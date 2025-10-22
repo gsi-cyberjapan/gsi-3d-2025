@@ -1,0 +1,7 @@
+{
+  "conversationStart": {
+    "command": "claude mcp run serena",
+    "background": true,
+    "description": "Auto-start Serena MCP without web dashboard"
+  }
+}
