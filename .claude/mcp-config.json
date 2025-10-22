@@ -6,7 +6,9 @@
       "git+https://github.com/oraios/serena",
       "serena-mcp-server",
       "--enable-web-dashboard",
-      "False"
+      "False",
+      "--auto-activate-project",
+      "gsi-3d-2025"
     ]
   }
 }
