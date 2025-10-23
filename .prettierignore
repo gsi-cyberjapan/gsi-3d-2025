@@ -1,7 +1,2 @@
 .cursorrules
-node_modules
-.next
-out
-dist
-.vscode
 pnpm-lock.yaml

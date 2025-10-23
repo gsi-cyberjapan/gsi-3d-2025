@@ -6,10 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint src --ext .js,.jsx,.ts,.tsx",
-    "fix": "eslint src --ext .js,.jsx,.ts,.tsx --fix",
-    "format": "prettier --check .",
-    "format:write": "prettier --write ."
+    "lint": "eslint .",
+    "fix": "prettier --write . && eslint --fix .",
+    "format": "prettier --check ."
   },
   "dependencies": {
     "next": "16.0.0",
@@ -22,7 +21,6 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "babel-plugin-react-compiler": "1.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.0.0",
     "eslint-config-prettier": "^10.1.8",
@@ -30,6 +28,7 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.0",
     "eslint-plugin-unused-imports": "^4.3.0",
+    "prettier": "^3.6.2",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
