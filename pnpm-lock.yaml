@@ -18,9 +18,6 @@ importers:
         specifier: 19.2.0
         version: 19.2.0(react@19.2.0)
     devDependencies:
-      '@eslint/eslintrc':
-        specifier: ^3.3.1
-        version: 3.3.1
       '@tailwindcss/postcss':
         specifier: ^4
         version: 4.1.15
@@ -37,26 +34,8 @@ importers:
         specifier: ^9
         version: 9.38.0(jiti@2.6.1)
       eslint-config-next:
-        specifier: 16.0.0
-        version: 16.0.0(@typescript-eslint/parser@8.46.2(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3))(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3)
-      eslint-config-prettier:
-        specifier: ^10.1.8
-        version: 10.1.8(eslint@9.38.0(jiti@2.6.1))
-      eslint-plugin-perfectionist:
-        specifier: ^4.15.1
-        version: 4.15.1(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3)
-      eslint-plugin-react:
-        specifier: ^7.37.5
-        version: 7.37.5(eslint@9.38.0(jiti@2.6.1))
-      eslint-plugin-react-hooks:
-        specifier: ^7.0.0
-        version: 7.0.0(eslint@9.38.0(jiti@2.6.1))
-      eslint-plugin-unused-imports:
-        specifier: ^4.3.0
-        version: 4.3.0(@typescript-eslint/eslint-plugin@8.46.2(@typescript-eslint/parser@8.46.2(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3))(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3))(eslint@9.38.0(jiti@2.6.1))
-      prettier:
-        specifier: ^3.6.2
-        version: 3.6.2
+        specifier: 16.0.1
+        version: 16.0.1(@typescript-eslint/parser@8.46.2(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3))(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3)
       tailwindcss:
         specifier: ^4
         version: 4.1.15
@@ -348,8 +327,8 @@ packages:
   '@next/env@16.0.0':
     resolution: {integrity: sha512-s5j2iFGp38QsG1LWRQaE2iUY3h1jc014/melHFfLdrsMJPqxqDQwWNwyQTcNoUSGZlCVZuM7t7JDMmSyRilsnA==}
 
-  '@next/eslint-plugin-next@16.0.0':
-    resolution: {integrity: sha512-IB7RzmmtrPOrpAgEBR1PIQPD0yea5lggh5cq54m51jHjjljU80Ia+czfxJYMlSDl1DPvpzb8S9TalCc0VMo9Hw==}
+  '@next/eslint-plugin-next@16.0.1':
+    resolution: {integrity: sha512-g4Cqmv/gyFEXNeVB2HkqDlYKfy+YrlM2k8AVIO/YQVEPfhVruH1VA99uT1zELLnPLIeOnx8IZ6Ddso0asfTIdw==}
 
   '@next/swc-darwin-arm64@16.0.0':
     resolution: {integrity: sha512-/CntqDCnk5w2qIwMiF0a9r6+9qunZzFmU0cBX4T82LOflE72zzH6gnOjCwUXYKOBlQi8OpP/rMj8cBIr18x4TA==}
@@ -937,20 +916,14 @@ packages:
     resolution: {integrity: sha512-TtpcNJ3XAzx3Gq8sWRzJaVajRs0uVxA2YAkdb1jm2YkPz4G6egUFAyA3n5vtEIZefPk5Wa4UXbKuS5fKkJWdgA==}
     engines: {node: '>=10'}
 
-  eslint-config-next@16.0.0:
-    resolution: {integrity: sha512-DWKT1YAO9ex2rK0/EeiPpKU++ghTiG59z6m08/ReLRECOYIaEv17maSCYT8zmFQLwIrY5lhJ+iaJPQdT4sJd4g==}
+  eslint-config-next@16.0.1:
+    resolution: {integrity: sha512-wNuHw5gNOxwLUvpg0cu6IL0crrVC9hAwdS/7UwleNkwyaMiWIOAwf8yzXVqBBzL3c9A7jVRngJxjoSpPP1aEhg==}
     peerDependencies:
       eslint: '>=9.0.0'
       typescript: '>=3.3.1'
     peerDependenciesMeta:
       typescript:
         optional: true
-
-  eslint-config-prettier@10.1.8:
-    resolution: {integrity: sha512-82GZUjRS0p/jganf6q1rEO25VSoHH0hKPCTrgillPjdI/3bgBhAE1QzHrHTizjpRvy6pGAvKjDJtk2pF9NDq8w==}
-    hasBin: true
-    peerDependencies:
-      eslint: '>=7.0.0'
 
   eslint-import-resolver-node@0.3.9:
     resolution: {integrity: sha512-WFj2isz22JahUv+B788TlO3N6zL3nNJGU8CcZbPZvVEkBPaJdCV4vy5wyghty5ROFbCRnm132v8BScu5/1BQ8g==}
@@ -1005,12 +978,6 @@ packages:
     peerDependencies:
       eslint: ^3 || ^4 || ^5 || ^6 || ^7 || ^8 || ^9
 
-  eslint-plugin-perfectionist@4.15.1:
-    resolution: {integrity: sha512-MHF0cBoOG0XyBf7G0EAFCuJJu4I18wy0zAoT1OHfx2o6EOx1EFTIzr2HGeuZa1kDcusoX0xJ9V7oZmaeFd773Q==}
-    engines: {node: ^18.0.0 || >=20.0.0}
-    peerDependencies:
-      eslint: '>=8.45.0'
-
   eslint-plugin-react-hooks@7.0.0:
     resolution: {integrity: sha512-fNXaOwvKwq2+pXiRpXc825Vd63+KM4DLL40Rtlycb8m7fYpp6efrTp1sa6ZbP/Ap58K2bEKFXRmhURE+CJAQWw==}
     engines: {node: '>=18'}
@@ -1022,15 +989,6 @@ packages:
     engines: {node: '>=4'}
     peerDependencies:
       eslint: ^3 || ^4 || ^5 || ^6 || ^7 || ^8 || ^9.7
-
-  eslint-plugin-unused-imports@4.3.0:
-    resolution: {integrity: sha512-ZFBmXMGBYfHttdRtOG9nFFpmUvMtbHSjsKrS20vdWdbfiVYsO3yA2SGYy9i9XmZJDfMGBflZGBCm70SEnFQtOA==}
-    peerDependencies:
-      '@typescript-eslint/eslint-plugin': ^8.0.0-0 || ^7.0.0 || ^6.0.0 || ^5.0.0
-      eslint: ^9.0.0 || ^8.0.0
-    peerDependenciesMeta:
-      '@typescript-eslint/eslint-plugin':
-        optional: true
 
   eslint-scope@8.4.0:
     resolution: {integrity: sha512-sNXOfKCn74rt8RICKMvJS7XKV/Xk9kA7DyJr8mJik3S7Cwgy3qlkkmyS2uQB3jiJg6VNdZd/pDBJu0nvG2NlTg==}
@@ -1532,10 +1490,6 @@ packages:
   natural-compare@1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
 
-  natural-orderby@5.0.0:
-    resolution: {integrity: sha512-kKHJhxwpR/Okycz4HhQKKlhWe4ASEfPgkSWNmKFHd7+ezuQlxkA5cM3+XkBPvm1gmHen3w53qsYAv+8GwRrBlg==}
-    engines: {node: '>=18'}
-
   next@16.0.0:
     resolution: {integrity: sha512-nYohiNdxGu4OmBzggxy9rczmjIGI+TpR5vbKTsE1HqYwNm1B+YSiugSrFguX6omMOKnDHAmBPY4+8TNJk0Idyg==}
     engines: {node: '>=20.9.0'}
@@ -1649,11 +1603,6 @@ packages:
   prelude-ls@1.2.1:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
-
-  prettier@3.6.2:
-    resolution: {integrity: sha512-I7AIg5boAr5R0FFtJ6rCfD+LFsWHp81dolrFD8S79U9tb8Az2nGrJncnMSnys+bpQJfRUzqs9hnA81OAA3hCuQ==}
-    engines: {node: '>=14'}
-    hasBin: true
 
   prop-types@15.8.1:
     resolution: {integrity: sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==}
@@ -2248,7 +2197,7 @@ snapshots:
 
   '@next/env@16.0.0': {}
 
-  '@next/eslint-plugin-next@16.0.0':
+  '@next/eslint-plugin-next@16.0.1':
     dependencies:
       fast-glob: 3.3.1
 
@@ -2884,9 +2833,9 @@ snapshots:
 
   escape-string-regexp@4.0.0: {}
 
-  eslint-config-next@16.0.0(@typescript-eslint/parser@8.46.2(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3))(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3):
+  eslint-config-next@16.0.1(@typescript-eslint/parser@8.46.2(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3))(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3):
     dependencies:
-      '@next/eslint-plugin-next': 16.0.0
+      '@next/eslint-plugin-next': 16.0.1
       eslint: 9.38.0(jiti@2.6.1)
       eslint-import-resolver-node: 0.3.9
       eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0)(eslint@9.38.0(jiti@2.6.1))
@@ -2903,10 +2852,6 @@ snapshots:
       - eslint-import-resolver-webpack
       - eslint-plugin-import-x
       - supports-color
-
-  eslint-config-prettier@10.1.8(eslint@9.38.0(jiti@2.6.1)):
-    dependencies:
-      eslint: 9.38.0(jiti@2.6.1)
 
   eslint-import-resolver-node@0.3.9:
     dependencies:
@@ -2990,16 +2935,6 @@ snapshots:
       safe-regex-test: 1.1.0
       string.prototype.includes: 2.0.1
 
-  eslint-plugin-perfectionist@4.15.1(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3):
-    dependencies:
-      '@typescript-eslint/types': 8.46.2
-      '@typescript-eslint/utils': 8.46.2(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3)
-      eslint: 9.38.0(jiti@2.6.1)
-      natural-orderby: 5.0.0
-    transitivePeerDependencies:
-      - supports-color
-      - typescript
-
   eslint-plugin-react-hooks@7.0.0(eslint@9.38.0(jiti@2.6.1)):
     dependencies:
       '@babel/core': 7.28.4
@@ -3032,12 +2967,6 @@ snapshots:
       semver: 6.3.1
       string.prototype.matchall: 4.0.12
       string.prototype.repeat: 1.0.0
-
-  eslint-plugin-unused-imports@4.3.0(@typescript-eslint/eslint-plugin@8.46.2(@typescript-eslint/parser@8.46.2(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3))(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3))(eslint@9.38.0(jiti@2.6.1)):
-    dependencies:
-      eslint: 9.38.0(jiti@2.6.1)
-    optionalDependencies:
-      '@typescript-eslint/eslint-plugin': 8.46.2(@typescript-eslint/parser@8.46.2(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3))(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3)
 
   eslint-scope@8.4.0:
     dependencies:
@@ -3537,8 +3466,6 @@ snapshots:
 
   natural-compare@1.4.0: {}
 
-  natural-orderby@5.0.0: {}
-
   next@16.0.0(@babel/core@7.28.4)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
     dependencies:
       '@next/env': 16.0.0
@@ -3661,8 +3588,6 @@ snapshots:
       source-map-js: 1.2.1
 
   prelude-ls@1.2.1: {}
-
-  prettier@3.6.2: {}
 
   prop-types@15.8.1:
     dependencies:
