@@ -9,13 +9,17 @@ const eslintConfig = defineConfig([
   /** Next.js デフォルト */
   ...nextVitals,
 
+  /** 無視するファイル */
+  globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts", "*.mjs"]),
+
   /** typescript-eslint */
   ...tseslint.configs.strict,
   ...tseslint.configs.strictTypeChecked,
   {
     languageOptions: {
       parserOptions: {
-        projectService: true,
+        project: true,
+        tsconfigRootDir: import.meta.dirname,
       },
     },
   },
@@ -50,6 +54,7 @@ const eslintConfig = defineConfig([
       "react/jsx-fragments": "error",
       "react/jsx-curly-brace-presence": "error",
       "react/jsx-no-useless-fragment": "error",
+      "react/jsx-self-closing-comp": "error",
       "react/jsx-pascal-case": "error",
       "react/no-danger": "error",
     },
@@ -75,7 +80,6 @@ const eslintConfig = defineConfig([
 
   /** Prettier (最後に上書きして競合するルールを無効化) */
   prettier,
-  globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts", "*.mjs"]),
 ]);
 
 export default eslintConfig;
