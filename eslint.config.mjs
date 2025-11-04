@@ -1,35 +1,45 @@
 import { defineConfig, globalIgnores } from "eslint/config";
 import nextVitals from "eslint-config-next/core-web-vitals";
 import prettier from "eslint-config-prettier/flat";
+import tseslint from "typescript-eslint";
 import reactPlugin from "eslint-plugin-react";
-import unusedImportsPlugin from "eslint-plugin-unused-imports";
-import perfectionistPlugin from "eslint-plugin-perfectionist";
-//import globals from "globals";
+import unusedImports from "eslint-plugin-unused-imports";
 
 const eslintConfig = defineConfig([
+  /** Next.js デフォルト */
   ...nextVitals,
-  prettier,
 
-  // Override default ignores of eslint-config-next.
-  globalIgnores([
-    ".next/**",
-    "out/**",
-    "build/**",
-    "next-env.d.ts",
-    "src/components/ui/**", // 元の構成の除外フォルダ
-  ]),
+  /** 無視するファイル */
+  globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts", "*.mjs"]),
 
-  // グローバル変数 (ブラウザ環境)
-  // {
-  //   languageOptions: {
-  //     globals: globals.browser,
-  //   },
-  // },
-
-  // eslint-plugin-react 共通ルール
+  /** typescript-eslint */
+  ...tseslint.configs.strict,
+  ...tseslint.configs.strictTypeChecked,
   {
-    plugins: { react: reactPlugin },
-    settings: { react: { version: "detect" } },
+    languageOptions: {
+      parserOptions: {
+        project: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+  },
+
+  /** ESLintのデフォルトルール */
+  {
+    rules: {
+      "no-console": ["warn", { allow: ["warn", "error"] }],
+    },
+  },
+
+  /** eslint-plugin-react */
+  reactPlugin.configs.flat.recommended,
+  reactPlugin.configs.flat["jsx-runtime"],
+  {
+    settings: {
+      react: {
+        version: "detect",
+      },
+    },
     rules: {
       "react/destructuring-assignment": "error",
       "react/function-component-definition": [
@@ -39,28 +49,20 @@ const eslintConfig = defineConfig([
           unnamedComponents: "arrow-function",
         },
       ],
+      "react/hook-use-state": "error",
       "react/jsx-boolean-value": "error",
       "react/jsx-fragments": "error",
       "react/jsx-curly-brace-presence": "error",
       "react/jsx-no-useless-fragment": "error",
-      "react/jsx-sort-props": "error",
       "react/self-closing-comp": "error",
       "react/jsx-pascal-case": "error",
       "react/no-danger": "error",
-      "react/prop-types": "off",
     },
   },
 
-  // eslint-plugin-react-hooks
+  /** eslint-plugin-unused-imports */
   {
-    rules: {
-      "react-hooks/exhaustive-deps": "error",
-    },
-  },
-
-  // 未使用 import / var チェック
-  {
-    plugins: { "unused-imports": unusedImportsPlugin },
+    plugins: { "unused-imports": unusedImports },
     rules: {
       "@typescript-eslint/no-unused-vars": "off",
       "unused-imports/no-unused-imports": "error",
@@ -76,14 +78,8 @@ const eslintConfig = defineConfig([
     },
   },
 
-  // perfectionist で interface / object プロパティをソート
-  {
-    plugins: { perfectionist: perfectionistPlugin },
-    rules: {
-      "perfectionist/sort-interfaces": "warn",
-      "perfectionist/sort-object-types": "warn",
-    },
-  },
+  /** Prettier (最後に上書きして競合するルールを無効化) */
+  prettier,
 ]);
 
 export default eslintConfig;
