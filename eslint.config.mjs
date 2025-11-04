@@ -54,7 +54,7 @@ const eslintConfig = defineConfig([
       "react/jsx-fragments": "error",
       "react/jsx-curly-brace-presence": "error",
       "react/jsx-no-useless-fragment": "error",
-      "react/jsx-self-closing-comp": "error",
+      "react/jself-closing-comp": "error",
       "react/jsx-pascal-case": "error",
       "react/no-danger": "error",
     },
