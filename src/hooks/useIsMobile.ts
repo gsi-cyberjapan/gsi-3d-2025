@@ -1,23 +1,23 @@
-import { useState, useEffect } from "react";
+"use client";
+import { useSyncExternalStore } from "react";
 import { RESPONSIVE } from "@/lib/config";
 
 export function useIsMobile() {
-  const [isMobile, setIsMobile] = useState<boolean | undefined>(
-    window.innerWidth < RESPONSIVE.MOBILE_BREAKPOINT_PX,
-  );
+  const query = `(max-width: ${(RESPONSIVE.MOBILE_BREAKPOINT_PX - 1).toString()}px)`;
 
-  useEffect(() => {
-    const mql = window.matchMedia(
-      `(max-width: ${String(RESPONSIVE.MOBILE_BREAKPOINT_PX - 1)}px)`,
-    );
-    const onChange = () => {
-      setIsMobile(window.innerWidth < RESPONSIVE.MOBILE_BREAKPOINT_PX);
-    };
-    mql.addEventListener("change", onChange);
+  const getSnapshot = () => {
+    if (typeof window === "undefined") return false;
+    return window.matchMedia(query).matches;
+  };
+
+  const subscribe = (cb: () => void) => {
+    if (typeof window === "undefined") return () => {};
+    const mql = window.matchMedia(query);
+    mql.addEventListener("change", cb);
     return () => {
-      mql.removeEventListener("change", onChange);
+      mql.removeEventListener("change", cb);
     };
-  }, []);
+  };
 
-  return !!isMobile;
+  return useSyncExternalStore(subscribe, getSnapshot, () => false);
 }
