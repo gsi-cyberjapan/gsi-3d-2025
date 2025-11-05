@@ -6,7 +6,6 @@ import {
 } from "@/components/ui/sidebar";
 import { GENERAL } from "@/lib/config";
 import Link from "next/link";
-import Image from "next/image";
 
 export const SidebarHeader = () => {
   return (
@@ -15,12 +14,7 @@ export const SidebarHeader = () => {
         <SidebarMenuItem>
           <SidebarMenuButton>
             <Link href="/">
-              <div className="flex gap-2 items-center">
-                <div className="relative size-6">
-                  <Image src="/geolonia_logo.svg" alt="Geoloniaのロゴ" fill />
-                </div>
-                <h1 className="font-semibold text-lg">{GENERAL.TITLE}</h1>
-              </div>
+              <h1 className="font-semibold text-lg">{GENERAL.TITLE}</h1>
             </Link>
           </SidebarMenuButton>
         </SidebarMenuItem>
