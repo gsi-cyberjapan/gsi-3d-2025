@@ -6,3 +6,8 @@ export const GENERAL = {
   /** アプリケーションの言語 */
   LANGUAGE: "ja",
 } as const;
+
+export const RESPONSIVE = {
+  /** モバイルと判定するブレイクポイント */
+  MOBILE_BREAKPOINT: 768,
+};
