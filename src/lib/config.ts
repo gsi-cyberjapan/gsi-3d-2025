@@ -9,5 +9,5 @@ export const GENERAL = {
 
 export const RESPONSIVE = {
   /** モバイルと判定するブレイクポイント */
-  MOBILE_BREAKPOINT: 768,
+  MOBILE_BREAKPOINT_PX: 768,
 };
