@@ -4,7 +4,7 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
-import { GENERAL } from "@/lib/config";
+import { GENERAL_CONFIG } from "@/lib/config";
 import Link from "next/link";
 
 export const SidebarHeader = () => {
@@ -14,7 +14,7 @@ export const SidebarHeader = () => {
         <SidebarMenuItem>
           <SidebarMenuButton>
             <Link href="/">
-              <h1 className="font-semibold text-lg">{GENERAL.TITLE}</h1>
+              <h1 className="font-semibold text-lg">{GENERAL_CONFIG.TITLE}</h1>
             </Link>
           </SidebarMenuButton>
         </SidebarMenuItem>

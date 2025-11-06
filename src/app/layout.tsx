@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { GENERAL } from "@/lib/config";
+import "maplibre-gl/dist/maplibre-gl.css";
+import { GENERAL_CONFIG } from "@/lib/config";
 import { ThemeProvider } from "@/components/custom/theme-provider";
 
 export const metadata: Metadata = {
-  title: GENERAL.TITLE,
-  description: GENERAL.DESCRIPTION,
+  title: GENERAL_CONFIG.TITLE,
+  description: GENERAL_CONFIG.DESCRIPTION,
 };
 
 const RootLayout = ({
@@ -14,7 +15,7 @@ const RootLayout = ({
   children: React.ReactNode;
 }>) => {
   return (
-    <html lang={GENERAL.LANGUAGE} suppressHydrationWarning>
+    <html lang={GENERAL_CONFIG.LANGUAGE} suppressHydrationWarning>
       <body className="antialiased">
         <ThemeProvider
           attribute="class"
