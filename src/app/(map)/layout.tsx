@@ -10,7 +10,7 @@ const MapLayout = ({
   return (
     <SidebarProvider>
       <Sidebar />
-      <main className="w-full h-dvh">
+      <main className="w-full h-dvh flex flex-col">
         <Header sidebarTrigger={<SidebarTrigger />} />
         {children}
       </main>
