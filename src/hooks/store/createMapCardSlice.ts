@@ -27,9 +27,9 @@ export interface MapCardSlice {
   /** 2つの地図の位置を連動するかどうか */
   isLinkMapPosition: boolean;
   setIsLinkMapPosition: (isLink: boolean) => void;
-  /** 主マップの透過率(0-1) */
-  primaryMapOpacity: number;
-  setPrimaryMapOpacity: (opacity: number) => void;
+  /** サブマップの透過率(0-1) */
+  subMapOpacity: number;
+  setSubMapOpacity: (opacity: number) => void;
 }
 
 export const createMapCardSlice: StateCreator<
@@ -73,8 +73,8 @@ export const createMapCardSlice: StateCreator<
   setIsLinkMapPosition: (isLink: boolean) => {
     set(() => ({ isLinkMapPosition: isLink }));
   },
-  primaryMapOpacity: 0.5,
-  setPrimaryMapOpacity: (opacity: number) => {
-    set(() => ({ primaryMapOpacity: opacity }));
+  subMapOpacity: 0.5,
+  setSubMapOpacity: (opacity: number) => {
+    set(() => ({ subMapOpacity: opacity }));
   },
 });

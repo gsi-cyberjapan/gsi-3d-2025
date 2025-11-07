@@ -30,12 +30,13 @@ export type MapInitialViewState = ComponentProps<
 interface Props {
   id: string;
   initialViewState: MapInitialViewState;
+  opacity?: number;
   className?: string;
 }
 
-export const Map = ({ id, initialViewState, className }: Props) => {
+export const Map = ({ id, initialViewState, opacity, className }: Props) => {
   return (
-    <div className={cn("w-full", className)}>
+    <div className={cn("w-full", className)} style={{ opacity: opacity }}>
       <ReactMaplibre
         id={id}
         initialViewState={initialViewState}
