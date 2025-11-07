@@ -2,7 +2,8 @@ import { StateCreator } from "zustand";
 import { MAP_CONFIG } from "@/lib/config";
 import { MapInitialViewState } from "@/components/custom/map-card/map";
 
-type MapViewMode = "single" | "split" | "overlap";
+export const MAP_VIEW_MODES = ["single", "split", "overlap"] as const;
+export type MapViewMode = (typeof MAP_VIEW_MODES)[number];
 type SetMapViewModeOption =
   | {
       viewMode: "single";
@@ -42,26 +43,41 @@ export const createMapCardSlice: StateCreator<
   setViewMode: (setOption: SetMapViewModeOption) => {
     set(() => {
       const mapAMeta = get().mapMetas[0];
-      if (setOption.viewMode === "split" || setOption.viewMode === "overlap") {
+      if (setOption.viewMode === "split") {
         return {
+          viewMode: setOption.viewMode,
           mapMetas: [
             mapAMeta,
             {
-              id: MAP_CONFIG.MAP_B.ID,
-              mapName: MAP_CONFIG.MAP_B.NAME,
+              id: MAP_CONFIG.MAP_SECONDARY.ID,
+              mapName: MAP_CONFIG.MAP_SECONDARY.NAME,
+              initialViewState: setOption.newMapnitialViewState,
+            },
+          ],
+        };
+      }
+      if (setOption.viewMode === "overlap") {
+        return {
+          viewMode: setOption.viewMode,
+          isLinkMapPosition: true,
+          mapMetas: [
+            mapAMeta,
+            {
+              id: MAP_CONFIG.MAP_SECONDARY.ID,
+              mapName: MAP_CONFIG.MAP_SECONDARY.NAME,
               initialViewState: setOption.newMapnitialViewState,
             },
           ],
         };
       }
 
-      return { mapMetas: [mapAMeta] };
+      return { viewMode: setOption.viewMode, mapMetas: [mapAMeta] };
     });
   },
   mapMetas: [
     {
-      id: MAP_CONFIG.MAP_A.ID,
-      mapName: MAP_CONFIG.MAP_A.NAME,
+      id: MAP_CONFIG.MAP_PRIMARY.ID,
+      mapName: MAP_CONFIG.MAP_PRIMARY.NAME,
       initialViewState: {
         longitude: MAP_CONFIG.INITIAL_VIEW_STATE.LONGITUDE,
         latitude: MAP_CONFIG.INITIAL_VIEW_STATE.LATITUDE,
@@ -73,7 +89,7 @@ export const createMapCardSlice: StateCreator<
   setIsLinkMapPosition: (isLink: boolean) => {
     set(() => ({ isLinkMapPosition: isLink }));
   },
-  subMapOpacity: 0.5,
+  subMapOpacity: MAP_CONFIG.INITIAL_OVERLAP_MAP_OPACITY,
   setSubMapOpacity: (opacity: number) => {
     set(() => ({ subMapOpacity: opacity }));
   },

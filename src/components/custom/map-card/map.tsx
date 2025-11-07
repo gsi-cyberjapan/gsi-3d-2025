@@ -36,7 +36,10 @@ interface Props {
 
 export const Map = ({ id, initialViewState, opacity, className }: Props) => {
   return (
-    <div className={cn("w-full", className)} style={{ opacity: opacity }}>
+    <div
+      className={cn("w-full h-full", className)}
+      style={{ opacity: opacity }}
+    >
       <ReactMaplibre
         id={id}
         initialViewState={initialViewState}

@@ -16,7 +16,7 @@ export const MapCard = () => {
           key={meta.id}
           id={meta.id}
           className={cn({ absolute: viewMode === "overlap" })}
-          opacity={index === 1 ? subMapOpacity : 1}
+          opacity={index === 1 && viewMode === "overlap" ? subMapOpacity : 1}
           initialViewState={meta.initialViewState}
         />
       ))}

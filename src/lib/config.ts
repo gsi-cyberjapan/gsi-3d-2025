@@ -19,8 +19,10 @@ export const MAP_CONFIG = {
     LATITUDE: 36.102376,
     ZOOM: 4,
   },
+  /** マップを重ねた時の透過率の初期値 */
+  INITIAL_OVERLAP_MAP_OPACITY: 0.5,
   /** 主マップのID */
-  MAP_A: { ID: "map-a", NAME: "地図A" },
+  MAP_PRIMARY: { ID: "primary-map", NAME: "地図A" },
   /** サブマップのID */
-  MAP_B: { ID: "map-b", NAME: "地図B" },
+  MAP_SECONDARY: { ID: "secondary-map", NAME: "地図B" },
 } as const;
