@@ -23,8 +23,6 @@ export interface MapCardSlice {
   /** 地図の表示モード（シングル, 分割, 重ねる） */
   viewMode: MapViewMode;
   setViewMode: (setOption: SetMapViewModeOption) => void;
-  /** 操作対象の地図ID */
-  activeMapId: string;
   /** カード内の地図の情報 */
   mapMetas: MapMeta[];
   /** 2つの地図の位置を連動するかどうか */
@@ -76,7 +74,6 @@ export const createMapCardSlice: StateCreator<
       return { viewMode: setOption.viewMode, mapMetas: [mapAMeta] };
     });
   },
-  activeMapId: MAP_CONFIG.MAP_PRIMARY.ID,
   mapMetas: [
     {
       id: MAP_CONFIG.MAP_PRIMARY.ID,
