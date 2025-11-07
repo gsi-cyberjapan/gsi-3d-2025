@@ -22,7 +22,9 @@ const RootLayout = ({
 }>) => {
   return (
     <html lang={GENERAL.LANGUAGE} suppressHydrationWarning>
-      <body className={`${notoSansJP.variable} ${notoSansJP.className} antialiased`}>
+      <body
+        className={`${notoSansJP.variable} ${notoSansJP.className} antialiased`}
+      >
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
