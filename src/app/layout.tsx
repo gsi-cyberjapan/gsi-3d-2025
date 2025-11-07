@@ -21,9 +21,9 @@ const RootLayout = ({
   children: React.ReactNode;
 }>) => {
   return (
-    <html lang={GENERAL.LANGUAGE} suppressHydrationWarning>
+    <html lang={GENERAL.LANGUAGE} className={notoSansJP.variable} suppressHydrationWarning>
       <body
-        className={`${notoSansJP.variable} ${notoSansJP.className} antialiased`}
+        className="font-sans antialiased"
       >
         <ThemeProvider
           attribute="class"

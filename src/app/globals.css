@@ -117,12 +117,12 @@
   * {
     @apply border-border outline-ring/50;
   }
-  html {
+  /* html {
     font-family:
       var(--font-noto-sans-jp), ui-sans-serif, system-ui, sans-serif,
       "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
       "Noto Color Emoji";
-  }
+  } */
   body {
     @apply bg-background text-foreground;
   }
