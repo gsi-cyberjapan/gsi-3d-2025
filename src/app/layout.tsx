@@ -21,10 +21,12 @@ const RootLayout = ({
   children: React.ReactNode;
 }>) => {
   return (
-    <html lang={GENERAL.LANGUAGE} className={notoSansJP.variable} suppressHydrationWarning>
-      <body
-        className="font-sans antialiased"
-      >
+    <html
+      lang={GENERAL.LANGUAGE}
+      className={notoSansJP.variable}
+      suppressHydrationWarning
+    >
+      <body className="font-sans antialiased">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
