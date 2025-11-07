@@ -17,7 +17,6 @@
     "@radix-ui/react-tooltip": "^1.2.8",
     "@vis.gl/react-maplibre": "^8.1.0",
     "class-variance-authority": "^0.7.1",
-    "clsx": "^2.1.1",
     "lucide-react": "^0.552.0",
     "maplibre-gl": "^5.11.0",
     "next": "16.0.0",

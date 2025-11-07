@@ -2,6 +2,8 @@
 
 import { Spinner } from "@/components/ui/spinner";
 import dynamic from "next/dynamic";
+import { ComponentProps } from "react";
+import { cn } from "@/lib/utils";
 
 const ReactMaplibre = dynamic(
   () => import("@vis.gl/react-maplibre").then((m) => m.Map),
@@ -21,15 +23,22 @@ const ReactMaplibre = dynamic(
   },
 );
 
-export const Map = () => {
+export type MapInitialViewState = ComponentProps<
+  typeof ReactMaplibre
+>["initialViewState"];
+
+interface Props {
+  id: string;
+  initialViewState: MapInitialViewState;
+  className?: string;
+}
+
+export const Map = ({ id, initialViewState, className }: Props) => {
   return (
-    <div className="w-full">
+    <div className={cn("w-full", className)}>
       <ReactMaplibre
-        initialViewState={{
-          longitude: -100,
-          latitude: 40,
-          zoom: 3.5,
-        }}
+        id={id}
+        initialViewState={initialViewState}
         mapStyle="https://demotiles.maplibre.org/style.json"
       />
     </div>
