@@ -14,10 +14,10 @@ export const RESPONSIVE_CONFIG = {
 
 export const MAP_CONFIG = {
   /** 初期表示状態 */
-  INITALI_VIEW_STATE: {
-    LONGITUDE: -100,
-    LATITUDE: 40,
-    ZOOM: 3.5,
+  INITIAL_VIEW_STATE: {
+    LONGITUDE: 140.097656,
+    LATITUDE: 36.102376,
+    ZOOM: 4,
   },
   /** 主マップのID */
   MAP_A: { ID: "map-a", NAME: "地図A" },

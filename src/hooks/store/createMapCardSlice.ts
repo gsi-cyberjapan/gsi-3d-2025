@@ -63,9 +63,9 @@ export const createMapCardSlice: StateCreator<
       id: MAP_CONFIG.MAP_A.ID,
       mapName: MAP_CONFIG.MAP_A.NAME,
       initialViewState: {
-        longitue: MAP_CONFIG.INITALI_VIEW_STATE.LONGITUDE,
-        latitude: MAP_CONFIG.INITALI_VIEW_STATE.LATITUDE,
-        zoom: MAP_CONFIG.INITALI_VIEW_STATE.ZOOM,
+        longitude: MAP_CONFIG.INITIAL_VIEW_STATE.LONGITUDE,
+        latitude: MAP_CONFIG.INITIAL_VIEW_STATE.LATITUDE,
+        zoom: MAP_CONFIG.INITIAL_VIEW_STATE.ZOOM,
       },
     },
   ],
