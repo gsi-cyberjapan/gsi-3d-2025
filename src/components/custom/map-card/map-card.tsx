@@ -3,6 +3,7 @@
 import { Map } from "./map";
 import { useGlobalStore } from "@/hooks/store/useGlobalStore";
 import { cn } from "@/lib/utils";
+import { MapCardFooter } from "./map-card-footer";
 
 export const MapCard = () => {
   const viewMode = useGlobalStore((state) => state.viewMode);
@@ -22,6 +23,7 @@ export const MapCard = () => {
           />
         ))}
       </div>
+      <MapCardFooter />
     </div>
   );
 };
