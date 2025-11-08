@@ -18,7 +18,7 @@ export const ThemeSwitchButton = () => {
       className="size-7"
       onClick={handleOnClick}
     >
-      <SunMoon size={6} />
+      <SunMoon />
     </Button>
   );
 };
