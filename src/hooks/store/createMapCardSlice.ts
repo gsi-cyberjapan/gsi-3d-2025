@@ -31,6 +31,9 @@ export interface MapCardSlice {
   /** サブマップの透過率(0-1) */
   subMapOpacity: number;
   setSubMapOpacity: (opacity: number) => void;
+  /** 操作対象のマップID */
+  controlTargetMapId: string;
+  setControlTargetMapId: (id: string) => void;
 }
 
 export const createMapCardSlice: StateCreator<
@@ -92,5 +95,9 @@ export const createMapCardSlice: StateCreator<
   subMapOpacity: MAP_CONFIG.INITIAL_OVERLAP_MAP_OPACITY,
   setSubMapOpacity: (opacity: number) => {
     set(() => ({ subMapOpacity: opacity }));
+  },
+  controlTargetMapId: MAP_CONFIG.MAP_PRIMARY.ID,
+  setControlTargetMapId: (id: string) => {
+    set(() => ({ controlTargetMapId: id }));
   },
 });
