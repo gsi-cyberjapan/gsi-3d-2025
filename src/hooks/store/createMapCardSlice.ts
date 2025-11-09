@@ -31,6 +31,9 @@ export interface MapCardSlice {
   /** サブマップの透過率(0-1) */
   subMapOpacity: number;
   setSubMapOpacity: (opacity: number) => void;
+  /** サブマップを表示するかどうか */
+  isHideSubmap: boolean;
+  setIsHideSubmap: (isHide: boolean) => void;
   /** 操作対象のマップID */
   controlTargetMapId: string;
   setControlTargetMapId: (id: string) => void;
@@ -46,7 +49,7 @@ export const createMapCardSlice: StateCreator<
   setViewMode: (setOption: SetMapViewModeOption) => {
     set(() => {
       const mapAMeta = get().mapMetas[0];
-      if (setOption.viewMode === "split") {
+      if (setOption.viewMode === "split" || setOption.viewMode === "overlap") {
         return {
           viewMode: setOption.viewMode,
           mapMetas: [
@@ -59,21 +62,6 @@ export const createMapCardSlice: StateCreator<
           ],
         };
       }
-      if (setOption.viewMode === "overlap") {
-        return {
-          viewMode: setOption.viewMode,
-          isLinkMapPosition: true,
-          mapMetas: [
-            mapAMeta,
-            {
-              id: MAP_CONFIG.MAP_SECONDARY.ID,
-              mapName: MAP_CONFIG.MAP_SECONDARY.NAME,
-              initialViewState: setOption.newMapnitialViewState,
-            },
-          ],
-        };
-      }
-
       return { viewMode: setOption.viewMode, mapMetas: [mapAMeta] };
     });
   },
@@ -95,6 +83,10 @@ export const createMapCardSlice: StateCreator<
   subMapOpacity: MAP_CONFIG.INITIAL_OVERLAP_MAP_OPACITY,
   setSubMapOpacity: (opacity: number) => {
     set(() => ({ subMapOpacity: opacity }));
+  },
+  isHideSubmap: false,
+  setIsHideSubmap: (isHide: boolean) => {
+    set(() => ({ isHideSubmap: isHide }));
   },
   controlTargetMapId: MAP_CONFIG.MAP_PRIMARY.ID,
   setControlTargetMapId: (id: string) => {

@@ -74,7 +74,7 @@ export const MapLinkPositionSelect = () => {
   ]);
 
   return (
-    <Label className="cursor-pointer hover:bg-accent/50 dark:bg-input/30 dark:hover:bg-input/50 dark:border-input shadow-xs flex gap-3 rounded-lg border px-3 h-8 items-center has-aria-checked:border-blue-600 has-aria-checked:bg-blue-50 dark:has-aria-checked:border-blue-900 dark:has-aria-checked:bg-blue-950">
+    <Label className="cursor-pointer hover:bg-accent/50 dark:bg-input/30 dark:hover:bg-input/50 dark:border-input shadow-xs flex gap-3 rounded-md border px-3 h-8 items-center has-aria-checked:border-blue-600 has-aria-checked:bg-blue-50 dark:has-aria-checked:border-blue-900 dark:has-aria-checked:bg-blue-950">
       <Checkbox
         checked={isLinkMapPosition}
         onCheckedChange={setIsLinkMapPosition}

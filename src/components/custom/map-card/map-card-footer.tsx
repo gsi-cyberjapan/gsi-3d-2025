@@ -3,6 +3,7 @@
 import { useGlobalStore } from "@/hooks/store/useGlobalStore";
 import { MapCenterInformation } from "./map-center-information";
 import { SplitMapSeceltor } from "./split-map-selector";
+import { OverlapMapSelector } from "./overlap-map-selector";
 
 export const MapCardFooter = () => {
   const viewMode = useGlobalStore((state) => state.viewMode);
@@ -13,6 +14,8 @@ export const MapCardFooter = () => {
       {(() => {
         if (viewMode === "split") {
           return <SplitMapSeceltor />;
+        } else if (viewMode === "overlap") {
+          return <OverlapMapSelector />;
         }
         return <MapCenterInformation mapId={mapMetas[0].id} />;
       })()}

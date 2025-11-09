@@ -77,7 +77,7 @@ export const MapViewModeSelect = () => {
           <ChevronsUpDown className="opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-45 p-0">
+      <PopoverContent className="w-30 p-0">
         <Command>
           <CommandList>
             <CommandGroup>

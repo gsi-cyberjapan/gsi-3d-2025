@@ -7,7 +7,6 @@ import { cn } from "@/lib/utils";
 import { SlidersHorizontal } from "lucide-react";
 
 export const SplitMapSeceltor = () => {
-  const viewMode = useGlobalStore((state) => state.viewMode);
   const mapMetas = useGlobalStore((state) => state.mapMetas);
   const controlTargetMapId = useGlobalStore(
     (state) => state.controlTargetMapId,
@@ -16,10 +15,6 @@ export const SplitMapSeceltor = () => {
     (state) => state.setControlTargetMapId,
   );
 
-  if (viewMode !== "split") {
-    return null;
-  }
-
   return (
     <div className="flex gap-1">
       {mapMetas.map((meta) => (
@@ -27,7 +22,7 @@ export const SplitMapSeceltor = () => {
           key={meta.id}
           role="button"
           tabIndex={0}
-          className="cursor-pointer w-full pr-2 transition-opacity hover:opacity-80 focus-visible:ring"
+          className="cursor-pointer w-full pr-1 transition-colors rounded-md hover:bg-muted focus-visible:ring"
           onClick={() => {
             setControlTargetMapId(meta.id);
           }}
@@ -43,8 +38,8 @@ export const SplitMapSeceltor = () => {
               />
               <MapCenterInformation mapId={meta.id} />
             </div>
-            {controlTargetMapId === meta.id && (
-              <div>
+            <div className="flex gap-2 h-fit py-1">
+              {controlTargetMapId === meta.id && (
                 <Badge
                   variant="secondary"
                   className="bg-blue-500 text-white dark:bg-blue-600"
@@ -52,8 +47,8 @@ export const SplitMapSeceltor = () => {
                   <SlidersHorizontal />
                   設定中
                 </Badge>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       ))}
