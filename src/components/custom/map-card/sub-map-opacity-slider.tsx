@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { stopPropagation } from "@/lib/utils";
 
-export const SubMapOpacitySelector = () => {
+export const SubMapOpacitySlider = () => {
   const subMapOpacity = useGlobalStore((state) => state.subMapOpacity);
   const setSubMapOpacity = useGlobalStore((state) => state.setSubMapOpacity);
 

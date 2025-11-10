@@ -5,7 +5,8 @@ import { cn } from "@/lib/utils";
 import { SlidersHorizontal, Layers2, EyeOff } from "lucide-react";
 import { MapCenterInformation } from "./map-center-information";
 import { Badge } from "@/components/ui/badge";
-import { SubMapOpacitySelector } from "./sub-map-opacity-selector";
+import { SubMapOpacitySlider } from "./sub-map-opacity-slider";
+import { SubMapHiddenCheck } from "./sub-map-hidden-check";
 
 export const OverlapMapSelector = () => {
   const mapMetas = useGlobalStore((state) => state.mapMetas);
@@ -68,7 +69,12 @@ export const OverlapMapSelector = () => {
                   })()}
                 </Badge>
               </div>
-              {index === 0 && <SubMapOpacitySelector />}
+              {index === 0 && (
+                <div className="flex gap-2">
+                  <SubMapHiddenCheck />
+                  <SubMapOpacitySlider />
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -8,7 +8,7 @@ import { useRef, useEffect, useCallback } from "react";
 import { MAP_CONFIG } from "@/lib/config";
 import type { MapLibreEvent } from "maplibre-gl";
 
-export const MapLinkPositionSelect = () => {
+export const MapLinkPositionCheck = () => {
   const [mapPrimary, mapSecondary] = [
     useMap()[MAP_CONFIG.MAP_PRIMARY.ID]?.getMap(),
     useMap()[MAP_CONFIG.MAP_SECONDARY.ID]?.getMap(),
