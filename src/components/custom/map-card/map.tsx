@@ -1,0 +1,50 @@
+"use client";
+
+import { Spinner } from "@/components/ui/spinner";
+import dynamic from "next/dynamic";
+import { ComponentProps } from "react";
+import { cn } from "@/lib/utils";
+
+const ReactMaplibre = dynamic(
+  () => import("@vis.gl/react-maplibre").then((m) => m.Map),
+  {
+    ssr: false,
+    loading: () => (
+      <div
+        aria-busy="true"
+        className="w-full h-full flex items-center justify-center"
+      >
+        <div className="flex gap-2 items-center text-muted-foreground">
+          <Spinner />
+          <span>地図を読み込み中...</span>
+        </div>
+      </div>
+    ),
+  },
+);
+
+export type MapInitialViewState = ComponentProps<
+  typeof ReactMaplibre
+>["initialViewState"];
+
+interface Props {
+  id: string;
+  initialViewState: MapInitialViewState;
+  opacity?: number;
+  className?: string;
+}
+
+export const Map = ({ id, initialViewState, opacity, className }: Props) => {
+  return (
+    <div
+      className={cn("w-full h-full", className)}
+      style={{ opacity: opacity }}
+    >
+      <ReactMaplibre
+        id={id}
+        initialViewState={initialViewState}
+        mapStyle="https://demotiles.maplibre.org/style.json"
+      />
+    </div>
+  );
+};
