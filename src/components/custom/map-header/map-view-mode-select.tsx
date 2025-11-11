@@ -70,14 +70,14 @@ export const MapViewModeSelect = () => {
           variant="outline"
           role="combobox"
           aria-expanded={isPopoverOpen}
-          className="w-45 justify-between"
+          className="w-30 justify-between"
           size="sm"
         >
           <MapViewModeSelectItem viewMode={viewMode} />
           <ChevronsUpDown className="opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-45 p-0">
+      <PopoverContent className="w-30 p-0">
         <Command>
           <CommandList>
             <CommandGroup>
@@ -85,6 +85,7 @@ export const MapViewModeSelect = () => {
                 return (
                   <CommandItem
                     key={mode}
+                    className="cursor-pointer"
                     value={mode}
                     onSelect={handleModeSelect}
                   >
@@ -114,7 +115,7 @@ const MapViewModeSelectItem = ({ viewMode }: { viewMode: MapViewMode }) => {
           return (
             <>
               <SquareSplitHorizontal />
-              <span>スプリット</span>
+              <span>分割</span>
             </>
           );
         }
@@ -122,7 +123,7 @@ const MapViewModeSelectItem = ({ viewMode }: { viewMode: MapViewMode }) => {
           return (
             <>
               <Layers2 />
-              <span>オーバーラップ</span>
+              <span>重ねる</span>
             </>
           );
         }
@@ -130,7 +131,7 @@ const MapViewModeSelectItem = ({ viewMode }: { viewMode: MapViewMode }) => {
         return (
           <>
             <MapIcon />
-            <span>シングル</span>
+            <span>単一</span>
           </>
         );
       })()}
