@@ -1,3 +1,7 @@
 export const MapBaseLayerSelector = () => {
-  return <div>MapBaseLayerSelector</div>;
+  return (
+    <div>
+      <div className="text-muted-foreground text-xs">ベースレイヤー</div>
+    </div>
+  );
 };
