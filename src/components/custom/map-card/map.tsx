@@ -2,8 +2,11 @@
 
 import { Spinner } from "@/components/ui/spinner";
 import dynamic from "next/dynamic";
-import { ComponentProps } from "react";
+import { ComponentProps, useEffect } from "react";
 import { cn } from "@/lib/utils";
+import { MapState } from "@/hooks/store/createMapSlice";
+import { useGlobalStore } from "@/hooks/store/useGlobalStore";
+import { MAP_CONFIG } from "@/lib/config";
 
 const ReactMaplibre = dynamic(
   () => import("@vis.gl/react-maplibre").then((m) => m.Map),
@@ -30,11 +33,27 @@ export type MapInitialViewState = ComponentProps<
 interface Props {
   id: string;
   initialViewState: MapInitialViewState;
+  initialMapState: MapState;
   opacity?: number;
   className?: string;
 }
 
-export const Map = ({ id, initialViewState, opacity, className }: Props) => {
+export const Map = ({
+  id,
+  initialViewState,
+  opacity,
+  className,
+  initialMapState,
+}: Props) => {
+  const initMaps = useGlobalStore((state) => state.initMaps);
+
+  useEffect(() => {
+    initMaps({
+      [MAP_CONFIG.MAP_PRIMARY.ID]: initialMapState,
+      [MAP_CONFIG.MAP_SECONDARY.ID]: initialMapState,
+    });
+  }, [initMaps, initialMapState]);
+
   return (
     <div
       className={cn("w-full h-full", className)}

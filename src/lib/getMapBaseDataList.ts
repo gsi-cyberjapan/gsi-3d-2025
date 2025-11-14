@@ -19,7 +19,7 @@ interface VectorStyleDefinition {
   [key: string]: unknown;
 }
 
-interface BaseRusterMapData {
+interface RusterMapBaseData {
   meta: {
     id: string;
     type: "ruster";
@@ -32,7 +32,7 @@ interface BaseRusterMapData {
   };
 }
 
-interface BaseVectorMapData {
+interface VectorMapBaseData {
   meta: {
     id: string;
     type: "vector";
@@ -44,9 +44,9 @@ interface BaseVectorMapData {
   };
 }
 
-export type BaseMapData = BaseRusterMapData | BaseVectorMapData;
+export type MapBaseData = RusterMapBaseData | VectorMapBaseData;
 
-const getRasterMapDataList = async (): Promise<BaseRusterMapData[]> => {
+const getRasterMapDataList = async (): Promise<RusterMapBaseData[]> => {
   const rasterDefinitionResponse = await fetch(
     BASE_LAYER_CONFIG.RUSTER_DEFINITION_URL,
   );
@@ -73,7 +73,7 @@ const getRasterMapDataList = async (): Promise<BaseRusterMapData[]> => {
   }));
 };
 
-const getVectorMapDataList = async (): Promise<BaseVectorMapData[]> => {
+const getVectorMapDataList = async (): Promise<VectorMapBaseData[]> => {
   return await Promise.all(
     BASE_LAYER_CONFIG.VECTOR_STYLE_URLS.map(async (url) => {
       const styleResponse = await fetch(url);
@@ -91,7 +91,7 @@ const getVectorMapDataList = async (): Promise<BaseVectorMapData[]> => {
       if (!name) {
         throw new Error("Vector style url does not contain a valid filename.");
       }
-      const vectorMapData: BaseVectorMapData = {
+      const vectorMapData: VectorMapBaseData = {
         meta: {
           id: `${name}-vector`,
           type: "vector",
@@ -109,26 +109,26 @@ const getVectorMapDataList = async (): Promise<BaseVectorMapData[]> => {
 };
 
 export const isRusterMapData = (
-  data: BaseMapData,
-): data is BaseRusterMapData => {
+  data: MapBaseData,
+): data is RusterMapBaseData => {
   return data.meta.type === "ruster";
 };
 
 export const isVectorMapData = (
-  data: BaseMapData,
-): data is BaseVectorMapData => {
+  data: MapBaseData,
+): data is VectorMapBaseData => {
   return data.meta.type === "vector";
 };
 
-export const getBaseMapList = async (): Promise<BaseMapData[]> => {
+export const getMapBaseDataist = async (): Promise<MapBaseData[]> => {
   const [rasterMapDataList, vectorMapDataList] = await Promise.all([
     getRasterMapDataList(),
     getVectorMapDataList(),
   ]);
 
-  const baseMapDataList = [...rasterMapDataList, ...vectorMapDataList].sort(
+  const MapBaseDataList = [...rasterMapDataList, ...vectorMapDataList].sort(
     (a, b) => a.meta.id.localeCompare(b.meta.id),
   );
 
-  return baseMapDataList;
+  return MapBaseDataList;
 };

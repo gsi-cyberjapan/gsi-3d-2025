@@ -4,8 +4,13 @@ import { Map } from "./map";
 import { useGlobalStore } from "@/hooks/store/useGlobalStore";
 import { cn } from "@/lib/utils";
 import { MapCardFooter } from "./map-card-footer";
+import { MapState } from "@/hooks/store/createMapSlice";
 
-export const MapCard = () => {
+interface Props {
+  initialMapState: MapState;
+}
+
+export const MapCard = ({ initialMapState }: Props) => {
   const viewMode = useGlobalStore((state) => state.viewMode);
   const subMapOpacity = useGlobalStore((state) => state.subMapOpacity);
   const mapMetas = useGlobalStore((state) => state.mapMetas);
@@ -26,6 +31,7 @@ export const MapCard = () => {
             )}
             opacity={index === 1 && viewMode === "overlap" ? subMapOpacity : 1}
             initialViewState={meta.initialViewState}
+            initialMapState={initialMapState}
           />
         ))}
       </div>

@@ -1,4 +1,4 @@
-import { BaseMapData } from "@/lib/getBaseMapList";
+import { MapBaseData } from "@/lib/getMapBaseDataList";
 import { StateCreator } from "zustand";
 import { MAP_CONFIG } from "@/lib/config";
 
@@ -6,18 +6,18 @@ type MapId =
   | typeof MAP_CONFIG.MAP_PRIMARY.ID
   | typeof MAP_CONFIG.MAP_SECONDARY.ID;
 
-interface SingleMapState {
+export interface MapState {
   /** ベースレイヤー */
-  baseMapData: BaseMapData;
+  mapBaseData: MapBaseData;
 }
 
 export interface MapSlice {
   /** mapId ごとの状態 */
-  maps: Partial<Record<MapId, SingleMapState>>;
+  maps: Partial<Record<MapId, MapState>>;
   /** 初期化関数 */
-  initMaps: (initialState: Record<MapId, SingleMapState>) => void;
+  initMaps: (initialState: Record<MapId, MapState>) => void;
   /** ベースレイヤーを切り替える関数 */
-  setBaseMapData: (mapId: MapId, baseMapData: BaseMapData) => void;
+  setBaseMapData: (mapId: MapId, mapBaseData: MapBaseData) => void;
 }
 
 export const createMapSlice: StateCreator<MapSlice, [], [], MapSlice> = (
@@ -27,13 +27,13 @@ export const createMapSlice: StateCreator<MapSlice, [], [], MapSlice> = (
   initMaps: (initialState) => {
     set({ maps: initialState });
   },
-  setBaseMapData: (mapId, baseMapData) => {
+  setBaseMapData: (mapId, mapBaseData) => {
     set((state) => ({
       maps: {
         ...state.maps,
         [mapId]: {
           ...(state.maps[mapId] ?? {}),
-          baseMapData,
+          mapBaseData,
         },
       },
     }));
