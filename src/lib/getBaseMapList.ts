@@ -44,7 +44,7 @@ interface BaseVectorMapData {
   };
 }
 
-type BaseMapData = BaseRusterMapData | BaseVectorMapData;
+export type BaseMapData = BaseRusterMapData | BaseVectorMapData;
 
 const getRasterMapDataList = async (): Promise<BaseRusterMapData[]> => {
   const rasterDefinitionResponse = await fetch(
