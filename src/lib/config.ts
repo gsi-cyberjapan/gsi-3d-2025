@@ -26,3 +26,26 @@ export const MAP_CONFIG = {
   /** サブマップのID */
   MAP_SECONDARY: { ID: "secondary-map", NAME: "地図B" },
 } as const;
+
+export const BASE_LAYER_CONFIG = {
+  /** ラスターの定義ファイルURL */
+  RUSTER_DEFINITION_URL:
+    "https://raw.githubusercontent.com/gsi-cyberjapan/gsimaps/refs/heads/gh-pages/layers_txt/layers0.txt",
+  /** ベクターのデータURL */
+  VECTOR_DATA_URL:
+    "https://cyberjapandata.gsi.go.jp/xyz/experimental_bvmap/{z}/{x}/{y}.pbf",
+  /** ベクターのスタイルURLリスト */
+  VECTOR_STYLE_URLS: [
+    "https://raw.githubusercontent.com/gsi-cyberjapan/gsimaps-vector-experiment/refs/heads/master/data/std.json",
+    "https://raw.githubusercontent.com/gsi-cyberjapan/gsimaps-vector-experiment/refs/heads/master/data/pale.json",
+    "https://raw.githubusercontent.com/gsi-cyberjapan/gsimaps-vector-experiment/refs/heads/master/data/blank.json",
+    "https://raw.githubusercontent.com/gsi-cyberjapan/gsimaps-vector-experiment/refs/heads/master/data/label.json",
+    "https://raw.githubusercontent.com/gsi-cyberjapan/gsimaps-vector-experiment/refs/heads/master/data/llabel.json",
+    "https://raw.githubusercontent.com/gsi-cyberjapan/gsimaps-vector-experiment/refs/heads/master/data/std2.json",
+    "https://raw.githubusercontent.com/gsi-cyberjapan/gsimaps-vector-experiment/refs/heads/master/data/pale2.json",
+    "https://raw.githubusercontent.com/gsi-cyberjapan/gsimaps-vector-experiment/refs/heads/master/data/blank2.json",
+  ],
+  /** ベクターのレジェンド画像が格納されているURL */
+  VECTOR_LEGEND_IMAGE_PATH:
+    "https://github.com/gsi-cyberjapan/gsimaps-vector-experiment/blob/master/image/thumb",
+};
