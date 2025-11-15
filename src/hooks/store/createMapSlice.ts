@@ -1,10 +1,6 @@
 import { MapBaseData } from "@/lib/getMapBaseDataList";
 import { StateCreator } from "zustand";
-import { MAP_CONFIG } from "@/lib/config";
-
-type MapId =
-  | typeof MAP_CONFIG.MAP_PRIMARY.ID
-  | typeof MAP_CONFIG.MAP_SECONDARY.ID;
+import { MapId } from "./createMapCardSlice";
 
 export interface MapState {
   /** ベースレイヤー */

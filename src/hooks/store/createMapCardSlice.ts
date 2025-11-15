@@ -4,6 +4,10 @@ import { MapInitialViewState } from "@/components/custom/map-card/map";
 
 export const MAP_VIEW_MODES = ["single", "split", "overlap"] as const;
 export type MapViewMode = (typeof MAP_VIEW_MODES)[number];
+export type MapId =
+  | typeof MAP_CONFIG.MAP_PRIMARY.ID
+  | typeof MAP_CONFIG.MAP_SECONDARY.ID;
+
 type SetMapViewModeOption =
   | {
       viewMode: "single";
@@ -35,8 +39,8 @@ export interface MapCardSlice {
   isHideSubmap: boolean;
   setIsHideSubmap: (isHide: boolean) => void;
   /** 操作対象のマップID */
-  controlTargetMapId: string;
-  setControlTargetMapId: (id: string) => void;
+  controlTargetMapId: MapId;
+  setControlTargetMapId: (id: MapId) => void;
 }
 
 export const createMapCardSlice: StateCreator<
@@ -89,7 +93,7 @@ export const createMapCardSlice: StateCreator<
     set(() => ({ isHideSubmap: isHide }));
   },
   controlTargetMapId: MAP_CONFIG.MAP_PRIMARY.ID,
-  setControlTargetMapId: (id: string) => {
+  setControlTargetMapId: (id: MapId) => {
     set(() => ({ controlTargetMapId: id }));
   },
 });

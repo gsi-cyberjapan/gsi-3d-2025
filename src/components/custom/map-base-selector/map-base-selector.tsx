@@ -1,12 +1,13 @@
 import { getMapBaseDataist } from "@/lib/getMapBaseDataList";
+import { MapBaseSelectorInner } from "./ma-base-selector-inner";
 
-export const MapBaseLayerSelector = async () => {
+export const MapBaseSelector = async () => {
   const mapBaseDataList = await getMapBaseDataist();
 
   return (
-    <div>
+    <div className="flex flex-col gap-2">
       <div className="text-muted-foreground text-xs">ベースレイヤー</div>
-      <div>{JSON.stringify(mapBaseDataList)}</div>
+      <MapBaseSelectorInner mapBaseDataList={mapBaseDataList} />
     </div>
   );
 };

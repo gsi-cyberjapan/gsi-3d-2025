@@ -96,7 +96,7 @@ const getVectorMapDataList = async (): Promise<VectorMapBaseData[]> => {
           id: `${name}-vector`,
           type: "vector",
           title: style.title,
-          legendImageUrl: `${BASE_LAYER_CONFIG.VECTOR_LEGEND_IMAGE_PATH}/${name}.png`,
+          legendImageUrl: `${BASE_LAYER_CONFIG.VECTOR_LEGEND_IMAGE_PATH}/${name}.png?raw=true`,
         },
         data: {
           styleUrl: url,

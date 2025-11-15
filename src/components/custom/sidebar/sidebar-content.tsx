@@ -2,13 +2,13 @@ import {
   SidebarContent as ShadcnSidebarContent,
   SidebarGroup,
 } from "@/components/ui/sidebar";
-import { MapBaseLayerSelector } from "../map-base-layer-selector";
+import { MapBaseSelector } from "../map-base-selector";
 
 export const SidebarContent = () => {
   return (
     <ShadcnSidebarContent>
       <SidebarGroup>
-        <MapBaseLayerSelector />
+        <MapBaseSelector />
       </SidebarGroup>
     </ShadcnSidebarContent>
   );
