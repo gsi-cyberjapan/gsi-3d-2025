@@ -14,6 +14,8 @@ interface RasterDefinition {
   }[];
 }
 
+type GlobeDefinition = RasterDefinition;
+
 interface VectorStyleDefinition {
   title: string;
   [key: string]: unknown;
@@ -23,6 +25,19 @@ interface RusterMapBaseData {
   meta: {
     id: string;
     type: "ruster";
+    title: string;
+    legendImageUrl: string;
+  };
+  data: {
+    tileUrl: string;
+    errorTileUrl: string;
+  };
+}
+
+interface GlobeMapBaseData {
+  meta: {
+    id: string;
+    type: "globe";
     title: string;
     legendImageUrl: string;
   };
@@ -44,7 +59,10 @@ interface VectorMapBaseData {
   };
 }
 
-export type MapBaseData = RusterMapBaseData | VectorMapBaseData;
+export type MapBaseData =
+  | RusterMapBaseData
+  | VectorMapBaseData
+  | GlobeMapBaseData;
 
 const getRasterMapDataList = async (): Promise<RusterMapBaseData[]> => {
   const rasterDefinitionResponse = await fetch(
@@ -63,6 +81,33 @@ const getRasterMapDataList = async (): Promise<RusterMapBaseData[]> => {
     meta: {
       id: `${layer.id}-ruster`,
       type: "ruster",
+      title: layer.title,
+      legendImageUrl: layer.legendUrl,
+    },
+    data: {
+      tileUrl: layer.url,
+      errorTileUrl: layer.errorTileUrl,
+    },
+  }));
+};
+
+const getGlobeMapDataList = async (): Promise<GlobeMapBaseData[]> => {
+  const globeDefinitionResponse = await fetch(
+    BASE_LAYER_CONFIG.RUSTER_DEFINITION_URL,
+  );
+
+  const globeDefinition = await (async (): Promise<GlobeDefinition> => {
+    const json: unknown = await globeDefinitionResponse.json();
+    if (!json || typeof json !== "object" || !("layers" in json)) {
+      throw new Error("Invalid globe definition.");
+    }
+    return json as GlobeDefinition;
+  })();
+
+  return globeDefinition.layers.map((layer) => ({
+    meta: {
+      id: `${layer.id}-globe`,
+      type: "globe",
       title: layer.title,
       legendImageUrl: layer.legendUrl,
     },
@@ -121,14 +166,18 @@ export const isVectorMapData = (
 };
 
 export const getMapBaseDataist = async (): Promise<MapBaseData[]> => {
-  const [rasterMapDataList, vectorMapDataList] = await Promise.all([
-    getRasterMapDataList(),
-    getVectorMapDataList(),
-  ]);
+  const [rasterMapDataList, vectorMapDataList, globaMapDataList] =
+    await Promise.all([
+      getRasterMapDataList(),
+      getVectorMapDataList(),
+      getGlobeMapDataList(),
+    ]);
 
-  const MapBaseDataList = [...rasterMapDataList, ...vectorMapDataList].sort(
-    (a, b) => a.meta.id.localeCompare(b.meta.id),
-  );
+  const MapBaseDataList = [
+    ...vectorMapDataList,
+    ...rasterMapDataList,
+    ...globaMapDataList,
+  ];
 
   return MapBaseDataList;
 };

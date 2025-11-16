@@ -5,6 +5,8 @@ import {
   SelectContent,
   SelectTrigger,
   SelectItem,
+  SelectGroup,
+  SelectLabel,
 } from "@/components/ui/select";
 import { useGlobalStore } from "@/hooks/store/useGlobalStore";
 import { MapBaseData } from "@/lib/getMapBaseDataList";
@@ -22,6 +24,11 @@ export const MapBaseSelectorInner = ({ mapBaseDataList }: Props) => {
     (state) => state.maps[controlTargetMapId]?.mapBaseData,
   );
   const setBaseMapData = useGlobalStore((state) => state.setBaseMapData);
+  const [vectorMapDataList, rusterMapDataList, globeMapDataList] = [
+    mapBaseDataList.filter((d) => d.meta.id.endsWith("-vector")),
+    mapBaseDataList.filter((d) => d.meta.id.endsWith("-ruster")),
+    mapBaseDataList.filter((d) => d.meta.id.endsWith("-globe")),
+  ];
 
   const handleOnValueChange = (id: string) => {
     const targetMetaData = mapBaseDataList.find((mbd) => mbd.meta.id === id);
@@ -42,14 +49,49 @@ export const MapBaseSelectorInner = ({ mapBaseDataList }: Props) => {
       onValueChange={handleOnValueChange}
     >
       <SelectTrigger className="w-full" size="lg">
-        <MapBaseItem mapBaseData={selectedBaseMapData} />
+        <MapBaseItem
+          key={selectedBaseMapData.meta.id}
+          mapBaseData={selectedBaseMapData}
+          displayMapType
+        />
       </SelectTrigger>
       <SelectContent>
-        {mapBaseDataList.map((baseData) => (
-          <SelectItem key={baseData.meta.id} value={baseData.meta.id}>
-            <MapBaseItem key={baseData.meta.id} mapBaseData={baseData} />
-          </SelectItem>
-        ))}
+        <SelectGroup>
+          <SelectLabel>Vector</SelectLabel>
+          {vectorMapDataList.map((baseData) => (
+            <SelectItem
+              key={baseData.meta.id}
+              value={baseData.meta.id}
+              className="cursor-pointer"
+            >
+              <MapBaseItem key={baseData.meta.id} mapBaseData={baseData} />
+            </SelectItem>
+          ))}
+        </SelectGroup>
+        <SelectGroup>
+          <SelectLabel>Ruster</SelectLabel>
+          {rusterMapDataList.map((baseData) => (
+            <SelectItem
+              key={baseData.meta.id}
+              value={baseData.meta.id}
+              className="cursor-pointer"
+            >
+              <MapBaseItem key={baseData.meta.id} mapBaseData={baseData} />
+            </SelectItem>
+          ))}
+        </SelectGroup>
+        <SelectGroup>
+          <SelectLabel>Globe</SelectLabel>
+          {globeMapDataList.map((baseData) => (
+            <SelectItem
+              key={baseData.meta.id}
+              value={baseData.meta.id}
+              className="cursor-pointer"
+            >
+              <MapBaseItem key={baseData.meta.id} mapBaseData={baseData} />
+            </SelectItem>
+          ))}
+        </SelectGroup>
       </SelectContent>
     </Select>
   );

@@ -6,7 +6,7 @@ import { ComponentProps, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { MapState } from "@/hooks/store/createMapSlice";
 import { useGlobalStore } from "@/hooks/store/useGlobalStore";
-import { MAP_CONFIG } from "@/lib/config";
+import { MapId } from "@/hooks/store/createMapCardSlice";
 
 const ReactMaplibre = dynamic(
   () => import("@vis.gl/react-maplibre").then((m) => m.Map),
@@ -45,14 +45,11 @@ export const Map = ({
   className,
   initialMapState,
 }: Props) => {
-  const initMaps = useGlobalStore((state) => state.initMaps);
+  const initMap = useGlobalStore((state) => state.initMap);
 
   useEffect(() => {
-    initMaps({
-      [MAP_CONFIG.MAP_PRIMARY.ID]: initialMapState,
-      [MAP_CONFIG.MAP_SECONDARY.ID]: initialMapState,
-    });
-  }, [initMaps, initialMapState]);
+    initMap(id as MapId, initialMapState);
+  }, [initMap, id, initialMapState]);
 
   return (
     <div

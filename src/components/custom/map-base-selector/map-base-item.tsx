@@ -1,13 +1,16 @@
 "use client";
 
+import { Badge } from "@/components/ui/badge";
 import { MapBaseData } from "@/lib/getMapBaseDataList";
+import { cn } from "@/lib/utils";
 import { useState } from "react";
 
 interface Props {
   mapBaseData: MapBaseData;
+  displayMapType?: boolean;
 }
 
-export const MapBaseItem = ({ mapBaseData }: Props) => {
+export const MapBaseItem = ({ mapBaseData, displayMapType = false }: Props) => {
   const [isImageError, setIsImageError] = useState(false);
 
   return (
@@ -28,7 +31,22 @@ export const MapBaseItem = ({ mapBaseData }: Props) => {
         )}
       </div>
       <div className="flex flex-col justify-center">
-        <div>{mapBaseData.meta.title}</div>
+        <div className="flex gap-2 items-center">
+          <div className="font-semibold">{mapBaseData.meta.title}</div>
+          {displayMapType && (
+            <span className="text-xs text-muted-foreground">
+              {(() => {
+                if (mapBaseData.meta.type === "vector") {
+                  return "Vector";
+                } else if (mapBaseData.meta.type === "ruster") {
+                  return "Ruster";
+                } else if (mapBaseData.meta.type === "globe") {
+                  return "Globe";
+                }
+              })()}
+            </span>
+          )}
+        </div>
       </div>
     </div>
   );
