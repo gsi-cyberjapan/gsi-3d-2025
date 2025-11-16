@@ -26,7 +26,7 @@ export const MapBaseSelectorInner = ({ mapBaseDataList }: Props) => {
   const setBaseMapData = useGlobalStore((state) => state.setBaseMapData);
   const [vectorMapDataList, rusterMapDataList, globeMapDataList] = [
     mapBaseDataList.filter((d) => d.meta.id.endsWith("-vector")),
-    mapBaseDataList.filter((d) => d.meta.id.endsWith("-ruster")),
+    mapBaseDataList.filter((d) => d.meta.id.endsWith("-raster")),
     mapBaseDataList.filter((d) => d.meta.id.endsWith("-globe")),
   ];
 
@@ -69,7 +69,7 @@ export const MapBaseSelectorInner = ({ mapBaseDataList }: Props) => {
           ))}
         </SelectGroup>
         <SelectGroup>
-          <SelectLabel>Ruster</SelectLabel>
+          <SelectLabel>Raster</SelectLabel>
           {rusterMapDataList.map((baseData) => (
             <SelectItem
               key={baseData.meta.id}

@@ -21,10 +21,10 @@ interface VectorStyleDefinition {
   [key: string]: unknown;
 }
 
-interface RusterMapBaseData {
+interface RasterMapBaseData {
   meta: {
     id: string;
-    type: "ruster";
+    type: "raster";
     title: string;
     legendImageUrl: string;
   };
@@ -60,11 +60,11 @@ interface VectorMapBaseData {
 }
 
 export type MapBaseData =
-  | RusterMapBaseData
+  | RasterMapBaseData
   | VectorMapBaseData
   | GlobeMapBaseData;
 
-const getRasterMapDataList = async (): Promise<RusterMapBaseData[]> => {
+const getRasterMapDataList = async (): Promise<RasterMapBaseData[]> => {
   const rasterDefinitionResponse = await fetch(
     BASE_LAYER_CONFIG.RUSTER_DEFINITION_URL,
   );
@@ -79,8 +79,8 @@ const getRasterMapDataList = async (): Promise<RusterMapBaseData[]> => {
 
   return rasterDefinition.layers.map((layer) => ({
     meta: {
-      id: `${layer.id}-ruster`,
-      type: "ruster",
+      id: `${layer.id}-raster`,
+      type: "raster",
       title: layer.title,
       legendImageUrl: layer.legendUrl,
     },
@@ -153,10 +153,10 @@ const getVectorMapDataList = async (): Promise<VectorMapBaseData[]> => {
   );
 };
 
-export const isRusterMapData = (
+export const isRasterMapData = (
   data: MapBaseData,
-): data is RusterMapBaseData => {
-  return data.meta.type === "ruster";
+): data is RasterMapBaseData => {
+  return data.meta.type === "raster";
 };
 
 export const isVectorMapData = (

@@ -2,7 +2,6 @@
 
 import { Badge } from "@/components/ui/badge";
 import { MapBaseData } from "@/lib/getMapBaseDataList";
-import { cn } from "@/lib/utils";
 import { useState } from "react";
 
 interface Props {
@@ -38,8 +37,8 @@ export const MapBaseItem = ({ mapBaseData, displayMapType = false }: Props) => {
               {(() => {
                 if (mapBaseData.meta.type === "vector") {
                   return "Vector";
-                } else if (mapBaseData.meta.type === "ruster") {
-                  return "Ruster";
+                } else if (mapBaseData.meta.type === "raster") {
+                  return "Raster";
                 } else if (mapBaseData.meta.type === "globe") {
                   return "Globe";
                 }

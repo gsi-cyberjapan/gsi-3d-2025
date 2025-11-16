@@ -18,7 +18,7 @@ type SetMapViewModeOption =
     };
 
 interface MapMeta {
-  id: string;
+  id: MapId;
   mapName: string;
   initialViewState: MapInitialViewState;
 }
