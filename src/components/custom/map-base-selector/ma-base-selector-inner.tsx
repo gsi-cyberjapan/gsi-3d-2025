@@ -41,13 +41,13 @@ export const MapBaseSelectorInner = ({ mapBaseDataList }: Props) => {
       value={selectedBaseMapData.meta.id}
       onValueChange={handleOnValueChange}
     >
-      <SelectTrigger>
+      <SelectTrigger className="w-full" size="lg">
         <MapBaseItem mapBaseData={selectedBaseMapData} />
       </SelectTrigger>
       <SelectContent>
         {mapBaseDataList.map((baseData) => (
           <SelectItem key={baseData.meta.id} value={baseData.meta.id}>
-            <MapBaseItem mapBaseData={baseData} />
+            <MapBaseItem key={baseData.meta.id} mapBaseData={baseData} />
           </SelectItem>
         ))}
       </SelectContent>
