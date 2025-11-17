@@ -88,7 +88,7 @@ const getRasterMapDataList = async (): Promise<RasterMapBaseData[]> => {
 
 const getGlobeMapDataList = async (): Promise<GlobeMapBaseData[]> => {
   const globeDefinitionResponse = await fetch(
-    BASE_LAYER_CONFIG.RUSTER_DEFINITION_URL,
+    BASE_LAYER_CONFIG.GLOBE_DEFINITION_URL,
   );
 
   const globeDefinition = await (async (): Promise<GlobeDefinition> => {

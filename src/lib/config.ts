@@ -31,6 +31,9 @@ export const BASE_LAYER_CONFIG = {
   /** ラスターの定義ファイルURL */
   RUSTER_DEFINITION_URL:
     "https://raw.githubusercontent.com/gsi-cyberjapan/gsimaps/refs/heads/gh-pages/layers_txt/layers0.txt",
+  /** グローブの定義ファイルURL */
+  GLOBE_DEFINITION_URL:
+    "https://raw.githubusercontent.com/gsi-cyberjapan/gsimaps-globe/refs/heads/gh-pages/layers_txt/layers0.txt",
   /** ベクターの定義リスト */
   VECTOR_STYLES: [
     {
