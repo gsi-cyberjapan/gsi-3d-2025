@@ -1,6 +1,5 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
 import { MapBaseData } from "@/lib/getMapBaseDataList";
 import { useState } from "react";
 
@@ -35,13 +34,13 @@ export const MapBaseItem = ({ mapBaseData, displayMapType = false }: Props) => {
           {displayMapType && (
             <span className="text-xs text-muted-foreground">
               {(() => {
-                if (mapBaseData.meta.type === "vector") {
-                  return "Vector";
-                } else if (mapBaseData.meta.type === "raster") {
-                  return "Raster";
-                } else if (mapBaseData.meta.type === "globe") {
+                if (mapBaseData.meta.type === "globe") {
                   return "Globe";
                 }
+                if (mapBaseData.meta.type === "raster") {
+                  return "Raster";
+                }
+                return "Vector";
               })()}
             </span>
           )}

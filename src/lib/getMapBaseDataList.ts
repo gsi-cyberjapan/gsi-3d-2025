@@ -16,11 +16,6 @@ interface RasterDefinition {
 
 type GlobeDefinition = RasterDefinition;
 
-interface VectorStyleDefinition {
-  title: string;
-  [key: string]: unknown;
-}
-
 interface RasterMapBaseData {
   meta: {
     id: string;
@@ -118,45 +113,38 @@ const getGlobeMapDataList = async (): Promise<GlobeMapBaseData[]> => {
   }));
 };
 
-const getVectorMapDataList = async (): Promise<VectorMapBaseData[]> => {
-  return await Promise.all(
-    BASE_LAYER_CONFIG.VECTOR_STYLE_URLS.map(async (url) => {
-      const styleResponse = await fetch(url);
-      const style = await (async (): Promise<VectorStyleDefinition> => {
-        const json: unknown = await styleResponse.json();
-        if (!json || typeof json !== "object" || !("title" in json)) {
-          throw new Error("Invalid vevtor style.");
-        }
-        return json as VectorStyleDefinition;
-      })();
+const getVectorMapDataList = (): VectorMapBaseData[] => {
+  return BASE_LAYER_CONFIG.VECTOR_STYLES.map((style) => {
+    const filename = new URL(style.URL).pathname.split("/").pop();
+    const name = filename?.replace(/\.[^.]+$/, "");
 
-      const filename = new URL(url).pathname.split("/").pop();
-      const name = filename?.replace(/\.[^.]+$/, "");
+    if (!name) {
+      throw new Error("Vector style url does not contain a valid filename.");
+    }
 
-      if (!name) {
-        throw new Error("Vector style url does not contain a valid filename.");
-      }
-      const vectorMapData: VectorMapBaseData = {
-        meta: {
-          id: `${name}-vector`,
-          type: "vector",
-          title: style.title,
-          legendImageUrl: `${BASE_LAYER_CONFIG.VECTOR_LEGEND_IMAGE_PATH}/${name}.png?raw=true`,
-        },
-        data: {
-          styleUrl: url,
-        },
-      };
-
-      return vectorMapData;
-    }),
-  );
+    const vectorMapData: VectorMapBaseData = {
+      meta: {
+        id: `${name}-vector`,
+        type: "vector",
+        title: style.TITLE,
+        legendImageUrl: `${BASE_LAYER_CONFIG.VECTOR_LEGEND_IMAGE_PATH}/${name}.png?raw=true`,
+      },
+      data: {
+        styleUrl: style.URL,
+      },
+    };
+    return vectorMapData;
+  });
 };
 
 export const isRasterMapData = (
   data: MapBaseData,
 ): data is RasterMapBaseData => {
   return data.meta.type === "raster";
+};
+
+export const isGlobeMapData = (data: MapBaseData): data is GlobeMapBaseData => {
+  return data.meta.type === "globe";
 };
 
 export const isVectorMapData = (
@@ -166,12 +154,11 @@ export const isVectorMapData = (
 };
 
 export const getMapBaseDataist = async (): Promise<MapBaseData[]> => {
-  const [rasterMapDataList, vectorMapDataList, globaMapDataList] =
-    await Promise.all([
-      getRasterMapDataList(),
-      getVectorMapDataList(),
-      getGlobeMapDataList(),
-    ]);
+  const vectorMapDataList = getVectorMapDataList();
+  const [rasterMapDataList, globaMapDataList] = await Promise.all([
+    getRasterMapDataList(),
+    getGlobeMapDataList(),
+  ]);
 
   const MapBaseDataList = [
     ...vectorMapDataList,
