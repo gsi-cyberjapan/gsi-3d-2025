@@ -75,9 +75,11 @@ export const Map = ({
         id={id}
         initialViewState={initialViewState}
         mapStyle={
+          // Vecotrのベース
           isVectorMapData(baseData) ? baseData.data.styleUrl : undefined
         }
       >
+        {/* Rusterのベース */}
         {(isRasterMapData(baseData) || isGlobeMapData(baseData)) && (
           <Source type="raster" tiles={[baseData.data.tileUrl]} tileSize={256}>
             <Layer type="raster" />
