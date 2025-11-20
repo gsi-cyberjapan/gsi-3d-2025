@@ -2,11 +2,17 @@
 
 import { Spinner } from "@/components/ui/spinner";
 import dynamic from "next/dynamic";
-import { ComponentProps, useEffect } from "react";
+import { ComponentProps, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { MapState } from "@/hooks/store/createMapSlice";
 import { useGlobalStore } from "@/hooks/store/useGlobalStore";
 import { MapId } from "@/hooks/store/createMapCardSlice";
+import {
+  isGlobeMapData,
+  isRasterMapData,
+  isVectorMapData,
+} from "@/lib/getMapBaseDataList";
+import { Layer, Source, useMap } from "@vis.gl/react-maplibre";
 
 const MapLoadInformation = ({ message }: { message: string }) => {
   return (
@@ -51,10 +57,25 @@ export const Map = ({
 }: Props) => {
   const initMap = useGlobalStore((state) => state.initMap);
   const baseData = useGlobalStore((state) => state.maps[id]?.mapBaseData);
+  const [isMapLoaded, setIsMapLoaded] = useState(false);
+  const map = useMap()[id]?.getMap();
+
+  const handleOnLoad = () => {
+    setIsMapLoaded(true);
+  };
 
   useEffect(() => {
     initMap(id, initialMapState);
   }, [initMap, id, initialMapState]);
+
+  useEffect(() => {
+    if (!baseData || !isMapLoaded || !isGlobeMapData(baseData) || !map) return;
+    map.setProjection({ type: "globe" });
+
+    return () => {
+      map.setProjection({ type: "mercator" });
+    };
+  }, [map, baseData, isMapLoaded]);
 
   if (!baseData) {
     return <MapLoadInformation message="地図を初期化中..." />;
@@ -65,7 +86,18 @@ export const Map = ({
       className={cn("w-full h-full", className)}
       style={{ opacity: opacity }}
     >
-      <ReactMaplibre id={id} initialViewState={initialViewState} />
+      <ReactMaplibre
+        id={id}
+        initialViewState={initialViewState}
+        onLoad={handleOnLoad}
+        mapStyle={isVectorMapData(baseData) ? baseData.data.style : undefined}
+      >
+        {(isRasterMapData(baseData) || isGlobeMapData(baseData)) && (
+          <Source type="raster" tiles={[baseData.data.tileUrl]}>
+            <Layer type="raster" />
+          </Source>
+        )}
+      </ReactMaplibre>
     </div>
   );
 };
