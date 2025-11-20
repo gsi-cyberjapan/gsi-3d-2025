@@ -1,4 +1,6 @@
+import { StyleSpecification } from "maplibre-gl";
 import { BASE_LAYER_CONFIG } from "./config";
+import { convertGsiDesignToStyle } from "./test";
 
 interface RasterDefinition {
   layers: {
@@ -50,7 +52,7 @@ interface VectorMapBaseData {
     legendImageUrl: string;
   };
   data: {
-    styleUrl: string;
+    style: StyleSpecification;
   };
 }
 
@@ -93,6 +95,7 @@ const getGlobeMapDataList = async (): Promise<GlobeMapBaseData[]> => {
 
   const globeDefinition = await (async (): Promise<GlobeDefinition> => {
     const json: unknown = await globeDefinitionResponse.json();
+
     if (!json || typeof json !== "object" || !("layers" in json)) {
       throw new Error("Invalid globe definition.");
     }
@@ -113,28 +116,39 @@ const getGlobeMapDataList = async (): Promise<GlobeMapBaseData[]> => {
   }));
 };
 
-const getVectorMapDataList = (): VectorMapBaseData[] => {
-  return BASE_LAYER_CONFIG.VECTOR_STYLES.map((style) => {
-    const filename = new URL(style.URL).pathname.split("/").pop();
-    const name = filename?.replace(/\.[^.]+$/, "");
+const getVectorMapDataList = async (): Promise<VectorMapBaseData[]> => {
+  return Promise.all(
+    BASE_LAYER_CONFIG.VECTOR_STYLES.map(async (style) => {
+      const filename = new URL(style.URL).pathname.split("/").pop();
+      const name = filename?.replace(/\.[^.]+$/, "");
 
-    if (!name) {
-      throw new Error("Vector style url does not contain a valid filename.");
-    }
+      if (!name) {
+        throw new Error("Vector style url does not contain a valid filename.");
+      }
 
-    const vectorMapData: VectorMapBaseData = {
-      meta: {
-        id: `${name}-vector`,
-        type: "vector",
-        title: style.TITLE,
-        legendImageUrl: `${BASE_LAYER_CONFIG.VECTOR_LEGEND_IMAGE_PATH}/${name}.png?raw=true`,
-      },
-      data: {
-        styleUrl: style.URL,
-      },
-    };
-    return vectorMapData;
-  });
+      const gsiStyleResponse = await fetch(style.URL);
+      const gsiStyleJson: unknown = await (async (): Promise<unknown> => {
+        const json: unknown = await gsiStyleResponse.json();
+        if (!json || typeof json !== "object" || !("layers" in json)) {
+          throw new Error("Invalid globe definition.");
+        }
+        return json as unknown;
+      })();
+
+      const vectorMapData: VectorMapBaseData = {
+        meta: {
+          id: `${name}-vector`,
+          type: "vector",
+          title: style.TITLE,
+          legendImageUrl: `${BASE_LAYER_CONFIG.VECTOR_LEGEND_IMAGE_PATH}/${name}.png?raw=true`,
+        },
+        data: {
+          style: convertGsiDesignToStyle(gsiStyleJson),
+        },
+      };
+      return vectorMapData;
+    }),
+  );
 };
 
 export const isRasterMapData = (
@@ -154,11 +168,12 @@ export const isVectorMapData = (
 };
 
 export const getMapBaseDataist = async (): Promise<MapBaseData[]> => {
-  const vectorMapDataList = getVectorMapDataList();
-  const [rasterMapDataList, globaMapDataList] = await Promise.all([
-    getRasterMapDataList(),
-    getGlobeMapDataList(),
-  ]);
+  const [vectorMapDataList, rasterMapDataList, globaMapDataList] =
+    await Promise.all([
+      getVectorMapDataList(),
+      getRasterMapDataList(),
+      getGlobeMapDataList(),
+    ]);
 
   const MapBaseDataList = [
     ...vectorMapDataList,

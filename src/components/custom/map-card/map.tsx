@@ -7,12 +7,6 @@ import { cn } from "@/lib/utils";
 import { MapState } from "@/hooks/store/createMapSlice";
 import { useGlobalStore } from "@/hooks/store/useGlobalStore";
 import { MapId } from "@/hooks/store/createMapCardSlice";
-import {
-  isGlobeMapData,
-  isRasterMapData,
-  isVectorMapData,
-} from "@/lib/getMapBaseDataList";
-import { Layer, Source } from "@vis.gl/react-maplibre";
 
 const MapLoadInformation = ({ message }: { message: string }) => {
   return (
@@ -71,21 +65,7 @@ export const Map = ({
       className={cn("w-full h-full", className)}
       style={{ opacity: opacity }}
     >
-      <ReactMaplibre
-        id={id}
-        initialViewState={initialViewState}
-        mapStyle={
-          // Vecotrのベース
-          isVectorMapData(baseData) ? baseData.data.styleUrl : undefined
-        }
-      >
-        {/* Rusterのベース */}
-        {(isRasterMapData(baseData) || isGlobeMapData(baseData)) && (
-          <Source type="raster" tiles={[baseData.data.tileUrl]} tileSize={256}>
-            <Layer type="raster" />
-          </Source>
-        )}
-      </ReactMaplibre>
+      <ReactMaplibre id={id} initialViewState={initialViewState} />
     </div>
   );
 };
