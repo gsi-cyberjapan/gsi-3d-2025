@@ -11,6 +11,7 @@ import {
 import { useGlobalStore } from "@/hooks/store/useGlobalStore";
 import { MapBaseData } from "@/lib/getMapBaseDataList";
 import { MapBaseItem } from "./map-base-item";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Props {
   mapBaseDataList: MapBaseData[];
@@ -40,7 +41,16 @@ export const MapBaseSelectorInner = ({ mapBaseDataList }: Props) => {
   };
 
   if (!selectedBaseMapData) {
-    return <div>TODO</div>;
+    return (
+      <Select disabled>
+        <SelectTrigger className="w-full" size="lg">
+          <div className="flex gap-2 h-8 justify-start">
+            <Skeleton className="size-8 rounded-sm" />
+            <Skeleton className="w-24 h-3 mt-0.5" />
+          </div>
+        </SelectTrigger>
+      </Select>
+    );
   }
 
   return (
