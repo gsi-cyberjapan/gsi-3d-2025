@@ -130,7 +130,7 @@ const getVectorMapDataList = async (): Promise<VectorMapBaseData[]> => {
       const gsiStyleJson: unknown = await (async (): Promise<unknown> => {
         const json: unknown = await gsiStyleResponse.json();
         if (!json || typeof json !== "object" || !("layers" in json)) {
-          throw new Error("Invalid globe definition.");
+          throw new Error("Invalid vector style definition.");
         }
         return json as unknown;
       })();
