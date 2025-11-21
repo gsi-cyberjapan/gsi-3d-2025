@@ -1,8 +1,8 @@
-import { getMapBaseDataist } from "@/lib/getMapBaseDataList";
+import { getMapBaseDataList } from "@/lib/getMapBaseDataList";
 import { MapBaseSelectorInner } from "./ma-base-selector-inner";
 
 export const MapBaseSelector = async () => {
-  const mapBaseDataList = await getMapBaseDataist();
+  const mapBaseDataList = await getMapBaseDataList();
 
   return (
     <div className="flex flex-col gap-2">
