@@ -167,7 +167,7 @@ export const isVectorMapData = (
   return data.meta.type === "vector";
 };
 
-export const getMapBaseDataist = async (): Promise<MapBaseData[]> => {
+export const getMapBaseDataList = async (): Promise<MapBaseData[]> => {
   const [vectorMapDataList, rasterMapDataList, globaMapDataList] =
     await Promise.all([
       getVectorMapDataList(),
