@@ -63,7 +63,7 @@ export type MapBaseData =
 
 const getRasterMapDataList = async (): Promise<RasterMapBaseData[]> => {
   const rasterDefinitionResponse = await fetch(
-    BASE_LAYER_CONFIG.RUSTER_DEFINITION_URL,
+    BASE_LAYER_CONFIG.RASTER_DEFINITION_URL,
   );
 
   const rasterDefinition = await (async (): Promise<RasterDefinition> => {
