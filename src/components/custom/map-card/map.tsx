@@ -2,24 +2,37 @@
 
 import { Spinner } from "@/components/ui/spinner";
 import dynamic from "next/dynamic";
-import { ComponentProps } from "react";
+import { ComponentProps, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import { MapState } from "@/hooks/store/createMapSlice";
+import { useGlobalStore } from "@/hooks/store/useGlobalStore";
+import { MapId } from "@/hooks/store/createMapCardSlice";
+import {
+  isGlobeMapData,
+  isRasterMapData,
+  isVectorMapData,
+} from "@/lib/getMapBaseDataList";
+import { Layer, Source, useMap } from "@vis.gl/react-maplibre";
+
+const MapLoadInformation = ({ message }: { message: string }) => {
+  return (
+    <div
+      aria-busy="true"
+      className="w-full h-full flex items-center justify-center"
+    >
+      <div className="flex gap-2 items-center text-muted-foreground">
+        <Spinner />
+        <span>{message}</span>
+      </div>
+    </div>
+  );
+};
 
 const ReactMaplibre = dynamic(
   () => import("@vis.gl/react-maplibre").then((m) => m.Map),
   {
     ssr: false,
-    loading: () => (
-      <div
-        aria-busy="true"
-        className="w-full h-full flex items-center justify-center"
-      >
-        <div className="flex gap-2 items-center text-muted-foreground">
-          <Spinner />
-          <span>地図を読み込み中...</span>
-        </div>
-      </div>
-    ),
+    loading: () => <MapLoadInformation message="地図を読み込み中..." />,
   },
 );
 
@@ -28,13 +41,46 @@ export type MapInitialViewState = ComponentProps<
 >["initialViewState"];
 
 interface Props {
-  id: string;
+  id: MapId;
   initialViewState: MapInitialViewState;
+  initialMapState: MapState;
   opacity?: number;
   className?: string;
 }
 
-export const Map = ({ id, initialViewState, opacity, className }: Props) => {
+export const Map = ({
+  id,
+  initialViewState,
+  opacity,
+  className,
+  initialMapState,
+}: Props) => {
+  const initMap = useGlobalStore((state) => state.initMap);
+  const baseData = useGlobalStore((state) => state.maps[id]?.mapBaseData);
+  const [isMapLoaded, setIsMapLoaded] = useState(false);
+  const map = useMap()[id]?.getMap();
+
+  const handleOnLoad = () => {
+    setIsMapLoaded(true);
+  };
+
+  useEffect(() => {
+    initMap(id, initialMapState);
+  }, [initMap, id, initialMapState]);
+
+  useEffect(() => {
+    if (!baseData || !isMapLoaded || !isGlobeMapData(baseData) || !map) return;
+    map.setProjection({ type: "globe" });
+
+    return () => {
+      map.setProjection({ type: "mercator" });
+    };
+  }, [map, baseData, isMapLoaded]);
+
+  if (!baseData) {
+    return <MapLoadInformation message="地図を初期化中..." />;
+  }
+
   return (
     <div
       className={cn("w-full h-full", className)}
@@ -43,8 +89,15 @@ export const Map = ({ id, initialViewState, opacity, className }: Props) => {
       <ReactMaplibre
         id={id}
         initialViewState={initialViewState}
-        mapStyle="https://demotiles.maplibre.org/style.json"
-      />
+        onLoad={handleOnLoad}
+        mapStyle={isVectorMapData(baseData) ? baseData.data.style : undefined}
+      >
+        {(isRasterMapData(baseData) || isGlobeMapData(baseData)) && (
+          <Source type="raster" tiles={[baseData.data.tileUrl]}>
+            <Layer type="raster" />
+          </Source>
+        )}
+      </ReactMaplibre>
     </div>
   );
 };

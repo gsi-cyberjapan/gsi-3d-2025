@@ -24,6 +24,13 @@ const eslintConfig = defineConfig([
     },
   },
 
+  /** Next.jsのルール */
+  {
+    rules: {
+      "@next/next/no-img-element": "off",
+    },
+  },
+
   /** ESLintのデフォルトルール */
   {
     rules: {
