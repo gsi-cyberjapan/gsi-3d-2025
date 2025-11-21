@@ -1,6 +1,6 @@
 import { StyleSpecification } from "maplibre-gl";
 import { BASE_LAYER_CONFIG } from "./config";
-import { convertGsiDesignToStyle } from "./test";
+import { convertGsiDesignToStyle } from "./convertGsiDesignToStyle";
 
 interface RasterDefinition {
   layers: {

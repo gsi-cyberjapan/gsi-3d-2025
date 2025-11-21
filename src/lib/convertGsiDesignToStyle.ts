@@ -142,6 +142,8 @@ export function convertGsiDesignToStyle(
 ): StyleSpecification {
   if (isStyleSpecification(input)) return input;
 
+  // TODO: ここから先の処理は動作しないので修正する
+
   if (!isGsiDesignFile(input)) {
     throw new Error(
       "Given JSON is not a GSI design file: missing `list` array, and also not a style.json (no `version`/`layers`).",
@@ -164,6 +166,18 @@ export function convertGsiDesignToStyle(
 
   const tmpLayers: TmpLayer[] = [];
   let orderCounter = 0;
+
+  const usedLayerIds = new Set<string>();
+  const makeUniqueId = (base: string): string => {
+    let id = base;
+    let suffix = 1;
+    while (usedLayerIds.has(id)) {
+      id = `${base}_${suffix.toString()}`;
+      suffix += 1;
+    }
+    usedLayerIds.add(id);
+    return id;
+  };
 
   const pushLayer = (
     layer: LayerSpecification,
@@ -232,7 +246,11 @@ export function convertGsiDesignToStyle(
         });
 
         layersFromDraw.forEach((l) => {
-          pushLayer(l, groupIndex, item.zIndex ?? 0);
+          const layerWithUniqueId: LayerSpecification = {
+            ...l,
+            id: makeUniqueId(l.id),
+          };
+          pushLayer(layerWithUniqueId, groupIndex, item.zIndex ?? 0);
         });
       });
     });
@@ -524,8 +542,18 @@ function resolveGroupIndex(
   groupIds: string[],
   groupOrder: Record<string, number>,
 ): number {
-  const indices = groupIds.map((id) => groupOrder[id]);
-  return indices.length ? Math.min(...indices) : Number.MAX_SAFE_INTEGER;
+  if (groupIds.length === 0) return Number.MAX_SAFE_INTEGER;
+
+  const indices: number[] = [];
+  groupIds.forEach((id) => {
+    const idx = groupOrder[id];
+    if (typeof idx === "number") {
+      indices.push(idx);
+    }
+  });
+
+  if (indices.length === 0) return Number.MAX_SAFE_INTEGER;
+  return Math.min(...indices);
 }
 
 function collectGroupFilters(
