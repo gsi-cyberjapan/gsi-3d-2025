@@ -10,8 +10,13 @@ export interface MapManagerState {
   focusMapId: MapId;
   /** マップの表示レイアウト */
   layoutMode: LayoutMode;
-  /** レイアウトを切り替える関数 */
   setLayoutMode: (mode: LayoutMode) => void;
+  /** 分割表示の時に位置を連動するかどうか */
+  isSyncPosition: boolean;
+  setIsSyncPosition: (value: boolean) => void;
+  /** サブマップの透過度 */
+  subMapOpacityOnOverlay: number;
+  setSubMapOpacityOnOverlay: (value: number) => void;
 }
 
 export const createMapManagerSlice: StateCreator<
@@ -35,6 +40,22 @@ export const createMapManagerSlice: StateCreator<
         layoutMode: mode,
         activeMapIds,
         focusMapId: activeMapIds[0],
+      };
+    });
+  },
+  isSyncPosition: false,
+  setIsSyncPosition: (value) => {
+    set(() => {
+      return {
+        isSyncPosition: value,
+      };
+    });
+  },
+  subMapOpacityOnOverlay: 0.5,
+  setSubMapOpacityOnOverlay: (value) => {
+    set(() => {
+      return {
+        subMapOpacityOnOverlay: value,
       };
     });
   },

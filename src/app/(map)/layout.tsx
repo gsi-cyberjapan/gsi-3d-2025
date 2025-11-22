@@ -1,6 +1,6 @@
 import { Header } from "@/components/header";
 import { Sidebar } from "@/components/sidebar";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 
 const MapLayout = ({
   children,
@@ -12,8 +12,11 @@ const MapLayout = ({
       <Header />
       <SidebarProvider>
         <Sidebar />
-        <main className="relative">
-          <SidebarTrigger className="absolute top-1 left-1" />
+        <main className="relative w-full">
+          <SidebarTrigger
+            className="absolute top-1 left-1 z-20"
+            variant="secondary"
+          />
           {children}
         </main>
       </SidebarProvider>
