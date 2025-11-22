@@ -1,20 +1,21 @@
 import {
   Sidebar as UISidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarGroup,
-  SidebarHeader,
 } from "@/components/ui/sidebar";
+import { BaseLayerSelector } from "../map-control/base-layer-selector";
 
 export const Sidebar = () => {
   return (
     <UISidebar>
-      <SidebarHeader />
       <SidebarContent>
-        <SidebarGroup />
-        <SidebarGroup />
+        <SidebarGroup>
+          <div className="flex flex-col gap-1">
+            <span className="text-xs text-muted-foreground">地図</span>
+            <BaseLayerSelector />
+          </div>
+        </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter />
     </UISidebar>
   );
 };

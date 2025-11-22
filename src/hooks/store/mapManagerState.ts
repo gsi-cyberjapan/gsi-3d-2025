@@ -1,10 +1,11 @@
 import { StateCreator } from "zustand";
+import { GlobalState } from "./useStore";
 
 export type MapId = "main" | "sub";
 export type LayoutMode = "single" | "split" | "overlay";
 
 export interface MapManagerState {
-  /** 表示中のMapId */
+  /** 表示中のMapID */
   activeMapIds: MapId[];
   /** 操作対象のMapId */
   focusMapId: MapId;
@@ -20,7 +21,7 @@ export interface MapManagerState {
 }
 
 export const createMapManagerSlice: StateCreator<
-  MapManagerState,
+  GlobalState,
   [],
   [],
   MapManagerState

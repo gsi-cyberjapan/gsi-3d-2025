@@ -1,6 +1,9 @@
 import { create } from "zustand";
 import { createMapManagerSlice, MapManagerState } from "./mapManagerState";
+import { createMapSlice, MapStateWrapper } from "./mapState";
 
-export const useStore = create<MapManagerState>((...args) => ({
+export type GlobalState = MapManagerState & MapStateWrapper;
+export const useStore = create<GlobalState>((...args) => ({
   ...createMapManagerSlice(...args),
+  ...createMapSlice(...args),
 }));
