@@ -12,8 +12,8 @@ const MapLayout = ({
       <Header />
       <SidebarProvider>
         <Sidebar />
-        <main>
-          <SidebarTrigger />
+        <main className="relative">
+          <SidebarTrigger className="absolute top-1 left-1" />
           {children}
         </main>
       </SidebarProvider>

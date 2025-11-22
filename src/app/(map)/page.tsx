@@ -1,5 +1,5 @@
 const MapPage = () => {
-  return <div>test</div>;
+  return <div />;
 };
 
 export default MapPage;
