@@ -28,24 +28,6 @@ interface VectorBaseLayer {
 
 export type BaseLayer = RasterBaseLayer | GlobeBaseLayer | VectorBaseLayer;
 
-export const isRasterBaseLayer = (
-  baseLayer: BaseLayer,
-): baseLayer is RasterBaseLayer => {
-  return baseLayer.type === "raster";
-};
-
-export const isGlobeBaseLayer = (
-  baseLayer: BaseLayer,
-): baseLayer is GlobeBaseLayer => {
-  return baseLayer.type === "globe";
-};
-
-export const isVectorBaseLayer = (
-  baseLayer: BaseLayer,
-): baseLayer is VectorBaseLayer => {
-  return baseLayer.type === "vector";
-};
-
 export const getBaseLayers = (): BaseLayer[] => {
   const baseLayers: BaseLayer[] = [];
 
