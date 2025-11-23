@@ -1,11 +1,14 @@
 "use client";
 
 import { MapId } from "@/hooks/store/mapManagerState";
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { useMap } from "react-map-gl/maplibre";
 import { useQuery } from "@tanstack/react-query";
 import { getAddressFromLatLng } from "@/lib/getAddressFromLatLng";
 import { cn } from "@/lib/utils";
+import { getUTMFromLatLng } from "@/lib/geUTMFromLatLng";
+import { getElevationFromLatLng } from "@/lib/getElevationFromLatLng";
+import { Skeleton } from "../ui/skeleton";
 
 interface ViewState {
   latitude: number;
@@ -32,14 +35,26 @@ export const CenterInfo = ({ mapId }: Props) => {
     },
     enabled: lat != null && lon != null && !isMoving,
     placeholderData: (previous) => previous,
-    staleTime: 1000 * 60 * 10,
+    staleTime: 1000 * 60 * 5,
   });
+  const { data: elevation } = useQuery({
+    queryKey: ["center-elevetion", lat, lon],
+    queryFn: async () => {
+      if (lat == null || lon == null) return null;
+      return await getElevationFromLatLng(lat, lon);
+    },
+    enabled: lat != null && lon != null && !isMoving,
+    placeholderData: (previous) => previous,
+    staleTime: 1000 * 60 * 5,
+  });
+  const utm = useMemo(() => {
+    if (lat == null || lon == null) return null;
+    return getUTMFromLatLng(lat, lon);
+  }, [lat, lon]);
 
   const handleMapOnMove = useCallback(() => {
     if (!map) return;
-
     setIsMoving(true);
-
     if (frameRef.current != null) return;
 
     frameRef.current = requestAnimationFrame(() => {
@@ -89,6 +104,17 @@ export const CenterInfo = ({ mapId }: Props) => {
     };
   }, [map, handleMapOnMove, handleMapOnMoveEnd]);
 
+  if (!viewState) {
+    return (
+      <div className="h-24 pt-2">
+        <Skeleton className="h-3  w-32" />
+        <Skeleton className="h-2 mt-2 w-48" />
+        <Skeleton className="h-2 mt-2 w-48" />
+        <Skeleton className="h-2 mt-2 w-48" />
+        <Skeleton className="h-2 mt-2 w-48" />
+      </div>
+    );
+  }
   return (
     <div className="text-xs text-muted-foreground">
       <div
@@ -102,18 +128,23 @@ export const CenterInfo = ({ mapId }: Props) => {
         <tbody>
           <tr>
             <td className="pr-2">緯度</td>
-            <td>{viewState?.latitude}</td>
+            <td>{viewState.latitude}</td>
           </tr>
           <tr>
             <td className="pr-2">経度</td>
-            <td>{viewState?.longitude}</td>
+            <td>{viewState.longitude}</td>
           </tr>
           <tr>
             <td className="pr-2">ズーム</td>
-            <td>{viewState?.zoom}</td>
+            <td>{viewState.zoom}</td>
           </tr>
           <tr>
             <td className="pr-2">UTM</td>
+            <td>{utm ?? "-"}</td>
+          </tr>
+          <tr>
+            <td className="pr-2">標高</td>
+            <td>{elevation != undefined ? `${elevation.toString()}m` : "-"}</td>
           </tr>
         </tbody>
       </table>

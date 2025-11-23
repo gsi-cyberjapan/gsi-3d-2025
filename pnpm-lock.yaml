@@ -56,6 +56,9 @@ importers:
       maplibre-gl:
         specifier: ^5.13.0
         version: 5.13.0
+      mgrs:
+        specifier: ^2.1.0
+        version: 2.1.0
       next:
         specifier: 16.0.0
         version: 16.0.0(@babel/core@7.28.4)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -2165,6 +2168,9 @@ packages:
   merge2@1.4.1:
     resolution: {integrity: sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==}
     engines: {node: '>= 8'}
+
+  mgrs@2.1.0:
+    resolution: {integrity: sha512-/pjuM02PUAhp4dazfccTSKBGTGPFkRz9LKwGJKusc/B20apcGG/CYnRHx0kXmLXy4m5O3p6y6nOVxEnErPpFvQ==}
 
   micromatch@4.0.8:
     resolution: {integrity: sha512-PXwfBhYu0hBCPw8Dn0E+WDYb7af3dSLVWKi3HGv84IdF4TyFoC0ysxFd0Goxw7nSv4T/PzEJQxsYsEiFCKo2BA==}
@@ -4940,6 +4946,8 @@ snapshots:
   math-intrinsics@1.1.0: {}
 
   merge2@1.4.1: {}
+
+  mgrs@2.1.0: {}
 
   micromatch@4.0.8:
     dependencies:
