@@ -4,6 +4,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { GENERAL_CONFIG } from "@/lib/config";
 import { Noto_Sans_JP } from "next/font/google";
 import { ThemeProvider } from "next-themes";
+import { QueryProvider } from "@/components/query";
 
 const notoSansJP = Noto_Sans_JP({
   subsets: ["latin", "latin-ext"],
@@ -29,13 +30,15 @@ const RootLayout = ({
       suppressHydrationWarning
     >
       <body className="antialiased">
-        <ThemeProvider
-          attribute="class"
-          forcedTheme="dark"
-          disableTransitionOnChange
-        >
-          {children}
-        </ThemeProvider>
+        <QueryProvider>
+          <ThemeProvider
+            attribute="class"
+            forcedTheme="dark"
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProvider>
+        </QueryProvider>
       </body>
     </html>
   );

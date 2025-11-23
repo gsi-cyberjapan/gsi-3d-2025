@@ -4,6 +4,7 @@ import prettier from "eslint-config-prettier/flat";
 import tseslint from "typescript-eslint";
 import reactPlugin from "eslint-plugin-react";
 import unusedImports from "eslint-plugin-unused-imports";
+import pluginQuery from "@tanstack/eslint-plugin-query";
 
 const eslintConfig = defineConfig([
   /** Next.js デフォルト */
@@ -77,6 +78,9 @@ const eslintConfig = defineConfig([
       ],
     },
   },
+
+  /** eslint-plugin-query */
+  ...pluginQuery.configs["flat/recommended"],
 
   /** Prettier (最後に上書きして競合するルールを無効化) */
   prettier,
