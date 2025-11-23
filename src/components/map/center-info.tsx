@@ -91,13 +91,29 @@ export const CenterInfo = ({ mapId }: Props) => {
 
   return (
     <div className="text-xs text-muted-foreground">
-      <span
+      <div
         className={cn("font-semibold", {
           "text-foreground": !isAddressPending && !isMoving,
         })}
       >
-        {address || "------"}
-      </span>
+        {address || "-"}
+      </div>
+      <table>
+        <tbody>
+          <tr>
+            <td className="pr-2">緯度</td>
+            <td>{viewState?.latitude}</td>
+          </tr>
+          <tr>
+            <td className="pr-2">経度</td>
+            <td>{viewState?.longitude}</td>
+          </tr>
+          <tr>
+            <td className="pr-2">ズーム</td>
+            <td>{viewState?.zoom}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   );
 };
