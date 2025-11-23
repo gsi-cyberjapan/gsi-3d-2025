@@ -1,6 +1,6 @@
 import type maplibregl from "maplibre-gl";
 
-type MapLibreType = typeof maplibregl;
+export type MapLibreType = typeof maplibregl;
 
 let maplibrePromise: Promise<MapLibreType> | null = null;
 

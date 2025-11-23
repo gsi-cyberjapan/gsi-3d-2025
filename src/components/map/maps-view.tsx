@@ -1,6 +1,6 @@
 "use client";
 
-import { MapProvider } from "@vis.gl/react-maplibre";
+import { MapProvider } from "react-map-gl/maplibre";
 import { useStore } from "@/hooks/store/useStore";
 import { Map } from "./map";
 import { cn } from "@/lib/utils";

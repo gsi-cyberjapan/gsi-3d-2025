@@ -4,21 +4,18 @@ import { MapId } from "@/hooks/store/mapManagerState";
 import dynamic from "next/dynamic";
 import { cn } from "@/lib/utils";
 import { Spinner } from "../ui/spinner";
-import { BaseLayer } from "./base-layer";
-import { getMaplibreWithPmtiles } from "@/lib/getMaplibreWhithProtocl";
+import {
+  getMaplibreWithPmtiles,
+  MapLibreType,
+} from "@/lib/getMaplibreWhithProtocl";
+import { buildStyleFromBaseLayer } from "@/lib/buildStyleFromBaseLayer";
+import { useStore } from "@/hooks/store/useStore";
+import { useEffect, useState, useMemo } from "react";
 
 const ReactMaplibre = dynamic(
-  () => import("@vis.gl/react-maplibre").then((m) => m.Map),
+  () => import("react-map-gl/maplibre").then((m) => m.Map),
   {
     ssr: false,
-    loading: () => (
-      <div className="h-full w-full flex items-center justify-center">
-        <div className="flex gap-2 text-muted-foreground items-center">
-          <Spinner />
-          <div>地図を読み込み中</div>
-        </div>
-      </div>
-    ),
   },
 );
 
@@ -28,22 +25,79 @@ interface Props {
   className?: string;
 }
 export const Map = ({ mapId, className, opacity }: Props) => {
+  const baseLayer = useStore((state) => state.maps[mapId].baseLayer);
+  const [mapLib, setMapLib] = useState<MapLibreType | null>(null);
+  const [isMapLoaded, setIsMapLoaded] = useState(false);
+  const showLoading = !mapLib || !isMapLoaded;
+  const mapStyle = useMemo(
+    () => buildStyleFromBaseLayer(baseLayer),
+    [baseLayer],
+  );
+  const projection = useMemo(
+    () => (baseLayer.type === "globe" ? "globe" : "mercator"),
+    [baseLayer.type],
+  );
+
+  useEffect(() => {
+    let cancelled = false;
+
+    getMaplibreWithPmtiles()
+      .then((lib) => {
+        if (!cancelled) {
+          setMapLib(lib);
+        }
+      })
+      .catch((err: unknown) => {
+        console.error("Failed to load maplibre:", err);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   return (
     <div
-      className={cn("w-full h-full", className)}
-      style={{ opacity: opacity }}
+      className={cn("relative w-full h-full", className)}
+      style={{ opacity }}
     >
-      <ReactMaplibre
-        id={mapId}
-        mapLib={getMaplibreWithPmtiles()}
-        initialViewState={{
-          longitude: 140.084556,
-          latitude: 36.104611,
-          zoom: 4,
-        }}
+      {mapLib && (
+        <div
+          className={cn(
+            "w-full h-full transition-opacity duration-200",
+            isMapLoaded ? "opacity-100" : "opacity-0",
+          )}
+        >
+          <ReactMaplibre
+            id={mapId}
+            mapLib={mapLib}
+            mapStyle={mapStyle}
+            projection={projection}
+            initialViewState={{
+              longitude: 140.084556,
+              latitude: 36.104611,
+              zoom: 4,
+            }}
+            onLoad={() => {
+              setIsMapLoaded(true);
+            }}
+          />
+        </div>
+      )}
+
+      <div
+        className={cn(
+          "absolute inset-0 flex items-center justify-center bg-background transition-opacity duration-200",
+          showLoading ? "opacity-100" : "opacity-0 pointer-events-none",
+        )}
       >
-        <BaseLayer mapId={mapId} />
-      </ReactMaplibre>
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none ">
+          <div className="flex gap-2 text-muted-foreground items-center">
+            <Spinner />
+            <div>地図を読み込み中</div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
