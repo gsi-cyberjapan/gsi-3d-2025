@@ -112,6 +112,9 @@ export const CenterInfo = ({ mapId }: Props) => {
             <td className="pr-2">ズーム</td>
             <td>{viewState?.zoom}</td>
           </tr>
+          <tr>
+            <td className="pr-2">UTM</td>
+          </tr>
         </tbody>
       </table>
     </div>
