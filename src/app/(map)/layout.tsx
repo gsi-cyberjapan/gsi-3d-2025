@@ -1,6 +1,6 @@
-import { Sidebar } from "@/components/custom/sidebar";
+import { Header } from "@/components/header";
+import { Sidebar } from "@/components/sidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { Header } from "@/components/custom/header";
 
 const MapLayout = ({
   children,
@@ -8,13 +8,19 @@ const MapLayout = ({
   children: React.ReactNode;
 }>) => {
   return (
-    <SidebarProvider>
-      <Sidebar />
-      <main className="w-full h-dvh flex flex-col">
-        <Header sidebarTrigger={<SidebarTrigger />} />
-        {children}
-      </main>
-    </SidebarProvider>
+    <div className="h-dvh flex flex-col">
+      <Header />
+      <SidebarProvider>
+        <Sidebar />
+        <main className="relative w-full">
+          <SidebarTrigger
+            className="absolute top-1 left-1 z-20"
+            variant="secondary"
+          />
+          {children}
+        </main>
+      </SidebarProvider>
+    </div>
   );
 };
 

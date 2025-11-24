@@ -1,9 +1,9 @@
 "use client";
 import { useSyncExternalStore } from "react";
-import { RESPONSIVE_CONFIG } from "@/lib/config";
+import { LAYOUT_CONFIG } from "@/lib/config";
 
 export function useIsMobile() {
-  const query = `(max-width: ${(RESPONSIVE_CONFIG.MOBILE_BREAKPOINT_PX - 1).toString()}px)`;
+  const query = `(max-width: ${(LAYOUT_CONFIG.MOBILE_BREAKPOINT_PX - 1).toString()}px)`;
 
   const getSnapshot = () => {
     if (typeof window === "undefined") return false;

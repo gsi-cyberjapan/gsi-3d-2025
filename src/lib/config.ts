@@ -7,49 +7,53 @@ export const GENERAL_CONFIG = {
   LANGUAGE: "ja",
 } as const;
 
-export const RESPONSIVE_CONFIG = {
+export const LAYOUT_CONFIG = {
   /** モバイルと判定するブレイクポイント */
   MOBILE_BREAKPOINT_PX: 768,
 } as const;
 
-export const MAP_CONFIG = {
-  /** 初期表示状態 */
-  INITIAL_VIEW_STATE: {
-    LONGITUDE: 139.767066,
-    LATITUDE: 35.6813,
-    ZOOM: 9,
-  },
-  /** マップを重ねた時の透過率の初期値 */
-  INITIAL_OVERLAP_MAP_OPACITY: 0.5,
-  /** 主マップのID */
-  MAP_PRIMARY: { ID: "primary-map", NAME: "地図A" },
-  /** サブマップのID */
-  MAP_SECONDARY: { ID: "secondary-map", NAME: "地図B" },
-} as const;
-
 export const BASE_LAYER_CONFIG = {
-  /** ラスターの定義ファイルURL */
-  RASTER_DEFINITION_URL:
-    "https://raw.githubusercontent.com/gsi-cyberjapan/gsimaps/refs/heads/gh-pages/layers_txt/layers0.txt",
-  /** グローブの定義ファイルURL */
-  GLOBE_DEFINITION_URL:
-    "https://raw.githubusercontent.com/gsi-cyberjapan/gsimaps-globe/refs/heads/gh-pages/layers_txt/layers0.txt",
-  /** ベクターの定義リスト */
-  VECTOR_STYLES: [
+  /** Vectorのベースレイヤー */
+  VECTOR_LAYERS: [
     {
+      ID: "std-vector",
       TITLE: "標準地図",
-      URL: "https://raw.githubusercontent.com/gsi-cyberjapan/gsivectortile-mapbox-gl-js/refs/heads/master/std.json",
+      LEGEND_IMAGE_URL:
+        "http://raw.githubusercontent.com/gsi-cyberjapan/3dpc-3dtiles/refs/heads/main/public/images/std.png",
+      STYLE_URL:
+        "https://raw.githubusercontent.com/gsi-cyberjapan/3dpc-3dtiles/refs/heads/main/public/styles/std.json",
+      MIN_ZOOM: 4,
+      MAX_ZOOM: 16,
     },
-    {
-      TITLE: "淡色地図",
-      URL: "https://raw.githubusercontent.com/gsi-cyberjapan/gsivectortile-mapbox-gl-js/refs/heads/master/pale.json",
-    },
-    {
-      TITLE: "白地図",
-      URL: "https://raw.githubusercontent.com/gsi-cyberjapan/gsivectortile-mapbox-gl-js/refs/heads/master/blank.json",
-    },
+    // TODO: https://github.com/gsi-cyberjapan/3dpc-3dtiles からさらに追加
   ],
-  /** ベクターのレジェンド画像が格納されているURL */
-  VECTOR_LEGEND_IMAGE_PATH:
-    "https://github.com/gsi-cyberjapan/gsimaps-vector-experiment/blob/master/image/thumb",
-};
+  /** Rasterのベースレイヤー */
+  RASTER_LAYERS: [
+    {
+      ID: "std-raster",
+      TITLE: "標準地図",
+      LEGEND_IMAGE_URL:
+        "https://cyberjapandata.gsi.go.jp/xyz/std/18/232801/103215.png",
+      TILE_URL: "https://maps.gsi.go.jp/xyz/std/{z}/{x}/{y}.png?_=20210915a",
+      ERROR_TILE_URL:
+        "https://raw.githubusercontent.com/gsi-cyberjapan/gsimaps/refs/heads/gh-pages/image/map/no-data-std.png",
+      MIN_ZOOM: 4,
+      MAX_ZOOM: 17,
+    },
+    // TODO: https://github.com/gsi-cyberjapan/gsimaps からさらに追加
+  ],
+  /** Globeのベースレイヤー */
+  GLOBE_LAYERS: [
+    {
+      ID: "std-globe",
+      TITLE: "標準地図",
+      LEGEND_IMAGE_URL:
+        "https://cyberjapandata.gsi.go.jp/xyz/std/18/232801/103215.png",
+      TILE_URL: "https://maps.gsi.go.jp/xyz/std/{z}/{x}/{y}.png?_=20191214c",
+      ERROR_TILE_URL:
+        "https://raw.githubusercontent.com/gsi-cyberjapan/gsimaps/refs/heads/gh-pages/image/map/no-data-std.png",
+      MAX_ZOOM: 18,
+    },
+    // TODO: https://github.com/gsi-cyberjapan/gsimaps-globe からさらに追加（不明なものはRasterから補完）
+  ],
+} as const;
