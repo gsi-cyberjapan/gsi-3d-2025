@@ -7,6 +7,8 @@ interface RasterBaseLayer {
   legendImageUrl: string;
   errorImageUrl: string;
   tileUrl: string;
+  maxZoom: number;
+  minZoom: number;
 }
 
 interface GlobeBaseLayer {
@@ -16,6 +18,7 @@ interface GlobeBaseLayer {
   legendImageUrl: string;
   errorImageUrl: string;
   tileUrl: string;
+  maxZoom: number;
 }
 
 interface VectorBaseLayer {
@@ -24,6 +27,8 @@ interface VectorBaseLayer {
   label: string;
   legendImageUrl: string;
   styleUrl: string;
+  maxZoom: number;
+  minZoom: number;
 }
 
 export type BaseLayer = RasterBaseLayer | GlobeBaseLayer | VectorBaseLayer;
@@ -38,6 +43,8 @@ export const getBaseLayers = (): BaseLayer[] => {
       label: layer.TITLE,
       legendImageUrl: layer.LEGEND_IMAGE_URL,
       styleUrl: layer.STYLE_URL,
+      minZoom: layer.MIN_ZOOM,
+      maxZoom: layer.MAX_ZOOM,
     });
   });
 
@@ -49,6 +56,8 @@ export const getBaseLayers = (): BaseLayer[] => {
       legendImageUrl: layer.LEGEND_IMAGE_URL,
       errorImageUrl: layer.ERROR_TILE_URL,
       tileUrl: layer.TILE_URL,
+      minZoom: layer.MIN_ZOOM,
+      maxZoom: layer.MAX_ZOOM,
     });
   });
 
@@ -60,6 +69,7 @@ export const getBaseLayers = (): BaseLayer[] => {
       legendImageUrl: layer.LEGEND_IMAGE_URL,
       errorImageUrl: layer.ERROR_TILE_URL,
       tileUrl: layer.TILE_URL,
+      maxZoom: layer.MAX_ZOOM,
     });
   });
   return baseLayers;

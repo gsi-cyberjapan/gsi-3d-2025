@@ -73,6 +73,8 @@ export const Map = ({ mapId, className, opacity }: Props) => {
             mapLib={mapLib}
             mapStyle={mapStyle}
             projection={projection}
+            minZoom={baseLayer.type === "globe" ? undefined : baseLayer.minZoom}
+            maxZoom={baseLayer.maxZoom}
             initialViewState={{
               longitude: 140.084556,
               latitude: 36.104611,

@@ -22,6 +22,8 @@ export const BASE_LAYER_CONFIG = {
         "http://raw.githubusercontent.com/gsi-cyberjapan/3dpc-3dtiles/refs/heads/main/public/images/std.png",
       STYLE_URL:
         "https://raw.githubusercontent.com/gsi-cyberjapan/3dpc-3dtiles/refs/heads/main/public/styles/std.json",
+      MIN_ZOOM: 4,
+      MAX_ZOOM: 16,
     },
     // TODO: https://github.com/gsi-cyberjapan/3dpc-3dtiles からさらに追加
   ],
@@ -35,6 +37,8 @@ export const BASE_LAYER_CONFIG = {
       TILE_URL: "https://maps.gsi.go.jp/xyz/std/{z}/{x}/{y}.png?_=20210915a",
       ERROR_TILE_URL:
         "https://raw.githubusercontent.com/gsi-cyberjapan/gsimaps/refs/heads/gh-pages/image/map/no-data-std.png",
+      MIN_ZOOM: 5,
+      MAX_ZOOM: 18,
     },
     // TODO: https://github.com/gsi-cyberjapan/gsimaps からさらに追加
   ],
@@ -48,6 +52,7 @@ export const BASE_LAYER_CONFIG = {
       TILE_URL: "https://maps.gsi.go.jp/xyz/std/{z}/{x}/{y}.png?_=20191214c",
       ERROR_TILE_URL:
         "https://raw.githubusercontent.com/gsi-cyberjapan/gsimaps/refs/heads/gh-pages/image/map/no-data-std.png",
+      MAX_ZOOM: 18,
     },
     // TODO: https://github.com/gsi-cyberjapan/gsimaps-globe からさらに追加（不明なものはRasterから補完）
   ],
