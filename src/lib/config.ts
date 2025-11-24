@@ -59,3 +59,9 @@ export const BASE_LAYER_CONFIG = {
     // TODO: https://github.com/gsi-cyberjapan/gsimaps-globe からさらに追加（不明なものはRasterから補完）
   ],
 } as const;
+
+export const OPTIONAL_LAYER_CONFIG = {
+  /** レイヤー一覧の定義ファイル */
+  LAYERS_DEFINITION_FILE_URL:
+    "http://raw.githubusercontent.com/gsi-cyberjapan/gsimaps/refs/heads/gh-pages/layers_txt/layers.txt",
+} as const;
