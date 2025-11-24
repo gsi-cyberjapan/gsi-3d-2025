@@ -11,6 +11,7 @@ import {
 import { buildStyleFromBaseLayer } from "@/lib/buildStyleFromBaseLayer";
 import { useStore } from "@/hooks/store/useStore";
 import { useEffect, useState, useMemo } from "react";
+import { ZoomLevelController } from "./zoomLevelController";
 
 const ReactMaplibre = dynamic(
   () => import("react-map-gl/maplibre").then((m) => m.Map),
@@ -81,7 +82,10 @@ export const Map = ({ mapId, className, opacity }: Props) => {
             onLoad={() => {
               setIsMapLoaded(true);
             }}
-          />
+          >
+            {/* Mapインスタンスを直接操作するコンポーネント */}
+            <ZoomLevelController mapId={mapId} />
+          </ReactMaplibre>
         </div>
       )}
 

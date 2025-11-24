@@ -37,8 +37,8 @@ export const BASE_LAYER_CONFIG = {
       TILE_URL: "https://maps.gsi.go.jp/xyz/std/{z}/{x}/{y}.png?_=20210915a",
       ERROR_TILE_URL:
         "https://raw.githubusercontent.com/gsi-cyberjapan/gsimaps/refs/heads/gh-pages/image/map/no-data-std.png",
-      MIN_ZOOM: 5,
-      MAX_ZOOM: 18,
+      MIN_ZOOM: 4,
+      MAX_ZOOM: 17,
     },
     // TODO: https://github.com/gsi-cyberjapan/gsimaps からさらに追加
   ],

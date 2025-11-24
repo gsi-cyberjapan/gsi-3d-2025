@@ -12,6 +12,8 @@ export const buildStyleFromBaseLayer = (
           type: "raster",
           tiles: [baseLayer.tileUrl],
           tileSize: 256,
+          minzoom: baseLayer.minZoom,
+          maxzoom: baseLayer.maxZoom,
         },
       },
       layers: [
@@ -19,6 +21,8 @@ export const buildStyleFromBaseLayer = (
           id: `${baseLayer.id}-layer`,
           type: "raster",
           source: baseLayer.id,
+          minzoom: baseLayer.minZoom,
+          maxzoom: baseLayer.maxZoom,
         },
       ],
     };
@@ -30,6 +34,7 @@ export const buildStyleFromBaseLayer = (
           type: "raster",
           tiles: [baseLayer.tileUrl],
           tileSize: 256,
+          maxzoom: baseLayer.maxZoom,
         },
       },
       layers: [
@@ -37,6 +42,7 @@ export const buildStyleFromBaseLayer = (
           id: `${baseLayer.id}-layer`,
           type: "raster",
           source: baseLayer.id,
+          maxzoom: baseLayer.maxZoom,
         },
       ],
     };
