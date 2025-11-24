@@ -4,7 +4,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { GENERAL_CONFIG } from "@/lib/config";
 import { Noto_Sans_JP } from "next/font/google";
 import { ThemeProvider } from "next-themes";
-import { QueryProvider } from "@/components/query";
+import { QueryProvider } from "@/components/query/query-provider";
 
 const notoSansJP = Noto_Sans_JP({
   subsets: ["latin", "latin-ext"],

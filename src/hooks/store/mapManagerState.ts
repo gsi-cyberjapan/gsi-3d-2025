@@ -9,6 +9,7 @@ export interface MapManagerState {
   activeMapIds: MapId[];
   /** 操作対象のMapId */
   focusMapId: MapId;
+  setFocusMapId: (mapId: MapId) => void;
   /** マップの表示レイアウト */
   layoutMode: LayoutMode;
   setLayoutMode: (mode: LayoutMode) => void;
@@ -29,19 +30,35 @@ export const createMapManagerSlice: StateCreator<
   activeMapIds: ["main"],
   layoutMode: "single",
   focusMapId: "main",
+  setFocusMapId: (mapId) => {
+    set(() => {
+      return { focusMapId: mapId };
+    });
+  },
   setLayoutMode: (mode) => {
     set(() => {
-      let activeMapIds: MapId[];
       if (mode === "single") {
-        activeMapIds = ["main"];
+        return {
+          layoutMode: mode,
+          activeMapIds: ["main"],
+          focusMapId: "main",
+          isSyncPosition: false,
+        };
+      } else if (mode === "split") {
+        return {
+          layoutMode: mode,
+          activeMapIds: ["main", "sub"],
+          focusMapId: "sub",
+          isSyncPosition: true,
+        };
       } else {
-        activeMapIds = ["main", "sub"];
+        return {
+          layoutMode: mode,
+          activeMapIds: ["main", "sub"],
+          focusMapId: "sub",
+          isSyncPosition: true,
+        };
       }
-      return {
-        layoutMode: mode,
-        activeMapIds,
-        focusMapId: activeMapIds[0],
-      };
     });
   },
   isSyncPosition: false,

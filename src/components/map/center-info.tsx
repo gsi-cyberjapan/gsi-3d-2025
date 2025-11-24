@@ -23,95 +23,113 @@ interface Props {
 export const CenterInfo = ({ mapId }: Props) => {
   const map = useMap()[mapId]?.getMap();
   const [viewState, setViewState] = useState<ViewState | null>(null);
+  const [stableViewState, setStableViewState] = useState<ViewState | null>(
+    null,
+  );
   const [isMoving, setIsMoving] = useState(false);
   const frameRef = useRef<number | null>(null);
-  const lat = viewState?.latitude ?? null;
-  const lon = viewState?.longitude ?? null;
+  const debounceRef = useRef<number | null>(null);
   const { data: address, isFetching: isAddressPending } = useQuery({
-    queryKey: ["center-address", lat, lon],
+    queryKey: ["center-address", stableViewState],
     queryFn: async () => {
-      if (lat == null || lon == null) return null;
-      return await getAddressFromLatLng(lat, lon);
+      if (stableViewState == null) return null;
+      return await getAddressFromLatLng(
+        stableViewState.latitude,
+        stableViewState.longitude,
+      );
     },
-    enabled: lat != null && lon != null && !isMoving,
     placeholderData: (previous) => previous,
     staleTime: 1000 * 60 * 5,
   });
   const { data: elevation } = useQuery({
-    queryKey: ["center-elevetion", lat, lon],
+    queryKey: ["center-elevetion", stableViewState],
     queryFn: async () => {
-      if (lat == null || lon == null) return null;
-      return await getElevationFromLatLng(lat, lon);
+      if (stableViewState == null) return null;
+      return await getElevationFromLatLng(
+        stableViewState.latitude,
+        stableViewState.longitude,
+      );
     },
-    enabled: lat != null && lon != null && !isMoving,
     placeholderData: (previous) => previous,
     staleTime: 1000 * 60 * 5,
   });
   const utm = useMemo(() => {
-    if (lat == null || lon == null) return null;
-    return getUTMFromLatLng(lat, lon);
-  }, [lat, lon]);
+    if (viewState === null) return null;
+    return getUTMFromLatLng(viewState.latitude, viewState.longitude);
+  }, [viewState]);
 
-  const handleMapOnMove = useCallback(() => {
+  const commitStableViewState = useCallback(() => {
     if (!map) return;
-    setIsMoving(true);
-    if (frameRef.current != null) return;
-
-    frameRef.current = requestAnimationFrame(() => {
-      frameRef.current = null;
-
-      const center = map.getCenter();
-      const zoom = map.getZoom();
-
-      setViewState({
-        latitude: center.lat,
-        longitude: center.lng,
-        zoom,
-      });
-    });
-  }, [map]);
-
-  const handleMapOnMoveEnd = useCallback(() => {
-    setIsMoving(false);
-
-    if (!map) return;
-
     const center = map.getCenter();
     const zoom = map.getZoom();
-
+    setStableViewState({
+      latitude: center.lat,
+      longitude: center.lng,
+      zoom,
+    });
     setViewState({
       latitude: center.lat,
       longitude: center.lng,
       zoom,
     });
+    setIsMoving(false);
+    debounceRef.current = null;
   }, [map]);
+
+  const handleMapOnMove = useCallback(() => {
+    if (!map) return;
+    setIsMoving(true);
+    if (frameRef.current == null) {
+      frameRef.current = requestAnimationFrame(() => {
+        frameRef.current = null;
+
+        const center = map.getCenter();
+        const zoom = map.getZoom();
+
+        setViewState({
+          latitude: center.lat,
+          longitude: center.lng,
+          zoom,
+        });
+      });
+    }
+
+    if (debounceRef.current != null) {
+      clearTimeout(debounceRef.current);
+    }
+    debounceRef.current = window.setTimeout(() => {
+      commitStableViewState();
+    }, 300);
+  }, [commitStableViewState, map]);
 
   useEffect(() => {
     if (!map) return;
 
-    void map.once("load", handleMapOnMoveEnd);
+    void map.once("load", commitStableViewState);
     map.on("move", handleMapOnMove);
-    map.on("moveend", handleMapOnMoveEnd);
 
     return () => {
       map.off("move", handleMapOnMove);
-      map.off("moveend", handleMapOnMoveEnd);
 
       if (frameRef.current != null) {
         cancelAnimationFrame(frameRef.current);
         frameRef.current = null;
       }
+      if (debounceRef.current != null) {
+        clearTimeout(debounceRef.current);
+        debounceRef.current = null;
+      }
     };
-  }, [map, handleMapOnMove, handleMapOnMoveEnd]);
+  }, [commitStableViewState, handleMapOnMove, map]);
 
   if (!viewState) {
     return (
       <div className="h-24 pt-2">
-        <Skeleton className="h-3  w-32" />
-        <Skeleton className="h-2 mt-2 w-48" />
-        <Skeleton className="h-2 mt-2 w-48" />
-        <Skeleton className="h-2 mt-2 w-48" />
-        <Skeleton className="h-2 mt-2 w-48" />
+        <Skeleton className="h-3  w-28" />
+        <Skeleton className="h-2 mt-2 w-42" />
+        <Skeleton className="h-2 mt-2 w-42" />
+        <Skeleton className="h-2 mt-2 w-42" />
+        <Skeleton className="h-2 mt-2 w-42" />
       </div>
     );
   }

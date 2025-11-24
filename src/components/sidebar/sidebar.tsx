@@ -2,8 +2,10 @@ import {
   Sidebar as UISidebar,
   SidebarContent,
   SidebarGroup,
+  SidebarFooter,
 } from "@/components/ui/sidebar";
 import { BaseLayerSelector } from "../map-control/base-layer-selector";
+import { LayoutSelector } from "../layout-control/layout-selector";
 
 export const Sidebar = () => {
   return (
@@ -15,7 +17,23 @@ export const Sidebar = () => {
             <BaseLayerSelector />
           </div>
         </SidebarGroup>
+        <SidebarGroup>
+          <div className="flex flex-col gap-1">
+            <span className="text-xs text-muted-foreground">地図の種類</span>
+          </div>
+        </SidebarGroup>
+        <SidebarGroup>
+          <div className="flex flex-col gap-1">
+            <span className="text-xs text-muted-foreground">選択中の地図</span>
+          </div>
+        </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+        <div className="flex flex-col gap-1">
+          <span className="text-xs text-muted-foreground">表示モード</span>
+          <LayoutSelector />
+        </div>
+      </SidebarFooter>
     </UISidebar>
   );
 };
