@@ -10,26 +10,32 @@ import {
 import { LayoutMode } from "@/hooks/store/mapManagerState";
 import { useStore } from "@/hooks/store/useStore";
 import { Columns2, Layers2, Square } from "lucide-react";
+import { LayoutDetailButton } from "./layout-detail-button";
 
 export const LayoutSelector = () => {
   const layoutMode = useStore((state) => state.layoutMode);
   const setLayouteMode = useStore((state) => state.setLayoutMode);
 
   return (
-    <Select value={layoutMode} onValueChange={setLayouteMode}>
-      <SelectTrigger className="w-30" size="sm">
-        <SelectValue>
-          <LayoutSelectItem layoutMode={layoutMode} />
-        </SelectValue>
-      </SelectTrigger>
-      <SelectContent align="end">
-        {(["single", "split", "overlay"] as LayoutMode[]).map((mode) => (
-          <SelectItem key={mode} value={mode} className="cursor-pointer">
-            <LayoutSelectItem layoutMode={mode} />
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
+    <div className="flex gap-2">
+      <Select value={layoutMode} onValueChange={setLayouteMode}>
+        <SelectTrigger className="w-full" size="sm">
+          <SelectValue>
+            <LayoutSelectItem layoutMode={layoutMode} />
+          </SelectValue>
+        </SelectTrigger>
+        <SelectContent align="end">
+          {(["single", "split", "overlay"] as LayoutMode[]).map((mode) => (
+            <SelectItem key={mode} value={mode} className="cursor-pointer">
+              <LayoutSelectItem layoutMode={mode} />
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      {(layoutMode === "split" || layoutMode === "overlay") && (
+        <LayoutDetailButton />
+      )}
+    </div>
   );
 };
 

@@ -1,5 +1,5 @@
-import { Header } from "@/components/header";
-import { Sidebar } from "@/components/sidebar";
+import { Header } from "@/components/header/header";
+import { Sidebar } from "@/components/sidebar/sidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 
 const MapLayout = ({
