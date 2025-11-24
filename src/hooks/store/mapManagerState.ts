@@ -42,12 +42,14 @@ export const createMapManagerSlice: StateCreator<
           layoutMode: mode,
           activeMapIds: ["main"],
           focusMapId: "main",
+          isSyncPosition: false,
         };
       } else if (mode === "split") {
         return {
           layoutMode: mode,
           activeMapIds: ["main", "sub"],
           focusMapId: "sub",
+          isSyncPosition: true,
         };
       } else {
         return {

@@ -11,7 +11,8 @@ import {
 import { buildStyleFromBaseLayer } from "@/lib/buildStyleFromBaseLayer";
 import { useStore } from "@/hooks/store/useStore";
 import { useEffect, useState, useMemo } from "react";
-import { ZoomLevelController } from "./zoomLevelController";
+import { ZoomLevelController } from "./zoom-level-controller";
+import { PositionSyncController } from "./position-sync-controller";
 
 const ReactMaplibre = dynamic(
   () => import("react-map-gl/maplibre").then((m) => m.Map),
@@ -85,6 +86,7 @@ export const Map = ({ mapId, className, opacity }: Props) => {
           >
             {/* Mapインスタンスを直接操作するコンポーネント */}
             <ZoomLevelController mapId={mapId} />
+            <PositionSyncController />
           </ReactMaplibre>
         </div>
       )}
