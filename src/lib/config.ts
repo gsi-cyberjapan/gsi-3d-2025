@@ -27,7 +27,6 @@ export const BASE_LAYER_CONFIG = {
       MIN_ZOOM: 4,
       MAX_ZOOM: 16,
     },
-    // TODO: https://github.com/gsi-cyberjapan/3dpc-3dtiles からさらに追加
     {
       ID: "pale-vector",
       TITLE: "淡色地図",
@@ -83,7 +82,6 @@ export const BASE_LAYER_CONFIG = {
       MIN_ZOOM: 4,
       MAX_ZOOM: 17,
     },
-    // TODO: https://github.com/gsi-cyberjapan/gsimaps からさらに追加
     {
       ID: "pale-raster",
       TITLE: "淡色地図",
@@ -141,7 +139,6 @@ export const BASE_LAYER_CONFIG = {
         "https://raw.githubusercontent.com/gsi-cyberjapan/gsimaps/refs/heads/gh-pages/image/map/no-data-std.png",
       MAX_ZOOM: 18,
     },
-    // TODO: https://github.com/gsi-cyberjapan/gsimaps-globe からさらに追加（不明なものはRasterから補完）
     {
       ID: "pale-globe",
       TITLE: "淡色地図",
