@@ -6,6 +6,7 @@ import {
 } from "@/components/ui/sidebar";
 import { BaseLayerSelector } from "../map-control/base-layer-selector";
 import { LayoutSelector } from "../layout-control/layout-selector";
+import { OptionalLayerSelector } from "../map-control/optional-layer-selector";
 
 export const Sidebar = () => {
   return (
@@ -21,6 +22,7 @@ export const Sidebar = () => {
           <div className="flex flex-col gap-1">
             <span className="text-xs text-muted-foreground">地図の種類</span>
           </div>
+          <OptionalLayerSelector />
         </SidebarGroup>
         <SidebarGroup>
           <div className="flex flex-col gap-1">
