@@ -39,7 +39,7 @@ export const BASE_LAYER_CONFIG = {
       MAX_ZOOM: 16,
     },
     {
-      ID: "skeleton-vector",
+      ID: "blank-vector",
       TITLE: "白地図",
       LEGEND_IMAGE_URL:
         "http://raw.githubusercontent.com/gsi-cyberjapan/3dpc-3dtiles/refs/heads/main/public/images/skeleton.png",
@@ -49,7 +49,7 @@ export const BASE_LAYER_CONFIG = {
       MAX_ZOOM: 16,
     },
     {
-      ID: "std-english-vector",
+      ID: "english-vector",
       TITLE: "English",
       LEGEND_IMAGE_URL:
         "http://raw.githubusercontent.com/gsi-cyberjapan/3dpc-3dtiles/refs/heads/main/public/images/std-english.png",
@@ -59,7 +59,7 @@ export const BASE_LAYER_CONFIG = {
       MAX_ZOOM: 16,
     },
     {
-      ID: "seamlessphoto-vector",
+      ID: "photo-vector",
       TITLE: "写真",
       LEGEND_IMAGE_URL:
         "http://raw.githubusercontent.com/gsi-cyberjapan/3dpc-3dtiles/refs/heads/main/public/images/seamlessphoto.png",
