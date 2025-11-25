@@ -63,7 +63,7 @@ const OptionalLayerBranch = ({
       ))}
 
       {groups.length > 0 && (
-        <Accordion type="single" className="space-y-1" collapsible>
+        <Accordion type="single" collapsible>
           {groups.map((group, index) => (
             <OptionalLayerGroupItem
               key={`${path}-${index.toString()}-${group.title}`}
