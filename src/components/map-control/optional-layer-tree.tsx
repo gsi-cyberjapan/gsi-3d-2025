@@ -93,7 +93,7 @@ const OptionalLayerGroupItem = ({
 
   return (
     <AccordionItem value={value}>
-      <AccordionTrigger className="gap-1 py-1 text-left">
+      <AccordionTrigger className="gap-1 py-1 text-left font-normal">
         <OptionalLayerDirRow title={group.title} />
       </AccordionTrigger>
       <AccordionContent>
