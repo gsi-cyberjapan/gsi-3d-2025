@@ -26,12 +26,12 @@ export const OptionalLayerSelectorClient = ({
 };
 
 const OptionalLayerTreeSkeleton = ({ count }: { count: number }) => {
-  const placeholderItems = Math.min(count, 7);
+  const placeholderItems = Math.min(count, 10);
 
   return (
     <div className="flex flex-col gap-4 pt-2">
       {Array.from({ length: placeholderItems }).map((_, index) => (
-        <Skeleton key={index.toString()} className="h-4 w-full" />
+        <Skeleton key={index.toString()} className="h-3 w-full" />
       ))}
     </div>
   );
