@@ -21,6 +21,8 @@ export const buildStyleFromBaseLayer = (
           id: `${baseLayer.id}-layer`,
           type: "raster",
           source: baseLayer.id,
+          minzoom: baseLayer.minZoom + 1,
+          maxzoom: baseLayer.maxZoom + 1,
         },
       ],
     };
@@ -40,6 +42,7 @@ export const buildStyleFromBaseLayer = (
           id: `${baseLayer.id}-layer`,
           type: "raster",
           source: baseLayer.id,
+          maxzoom: baseLayer.maxZoom + 1,
         },
       ],
     };
