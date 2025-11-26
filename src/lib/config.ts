@@ -101,7 +101,7 @@ export const BASE_LAYER_CONFIG = {
       ERROR_TILE_URL:
         "https://raw.githubusercontent.com/gsi-cyberjapan/gsimaps/refs/heads/gh-pages/image/map/no-data-blank.png",
       MIN_ZOOM: 4,
-      MAX_ZOOM: 14,
+      MAX_ZOOM: 17,
     },
     {
       ID: "english-raster",
@@ -112,7 +112,7 @@ export const BASE_LAYER_CONFIG = {
       ERROR_TILE_URL:
         "https://raw.githubusercontent.com/gsi-cyberjapan/gsimaps/refs/heads/gh-pages/image/map/no-data-english.png",
       MIN_ZOOM: 4,
-      MAX_ZOOM: 11,
+      MAX_ZOOM: 17,
     },
     {
       ID: "photo-raster",
