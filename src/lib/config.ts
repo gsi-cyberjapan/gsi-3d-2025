@@ -180,3 +180,14 @@ export const BASE_LAYER_CONFIG = {
     },
   ],
 } as const;
+
+export const OPTIONAL_LAYER_CONFIG = {
+  /** レイヤー一覧が存在するルートURL */
+  BASE_LAYER_URL:
+    "https://raw.githubusercontent.com/gsi-cyberjapan/gsimaps/refs/heads/gh-pages/layers_txt",
+  /** 画像が存在するルートURL */
+  BASE_IMAGE_URL:
+    "https://raw.githubusercontent.com/gsi-cyberjapan/gsimaps/refs/heads/gh-pages",
+  /** レイヤー一覧の定義ファイル */
+  LAYERS_DEFINITION_FILE_PATH: "/layers.txt",
+} as const;
