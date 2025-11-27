@@ -14,6 +14,15 @@ export const LAYOUT_CONFIG = {
   MOBILE_BREAKPOINT_PX: 768,
 } as const;
 
+export const ZOOM_CONFIG = {
+  /** Raster/Vectorマップの最小・最大ズームレベル（UI制御） */
+  RASTER_VECTOR_MIN_ZOOM: 4,
+  RASTER_VECTOR_MAX_ZOOM: 20,
+  /** Globeマップの最小・最大ズームレベル（UI制御） */
+  GLOBE_MIN_ZOOM: 2,
+  GLOBE_MAX_ZOOM: 20,
+} as const;
+
 export const BASE_LAYER_CONFIG = {
   /** Vectorのベースレイヤー */
   VECTOR_LAYERS: [

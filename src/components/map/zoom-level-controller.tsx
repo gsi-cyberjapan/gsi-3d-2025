@@ -2,6 +2,7 @@
 
 import { MapId } from "@/hooks/store/mapManagerState";
 import { useStore } from "@/hooks/store/useStore";
+import { ZOOM_CONFIG } from "@/lib/config";
 import { useEffect } from "react";
 import { useMap } from "react-map-gl/maplibre";
 
@@ -18,18 +19,21 @@ export const ZoomLevelController = ({ mapId }: Props) => {
     const currentZoom = map.getZoom();
 
     if (baseLayer.type === "globe") {
-      if (currentZoom > baseLayer.maxZoom) {
-        map.setZoom(baseLayer.maxZoom);
+      if (currentZoom > ZOOM_CONFIG.GLOBE_MAX_ZOOM) {
+        map.setZoom(ZOOM_CONFIG.GLOBE_MAX_ZOOM);
+      } else if (currentZoom < ZOOM_CONFIG.GLOBE_MIN_ZOOM) {
+        map.setZoom(ZOOM_CONFIG.GLOBE_MIN_ZOOM);
       }
-      map.setMaxZoom(baseLayer.maxZoom);
+      map.setMinZoom(ZOOM_CONFIG.GLOBE_MIN_ZOOM);
+      map.setMaxZoom(ZOOM_CONFIG.GLOBE_MAX_ZOOM);
     } else {
-      if (currentZoom > baseLayer.maxZoom) {
-        map.setZoom(baseLayer.maxZoom);
-      } else if (currentZoom < baseLayer.minZoom) {
-        map.setZoom(baseLayer.minZoom);
+      if (currentZoom > ZOOM_CONFIG.RASTER_VECTOR_MAX_ZOOM) {
+        map.setZoom(ZOOM_CONFIG.RASTER_VECTOR_MAX_ZOOM);
+      } else if (currentZoom < ZOOM_CONFIG.RASTER_VECTOR_MIN_ZOOM) {
+        map.setZoom(ZOOM_CONFIG.RASTER_VECTOR_MIN_ZOOM);
       }
-      map.setMaxZoom(baseLayer.maxZoom);
-      map.setMinZoom(baseLayer.minZoom);
+      map.setMinZoom(ZOOM_CONFIG.RASTER_VECTOR_MIN_ZOOM);
+      map.setMaxZoom(ZOOM_CONFIG.RASTER_VECTOR_MAX_ZOOM);
     }
 
     return () => {
