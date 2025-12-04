@@ -6,7 +6,7 @@ export const GENERAL_CONFIG = {
   /** アプリケーションの言語 */
   LANGUAGE: "ja",
   /** ヘルプページのURL */
-  HELP_PAGE_URL: "http://maps.gsi.go.jp/help",
+  HELP_PAGE_URL: "http://maps.gsi.go.jp/help/",
 } as const;
 
 export const LAYOUT_CONFIG = {
