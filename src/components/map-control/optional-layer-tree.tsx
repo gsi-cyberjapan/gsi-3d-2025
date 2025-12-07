@@ -108,7 +108,7 @@ const OptionalLayerGroupItem = ({
 };
 
 const OptionalLayerLeaf = ({ layer }: { layer: LayerEntry }) => {
-  return <OptionalLayerLayerRow title={layer.title} />;
+  return <OptionalLayerLayerRow layerId={layer.id} title={layer.title} />;
 };
 
 const toAccordionValue = (path: string, title: string) =>

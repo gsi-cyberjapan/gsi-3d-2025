@@ -3,13 +3,22 @@ import { GlobalState } from "./useStore";
 import { MapId } from "./mapManagerState";
 import { BaseLayer, getBaseLayers } from "@/lib/getBaseLayers";
 
+interface OptionalLayerEntry {
+  layerId: string;
+  title: string;
+  opacity: number;
+}
+
 export interface MapState {
   /** ベースとなるレイヤー */
   baseLayer: BaseLayer;
+  /** オプションレイヤー */
+  optionalLayers: OptionalLayerEntry[];
 }
 
 export const MAP_INITIAL_STATE: MapState = {
   baseLayer: getBaseLayers()[0],
+  optionalLayers: [],
 };
 
 export interface MapStateWrapper {
@@ -22,6 +31,14 @@ export interface MapStateWrapper {
   }: {
     mapId: MapId;
     baseLayer: BaseLayer;
+  }) => void;
+  /** オプションレイヤーの変更 */
+  setOptionalLayer: ({
+    mapId,
+    layers,
+  }: {
+    mapId: MapId;
+    layers: OptionalLayerEntry[];
   }) => void;
 }
 
@@ -41,7 +58,21 @@ export const createMapSlice: StateCreator<
         maps: {
           ...state.maps,
           [mapId]: {
+            ...state.maps[mapId],
             baseLayer: baseLayer,
+          },
+        },
+      };
+    });
+  },
+  setOptionalLayer: ({ mapId, layers }) => {
+    set((state) => {
+      return {
+        maps: {
+          ...state.maps,
+          [mapId]: {
+            ...state.maps[mapId],
+            optionalLayers: layers,
           },
         },
       };

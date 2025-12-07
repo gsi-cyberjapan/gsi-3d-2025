@@ -1,5 +1,3 @@
-"use client";
-
 import { Folder } from "lucide-react";
 
 interface OptionalLayerDirRowProps {
