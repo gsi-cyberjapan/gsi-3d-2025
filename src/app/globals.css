@@ -130,6 +130,7 @@
 @layer utilities {
   .scrollbar-transparent-thin {
     scrollbar-width: thin;
+    overflow-y: overlay;
     scrollbar-color: oklch(0.65 0 0 / 0.3) transparent;
   }
 

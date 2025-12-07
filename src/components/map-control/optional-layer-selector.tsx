@@ -5,7 +5,7 @@ export const OptionalLayerSelector = async () => {
   const layers = await getOptionalLayers();
 
   return (
-    <div className="border rounded-md p-2 max-h-120 overflow-y-scroll scrollbar-transparent-thin">
+    <div className="border rounded-md p-2 max-h-100 overflow-y-scroll scrollbar-transparent-thin">
       <OptionalLayerSelectorClient entries={layers} />
     </div>
   );
