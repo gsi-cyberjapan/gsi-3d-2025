@@ -20,8 +20,14 @@ import {
   restrictToParentElement,
   restrictToVerticalAxis,
 } from "@dnd-kit/modifiers";
-import { GripVertical } from "lucide-react";
+import { GripVertical, Eye, Trash } from "lucide-react";
 import { useMemo, type CSSProperties } from "react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Slider } from "../ui/slider";
 
 const OptionalLayerRow = ({
   layerId,
@@ -38,7 +44,12 @@ const OptionalLayerRow = ({
     transition,
     isDragging,
   } = useSortable({ id: layerId });
-
+  const setOptionalLayer = useStore((state) => state.setOptionalLayer);
+  const focusMapId = useStore((state) => state.focusMapId);
+  const optionalLayers = useStore(
+    (state) => state.maps[focusMapId].optionalLayers,
+  );
+  const targetLayer = optionalLayers.find((l) => l.layerId === layerId);
   const style = useMemo<CSSProperties>(
     () => ({
       transform: CSS.Transform.toString(transform),
@@ -47,24 +58,89 @@ const OptionalLayerRow = ({
     [transform, transition],
   );
 
+  const handleDeleteButtonClick = () => {
+    setOptionalLayer({
+      mapId: focusMapId,
+      layers: optionalLayers.filter((l) => l.layerId !== layerId),
+    });
+  };
+
+  const handleSliderChange = (values: number[]) => {
+    setOptionalLayer({
+      mapId: focusMapId,
+      layers: optionalLayers.map((l) => {
+        if (l.layerId !== layerId) return l;
+        return {
+          ...l,
+          opacity: values[0],
+        };
+      }),
+    });
+  };
+
+  if (!targetLayer) {
+    return null;
+  }
+
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className={`flex items-center gap-1 rounded border bg-background/70 w-full  p-1 text-xs  ${
+      className={`flex items-center gap-1 justify-between rounded border bg-background/70 w-full  p-1 text-xs  ${
         isDragging ? "opacity-70" : ""
       }`}
     >
-      <button
-        type="button"
-        className="cursor-grab text-muted-foreground"
-        {...attributes}
-        {...listeners}
-        aria-label="ドラッグして順序を変更"
-      >
-        <GripVertical className="size-4" />
-      </button>
-      <span className="truncate">{title}</span>
+      <div className="flex gap-1 items-center min-w-0">
+        <button
+          type="button"
+          className="cursor-grab text-muted-foreground"
+          {...attributes}
+          {...listeners}
+          aria-label="ドラッグして順序を変更"
+        >
+          <GripVertical className="size-4" />
+        </button>
+        <span className="truncate">{title}</span>
+      </div>
+      <div className="flex gap-1 items-center">
+        <Popover>
+          <PopoverTrigger asChild>
+            <button
+              type="button"
+              className="cursor-pointer text-muted-foreground border rounded-sm p-0.5"
+              aria-label="透明度を変更"
+            >
+              <Eye className="size-4" />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="p-2 w-58">
+            <div className="flex flex-col gap-1">
+              <span className="text-xs text-muted-foreground">
+                地図の透過率
+              </span>
+              <div className="flex gap-2 items-center">
+                <Slider
+                  value={[targetLayer.opacity]}
+                  onValueChange={handleSliderChange}
+                  max={1}
+                  step={0.01}
+                />
+                <div className="w-10 text-sm text-right">
+                  {targetLayer.opacity.toFixed(2)}
+                </div>
+              </div>
+            </div>
+          </PopoverContent>
+        </Popover>
+        <button
+          type="button"
+          className="cursor-pointer text-muted-foreground border rounded-sm p-0.5 hover:text-destructive transition-colors"
+          aria-label="地図を削除"
+          onClick={handleDeleteButtonClick}
+        >
+          <Trash className="size-4" />
+        </button>
+      </div>
     </div>
   );
 };
@@ -111,7 +187,7 @@ export const OptionalLayerControler = () => {
           sensors={sensors}
           collisionDetection={closestCenter}
           onDragEnd={handleDragEnd}
-          autoScroll={false}
+          autoScroll
           modifiers={[restrictToVerticalAxis, restrictToParentElement]}
         >
           <SortableContext
