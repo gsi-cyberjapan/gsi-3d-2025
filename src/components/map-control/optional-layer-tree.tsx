@@ -6,10 +6,10 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { cn } from "@/lib/utils";
 import type { OptionalLayerEntry } from "@/lib/getOptionalLayers";
-import { OptionalLayerDirRow } from "./optional-layer-dir-row";
-import { OptionalLayerLayerRow } from "./optional-layer-layer-row";
+import { Folder, Layers } from "lucide-react";
+import { useStore } from "@/hooks/store/useStore";
+import { cn } from "@/lib/utils";
 
 type LayerGroupEntry = Extract<OptionalLayerEntry, { type: "layer-group" }>;
 type LayerEntry = Extract<OptionalLayerEntry, { type: "layer" }>;
@@ -108,8 +108,74 @@ const OptionalLayerGroupItem = ({
 };
 
 const OptionalLayerLeaf = ({ layer }: { layer: LayerEntry }) => {
-  return <OptionalLayerLayerRow title={layer.title} />;
+  return <OptionalLayerLayerRow layer={layer} />;
 };
 
 const toAccordionValue = (path: string, title: string) =>
   `${path}-${title.replace(/\s+/g, "-").toLowerCase()}`;
+
+interface OptionalLayerLayerRowProps {
+  layer: LayerEntry;
+}
+
+export const OptionalLayerLayerRow = ({
+  layer,
+}: OptionalLayerLayerRowProps) => {
+  const { id: layerId, title, tileUrl, minZoom, maxZoom } = layer;
+  const focusMapId = useStore((state) => state.focusMapId);
+  const optionalLayers = useStore(
+    (state) => state.maps[focusMapId].optionalLayers,
+  );
+  const setOptionalLayer = useStore((state) => state.setOptionalLayer);
+  const isSelected = optionalLayers.some((l) => l.layerId === layerId);
+
+  const handleClick = () => {
+    if (isSelected) {
+      setOptionalLayer({
+        mapId: focusMapId,
+        layers: optionalLayers.filter((l) => l.layerId !== layerId),
+      });
+    } else {
+      setOptionalLayer({
+        mapId: focusMapId,
+        layers: [
+          ...optionalLayers,
+          {
+            layerId,
+            title,
+            tileUrl,
+            maxZoom,
+            minZoom,
+            opacity: 0.5,
+          },
+        ],
+      });
+    }
+  };
+
+  return (
+    <div
+      className={cn(
+        "flex gap-1 text-xs items-start cursor-pointer hover:opacity-80",
+        isSelected && "text-blue-500",
+      )}
+      onClick={handleClick}
+    >
+      <Layers className="text-muted-foreground size-3 shrink-0 mt-0.5" />
+      <span>{title}</span>
+    </div>
+  );
+};
+
+interface OptionalLayerDirRowProps {
+  title: string;
+}
+
+export const OptionalLayerDirRow = ({ title }: OptionalLayerDirRowProps) => {
+  return (
+    <div className="flex gap-1 text-xs items-start">
+      <Folder className="text-muted-foreground size-3 shrink-0 mt-0.5" />
+      <span>{title}</span>
+    </div>
+  );
+};

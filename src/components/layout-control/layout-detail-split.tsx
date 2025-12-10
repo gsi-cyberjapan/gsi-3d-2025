@@ -15,6 +15,8 @@ import { Checkbox } from "../ui/checkbox";
 export const LayoutDetailSplit = () => {
   const focusMapId = useStore((state) => state.focusMapId);
   const setFocusMapId = useStore((state) => state.setFocusMapId);
+  const isSyncPosition = useStore((state) => state.isSyncPosition);
+  const setIsSyncPosition = useStore((state) => state.setIsSyncPosition);
 
   return (
     <div className="flex flex-col gap-4">
@@ -40,7 +42,8 @@ export const LayoutDetailSplit = () => {
         <Label className="hover:bg-accent/50 flex items-start gap-2 rounded-md border p-2 has-aria-checked:border-blue-600 has-aria-checked:bg-blue-50 dark:has-aria-checked:border-blue-900 dark:has-aria-checked:bg-blue-950 cursor-pointer">
           <Checkbox
             id="sync-position"
-            defaultChecked
+            checked={isSyncPosition}
+            onCheckedChange={setIsSyncPosition}
             className="data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600 data-[state=checked]:text-white dark:data-[state=checked]:border-blue-700 dark:data-[state=checked]:bg-blue-700"
           />
           <div className="grid gap-1 font-normal">

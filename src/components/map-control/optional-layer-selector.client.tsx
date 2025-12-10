@@ -1,7 +1,6 @@
 "use client";
 
 import { Suspense, lazy } from "react";
-
 import type { OptionalLayerEntry } from "@/lib/getOptionalLayers";
 import { Skeleton } from "@/components/ui/skeleton";
 

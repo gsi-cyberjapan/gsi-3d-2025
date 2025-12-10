@@ -7,6 +7,7 @@ import {
 import { BaseLayerSelector } from "../map-control/base-layer-selector";
 import { LayoutSelector } from "../layout-control/layout-selector";
 import { OptionalLayerSelector } from "../map-control/optional-layer-selector";
+import { OptionalLayerControler } from "../map-control/optional-layer-controler";
 
 export const Sidebar = () => {
   return (
@@ -27,6 +28,7 @@ export const Sidebar = () => {
         <SidebarGroup>
           <div className="flex flex-col gap-1">
             <span className="text-xs text-muted-foreground">選択中の地図</span>
+            <OptionalLayerControler />
           </div>
         </SidebarGroup>
       </SidebarContent>
