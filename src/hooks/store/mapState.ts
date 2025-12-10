@@ -7,6 +7,9 @@ interface OptionalLayerEntry {
   layerId: string;
   title: string;
   opacity: number;
+  tileUrl: string;
+  minZoom?: number;
+  mazZoom?: number;
 }
 
 export interface MapState {

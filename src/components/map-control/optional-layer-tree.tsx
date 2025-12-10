@@ -108,38 +108,46 @@ const OptionalLayerGroupItem = ({
 };
 
 const OptionalLayerLeaf = ({ layer }: { layer: LayerEntry }) => {
-  return <OptionalLayerLayerRow layerId={layer.id} title={layer.title} />;
+  return <OptionalLayerLayerRow layer={layer} />;
 };
 
 const toAccordionValue = (path: string, title: string) =>
   `${path}-${title.replace(/\s+/g, "-").toLowerCase()}`;
 
 interface OptionalLayerLayerRowProps {
-  layerId: string;
-  title: string;
+  layer: LayerEntry;
 }
 
 export const OptionalLayerLayerRow = ({
-  layerId,
-  title,
+  layer,
 }: OptionalLayerLayerRowProps) => {
   const focusMapId = useStore((state) => state.focusMapId);
   const optionalLayers = useStore(
     (state) => state.maps[focusMapId].optionalLayers,
   );
   const setOptionalLayer = useStore((state) => state.setOptionalLayer);
-  const isSelected = optionalLayers.some((l) => l.layerId === layerId);
+  const isSelected = optionalLayers.some((l) => l.layerId === layer.id);
 
   const handleClick = () => {
     if (isSelected) {
       setOptionalLayer({
         mapId: focusMapId,
-        layers: optionalLayers.filter((l) => l.layerId !== layerId),
+        layers: optionalLayers.filter((l) => l.layerId !== layer.id),
       });
     } else {
       setOptionalLayer({
         mapId: focusMapId,
-        layers: [...optionalLayers, { layerId, title, opacity: 0.5 }],
+        layers: [
+          ...optionalLayers,
+          {
+            layerId: layer.id,
+            title: layer.title,
+            tileUrl: layer.tileUrl,
+            mazZoom: layer.minZoom,
+            minZoom: layer.minZoom,
+            opacity: 0.5,
+          },
+        ],
       });
     }
   };
@@ -153,7 +161,7 @@ export const OptionalLayerLayerRow = ({
       onClick={handleClick}
     >
       <Layers className="text-muted-foreground size-3 shrink-0 mt-0.5" />
-      <span>{title}</span>
+      <span>{layer.title}</span>
     </div>
   );
 };
