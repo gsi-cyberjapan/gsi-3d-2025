@@ -121,18 +121,19 @@ interface OptionalLayerLayerRowProps {
 export const OptionalLayerLayerRow = ({
   layer,
 }: OptionalLayerLayerRowProps) => {
+  const { id: layerId, title, tileUrl, minZoom, maxZoom } = layer;
   const focusMapId = useStore((state) => state.focusMapId);
   const optionalLayers = useStore(
     (state) => state.maps[focusMapId].optionalLayers,
   );
   const setOptionalLayer = useStore((state) => state.setOptionalLayer);
-  const isSelected = optionalLayers.some((l) => l.layerId === layer.id);
+  const isSelected = optionalLayers.some((l) => l.layerId === layerId);
 
   const handleClick = () => {
     if (isSelected) {
       setOptionalLayer({
         mapId: focusMapId,
-        layers: optionalLayers.filter((l) => l.layerId !== layer.id),
+        layers: optionalLayers.filter((l) => l.layerId !== layerId),
       });
     } else {
       setOptionalLayer({
@@ -140,11 +141,11 @@ export const OptionalLayerLayerRow = ({
         layers: [
           ...optionalLayers,
           {
-            layerId: layer.id,
-            title: layer.title,
-            tileUrl: layer.tileUrl,
-            mazZoom: layer.minZoom,
-            minZoom: layer.minZoom,
+            layerId,
+            title,
+            tileUrl,
+            maxZoom,
+            minZoom,
             opacity: 0.5,
           },
         ],
@@ -161,7 +162,7 @@ export const OptionalLayerLayerRow = ({
       onClick={handleClick}
     >
       <Layers className="text-muted-foreground size-3 shrink-0 mt-0.5" />
-      <span>{layer.title}</span>
+      <span>{title}</span>
     </div>
   );
 };
