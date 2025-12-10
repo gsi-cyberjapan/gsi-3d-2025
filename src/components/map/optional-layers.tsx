@@ -29,6 +29,8 @@ export const OptionalLayers = ({ mapId }: Props) => {
         const minzoom = layer.minZoom ?? undefined;
         const maxzoom = layer.maxZoom ?? undefined;
 
+        // TODO: GeoJson対応　https://qiita.com/mg_kudo/items/832ee30ed39b6c25df60
+
         return (
           <Source
             key={sourceId}
