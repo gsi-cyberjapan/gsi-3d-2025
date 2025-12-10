@@ -23,11 +23,15 @@ export const OptionalLayers = ({ mapId }: Props) => {
 
   return (
     <>
-      {optionalLayers.map((layer) => {
+      {optionalLayers.map((layer, index) => {
         const sourceId = buildSourceId(mapId, layer.layerId);
         const rasterLayerId = buildLayerId(mapId, layer.layerId);
         const minzoom = layer.minZoom ?? undefined;
         const maxzoom = layer.maxZoom ?? undefined;
+        const beforeId =
+          index === 0
+            ? undefined
+            : buildLayerId(mapId, optionalLayers[index - 1].layerId);
 
         // TODO: GeoJson対応　https://qiita.com/mg_kudo/items/832ee30ed39b6c25df60
 
@@ -45,6 +49,7 @@ export const OptionalLayers = ({ mapId }: Props) => {
               id={rasterLayerId}
               type="raster"
               source={sourceId}
+              beforeId={beforeId}
               paint={{ "raster-opacity": layer.opacity }}
               {...(minzoom !== undefined ? { minzoom } : {})}
               {...(maxzoom !== undefined ? { maxzoom } : {})}
