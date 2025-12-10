@@ -139,7 +139,6 @@ export const OptionalLayerLayerRow = ({
       setOptionalLayer({
         mapId: focusMapId,
         layers: [
-          ...optionalLayers,
           {
             layerId,
             title,
@@ -148,6 +147,7 @@ export const OptionalLayerLayerRow = ({
             minZoom,
             opacity: 0.5,
           },
+          ...optionalLayers,
         ],
       });
     }
