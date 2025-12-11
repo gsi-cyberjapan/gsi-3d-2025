@@ -10,6 +10,7 @@ import type { OptionalLayerEntry } from "@/lib/getOptionalLayers";
 import { Folder, Layers } from "lucide-react";
 import { useStore } from "@/hooks/store/useStore";
 import { cn } from "@/lib/utils";
+import { TriangleAlert } from "lucide-react";
 
 type LayerGroupEntry = Extract<OptionalLayerEntry, { type: "layer-group" }>;
 type LayerEntry = Extract<OptionalLayerEntry, { type: "layer" }>;
@@ -128,8 +129,10 @@ export const OptionalLayerLayerRow = ({
   );
   const setOptionalLayer = useStore((state) => state.setOptionalLayer);
   const isSelected = optionalLayers.some((l) => l.layerId === layerId);
+  const isGeojsonTileLayer = tileUrl.endsWith(".geojson");
 
   const handleClick = () => {
+    if (isGeojsonTileLayer) return;
     if (isSelected) {
       setOptionalLayer({
         mapId: focusMapId,
@@ -156,12 +159,20 @@ export const OptionalLayerLayerRow = ({
   return (
     <div
       className={cn(
-        "flex gap-1 text-xs items-start cursor-pointer hover:opacity-80",
+        "flex gap-1 text-xs items-start cursor-pointer",
         isSelected && "text-blue-500",
+        isGeojsonTileLayer
+          ? "opacity-60 cursor-not-allowed"
+          : "hover:opacity-80",
       )}
       onClick={handleClick}
     >
-      <Layers className="text-muted-foreground size-3 shrink-0 mt-0.5" />
+      {isGeojsonTileLayer ? (
+        <TriangleAlert className="text-muted-foreground size-3 shrink-0 mt-0.5" />
+      ) : (
+        <Layers className="text-muted-foreground size-3 shrink-0 mt-0.5" />
+      )}
+
       <span>{title}</span>
     </div>
   );
