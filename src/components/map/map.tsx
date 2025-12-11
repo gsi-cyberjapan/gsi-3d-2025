@@ -5,9 +5,9 @@ import dynamic from "next/dynamic";
 import { cn } from "@/lib/utils";
 import { Spinner } from "../ui/spinner";
 import {
-  getMaplibreWithPmtiles,
+  getMaplibreWithProtocol,
   MapLibreType,
-} from "@/lib/getMaplibreWhithProtocl";
+} from "@/lib/getMaplibreWhithProtocol";
 import { buildStyleFromBaseLayer } from "@/lib/buildStyleFromBaseLayer";
 import { useStore } from "@/hooks/store/useStore";
 import { useEffect, useState, useMemo } from "react";
@@ -44,7 +44,7 @@ export const Map = ({ mapId, className, opacity }: Props) => {
   useEffect(() => {
     let cancelled = false;
 
-    getMaplibreWithPmtiles()
+    getMaplibreWithProtocol()
       .then((lib) => {
         if (!cancelled) {
           setMapLib(lib);

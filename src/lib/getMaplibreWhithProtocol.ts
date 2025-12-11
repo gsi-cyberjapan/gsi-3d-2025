@@ -4,7 +4,7 @@ export type MapLibreType = typeof maplibregl;
 
 let maplibrePromise: Promise<MapLibreType> | null = null;
 
-export function getMaplibreWithPmtiles(): Promise<MapLibreType> {
+export function getMaplibreWithProtocol(): Promise<MapLibreType> {
   if (!maplibrePromise) {
     maplibrePromise = (async () => {
       const [{ Protocol }, maplibreModule] = await Promise.all([
