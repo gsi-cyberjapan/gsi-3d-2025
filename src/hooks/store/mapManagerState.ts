@@ -19,6 +19,9 @@ export interface MapManagerState {
   /** サブマップの透過度 */
   subMapOpacityOnOverlay: number;
   setSubMapOpacityOnOverlay: (value: number) => void;
+  /** 中心の十字線を表示するかどうか */
+  isDisplayCenterLine: boolean;
+  setIsDisaplayCenterLine: (value: boolean) => void;
 }
 
 export const createMapManagerSlice: StateCreator<
@@ -74,6 +77,14 @@ export const createMapManagerSlice: StateCreator<
     set(() => {
       return {
         subMapOpacityOnOverlay: value,
+      };
+    });
+  },
+  isDisplayCenterLine: true,
+  setIsDisaplayCenterLine: (value) => {
+    set(() => {
+      return {
+        isDisplayCenterLine: value,
       };
     });
   },

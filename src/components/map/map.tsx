@@ -14,6 +14,7 @@ import { useEffect, useState, useMemo } from "react";
 import { ZoomLevelController } from "./zoom-level-controller";
 import { PositionSyncController } from "./position-sync-controller";
 import { OptionalLayers } from "./optional-layers";
+import { MapCenterLine } from "./map-center-line";
 
 const ReactMaplibre = dynamic(
   () => import("react-map-gl/maplibre").then((m) => m.Map),
@@ -90,6 +91,12 @@ export const Map = ({ mapId, className, opacity }: Props) => {
             <ZoomLevelController mapId={mapId} />
             <PositionSyncController />
           </ReactMaplibre>
+        </div>
+      )}
+
+      {isMapLoaded && (
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+          <MapCenterLine />
         </div>
       )}
 
