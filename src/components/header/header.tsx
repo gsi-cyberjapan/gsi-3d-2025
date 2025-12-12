@@ -46,6 +46,16 @@ export const Header = () => {
                 </div>
               </Link>
             </DropdownMenuItem>
+            <DropdownMenuItem>
+              <DropdownMenu>
+                <DropdownMenuTrigger>
+                  <div className="flex gap-2 items-center">
+                    <Settings /> 設定
+                  </div>
+                </DropdownMenuTrigger>
+                <SettingDropdownContent />
+              </DropdownMenu>
+            </DropdownMenuItem>
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
