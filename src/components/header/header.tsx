@@ -11,11 +11,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { GENERAL_CONFIG } from "@/lib/config";
 import { SettingDropdownContent } from "./setting-dropdown-content";
+import { SearchInput } from "./search-input";
 
 export const Header = () => {
   return (
     <div className="flex border-b py-1 px-2 justify-between">
-      <Logo />
+      <div className="flex items-center gap-4">
+        <Logo />
+        <SearchInput />
+      </div>
       <div className="md:flex items-center gap-2 hidden">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

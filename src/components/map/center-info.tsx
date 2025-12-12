@@ -4,10 +4,10 @@ import { MapId } from "@/hooks/store/mapManagerState";
 import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { useMap } from "react-map-gl/maplibre";
 import { useQuery } from "@tanstack/react-query";
-import { getAddressFromLatLng } from "@/lib/getAddressFromLatLng";
+import { getAddressFromLatLng } from "@/lib/map-utils/getAddressFromLatLng";
 import { cn } from "@/lib/utils";
-import { getUTMFromLatLng } from "@/lib/geUTMFromLatLng";
-import { getElevationFromLatLng } from "@/lib/getElevationFromLatLng";
+import { getUTMFromLatLng } from "@/lib/map-utils/geUTMFromLatLng";
+import { getElevationFromLatLng } from "@/lib/map-utils/getElevationFromLatLng";
 import { Skeleton } from "../ui/skeleton";
 
 interface ViewState {
