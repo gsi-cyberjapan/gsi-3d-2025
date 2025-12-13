@@ -200,3 +200,7 @@ export const OPTIONAL_LAYER_CONFIG = {
   /** レイヤー一覧の定義ファイル */
   LAYERS_DEFINITION_FILE_PATH: "/layers.txt",
 } as const;
+
+export const GEOCODING_CONFIG = {
+  // TODO
+} as const;

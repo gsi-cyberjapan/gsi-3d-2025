@@ -1,10 +1,5 @@
-import { useEffect } from "react";
-import { useDebouncedValue } from "./useDebounceValue";
 import { LngLat } from "maplibre-gl";
 
-/**
- * Brand utilities
- */
 type Brand<T, B extends string> = T & { readonly __brand: B };
 
 type LngLatText = Brand<string, "LngLatText">; // "35.00 135.00" / "35.00,135.00"
@@ -35,7 +30,6 @@ const isMgrsText = (s: string): s is MgrsText => {
 
 const detectSearchInput = (raw: string): DetectedSearchInput => {
   const input = raw.trim();
-
   if (isLngLatText(input)) return { kind: "lnglat", value: input, raw };
   if (isLngLatDmsText(input)) return { kind: "lnglatDms", value: input, raw };
   if (isMgrsText(input)) return { kind: "mgrs", value: input, raw };
@@ -57,40 +51,53 @@ const getLngLatFromMgrs = (_input: MgrsText): LngLat => {
   return new LngLat(139.763328, 35.675069);
 };
 
-export const useGeoCode = (
-  input: string,
-  options: {
-    debounceMs: number;
-  },
-) => {
-  const debouncedInput = useDebouncedValue(input, options.debounceMs);
+interface AddressSearchResult {
+  test: string;
+}
 
-  useEffect(() => {
-    if (!debouncedInput.trim()) return;
+const geocodeFromAddress = async (
+  input: AddressText,
+): Promise<AddressSearchResult> => {
+  await new Promise((r) => setTimeout(r, 3000));
+  return {
+    test: input,
+  };
+};
 
-    const detected = detectSearchInput(debouncedInput);
+interface GeocodeAddressResult {
+  detected: DetectedSearchInput;
+  getAddressSearchResult: Promise<AddressSearchResult>;
+}
 
-    switch (detected.kind) {
-      case "lnglat": {
-        const lnglat = getLngLatFromLngLatString(detected.value);
-        console.log(lnglat);
-        return;
-      }
-      case "lnglatDms": {
-        const lnglat = getLngLatFromLngLatDms(detected.value);
-        console.log(lnglat);
-        return;
-      }
-      case "mgrs": {
-        const lnglat = getLngLatFromMgrs(detected.value);
-        console.log(lnglat);
-        return;
-      }
-      case "address": {
-        console.log(detected.value);
-        return;
-      }
-      default:
-    }
-  }, [debouncedInput]);
+interface GeocodePointResult {
+  detected: DetectedSearchInput;
+  lnglat: LngLat;
+}
+
+type GeocodeResult = GeocodePointResult | GeocodeAddressResult;
+
+export const geocode = (input: string): GeocodeResult => {
+  const detectedInput = detectSearchInput(input);
+
+  if (detectedInput.kind === "lnglat") {
+    return {
+      detected: detectedInput,
+      lnglat: getLngLatFromLngLatString(detectedInput.value),
+    };
+  } else if (detectedInput.kind === "lnglatDms") {
+    return {
+      detected: detectedInput,
+      lnglat: getLngLatFromLngLatDms(detectedInput.value),
+    };
+  } else if (detectedInput.kind === "mgrs") {
+    return {
+      detected: detectedInput,
+      lnglat: getLngLatFromMgrs(detectedInput.value),
+    };
+  } else {
+    return {
+      detected: detectedInput,
+      getAddressSearchResult: geocodeFromAddress(detectedInput.value),
+    };
+  }
 };

@@ -7,11 +7,9 @@ import {
 } from "@/components/ui/input-group";
 import { Search } from "lucide-react";
 import { useState } from "react";
-import { useGeoCode } from "@/hooks/useGeoCode";
 
 export const SearchInput = () => {
   const [input, setInput] = useState("");
-  useGeoCode(input, { debounceMs: 300 });
 
   return (
     <div className="relative">
