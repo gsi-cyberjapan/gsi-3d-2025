@@ -52,15 +52,55 @@ const getLngLatFromMgrs = (_input: MgrsText): LngLat => {
 };
 
 interface AddressSearchResult {
-  test: string;
+  candidates: {
+    id: string;
+    lnglat: LngLat;
+    /** 例: 丸の内 */
+    title: string;
+    /** 例: 東京都千代田区 */
+    subTitle: string;
+    prefCode: number;
+    cityCode: number;
+    /** 居住地名かどうか */
+    isResidentialAreaName: boolean;
+  }[];
 }
 
 const geocodeFromAddress = async (
-  input: AddressText,
+  _input: AddressText,
 ): Promise<AddressSearchResult> => {
+  // TODO
   await new Promise((r) => setTimeout(r, 3000));
   return {
-    test: input,
+    candidates: [
+      {
+        id: "tokyo-chiyoda-marunouchi",
+        lnglat: new LngLat(139.7649, 35.6812),
+        title: "丸の内",
+        subTitle: "東京都千代田区",
+        prefCode: 13,
+        cityCode: 13101,
+        isResidentialAreaName: true,
+      },
+      {
+        id: "tokyo-chiyoda-tokyostation",
+        lnglat: new LngLat(139.7671, 35.6812),
+        title: "東京駅",
+        subTitle: "東京都千代田区",
+        prefCode: 13,
+        cityCode: 13101,
+        isResidentialAreaName: false,
+      },
+      {
+        id: "osaka-kita-umeda",
+        lnglat: new LngLat(135.4983, 34.7025),
+        title: "梅田",
+        subTitle: "大阪府大阪市北区",
+        prefCode: 27,
+        cityCode: 27127,
+        isResidentialAreaName: true,
+      },
+    ],
   };
 };
 
