@@ -1,4 +1,5 @@
 import { LngLat } from "maplibre-gl";
+import * as mgrs from "mgrs";
 
 type Brand<T, B extends string> = T & { readonly __brand: B };
 
@@ -14,18 +15,61 @@ type DetectedSearchInput =
   | { kind: "address"; value: AddressText; raw: string };
 
 const isLngLatText = (s: string): s is LngLatText => {
-  // TODO
+  const trimmed = s.trim();
+
+  // Pattern 1: lat lng [z] または lat,lng[,z]
+  // Examples: "35.00 135.00", "35.00,135.00", "35.00 135.00 15"
+  const pattern1 = /^([-+]?[0-9]+(\.[0-9]+)?)([\s,]+)([-+]?[0-9]+(\.[0-9]+)?)(([\s,]+)([0-9]+(\.[0-9]+)?))?$/;
+  if (pattern1.test(trimmed)) {
+    const m = trimmed.match(pattern1);
+    if (m) {
+      const lat = parseFloat(m[1]);
+      const lng = parseFloat(m[4]);
+      return !isNaN(lat) && !isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
+    }
+  }
+
+  // Pattern 2: #z/lat/lng または z/lat/lng
+  // Examples: "#15/35.00/135.00", "15/35.00/135.00"
+  const pattern2 = /^[#]?([0-9]+(\.[0-9]+)?)([/]+)([-+]?[0-9]+(\.[0-9]+)?)([/]+)([-+]?[0-9]+(\.[0-9]+)?)$/;
+  if (pattern2.test(trimmed)) {
+    const m = trimmed.match(pattern2);
+    if (m) {
+      const lat = parseFloat(m[4]);
+      const lng = parseFloat(m[7]);
+      return !isNaN(lat) && !isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
+    }
+  }
+
   return false;
 };
 
 const isLngLatDmsText = (s: string): s is LngLatDmsText => {
-  // TODO
-  return false;
+  // Pattern: 度分秒形式
+  // Example: "35度40分57秒 139度45分10秒"
+  const japanesePattern = /^([+,-]?[0-9]+)度([0-9]+)分([0-9]+(\.[0-9]+)?)秒([\s]+)([+,-]?[0-9]+)度([0-9]+)分([0-9]+(\.[0-9]+)?)秒$/;
+  if (japanesePattern.test(s.trim())) {
+    return true;
+  }
+
+  // Also support Western notation with °'" markers
+  const westernPattern = /[度°]['′']?["″"]?|[分′]['′']?["″"]?|[秒″]/;
+  return westernPattern.test(s);
 };
 
 const isMgrsText = (s: string): s is MgrsText => {
-  // TODO
-  return false;
+  // Pattern: UTM point format used in GSI
+  // Format: 2 digits + 3 letters + 8 digits
+  // Example: "54SUE83694920"
+  const utmPattern = /^[0-9]{2}[A-Za-z]{3}[0-9]{8}$/;
+  if (utmPattern.test(s.trim())) {
+    return true;
+  }
+
+  // Also support standard MGRS format
+  // Format: zone(1-2 digits) + zone letter + 2-letter grid square + numerical location (even digits, 0-10 digits)
+  const mgrsPattern = /^\d{1,2}[C-X][A-Z]{2}(\d{2}|\d{4}|\d{6}|\d{8}|\d{10})?$/i;
+  return mgrsPattern.test(s.replace(/\s/g, ""));
 };
 
 const detectSearchInput = (raw: string): DetectedSearchInput => {
@@ -36,19 +80,94 @@ const detectSearchInput = (raw: string): DetectedSearchInput => {
   return { kind: "address", value: input as AddressText, raw };
 };
 
-const getLngLatFromLngLatString = (_input: LngLatText): LngLat => {
-  // TODO
-  return new LngLat(139.763328, 35.675069);
+const getLngLatFromLngLatString = (input: LngLatText): LngLat => {
+  const trimmed = input.trim();
+
+  // Pattern 1: lat lng [z] または lat,lng[,z]
+  const pattern1 = /^([-+]?[0-9]+(\.[0-9]+)?)([\s,]+)([-+]?[0-9]+(\.[0-9]+)?)(([\s,]+)([0-9]+(\.[0-9]+)?))?$/;
+  const m1 = trimmed.match(pattern1);
+  if (m1) {
+    const lat = parseFloat(m1[1]);
+    const lng = parseFloat(m1[4]);
+    return new LngLat(lng, lat); // LngLat constructor takes (lng, lat)
+  }
+
+  // Pattern 2: #z/lat/lng または z/lat/lng
+  const pattern2 = /^[#]?([0-9]+(\.[0-9]+)?)([/]+)([-+]?[0-9]+(\.[0-9]+)?)([/]+)([-+]?[0-9]+(\.[0-9]+)?)$/;
+  const m2 = trimmed.match(pattern2);
+  if (m2) {
+    const lat = parseFloat(m2[4]);
+    const lng = parseFloat(m2[7]);
+    return new LngLat(lng, lat);
+  }
+
+  // Fallback: simple split
+  const parts = input.split(/[,\s]+/).map((p) => parseFloat(p.trim()));
+  const [lat, lng] = parts;
+  return new LngLat(lng, lat);
 };
 
-const getLngLatFromLngLatDms = (_input: LngLatDmsText): LngLat => {
-  // TODO
-  return new LngLat(139.763328, 35.675069);
+const getLngLatFromLngLatDms = (input: LngLatDmsText): LngLat => {
+  const trimmed = input.trim();
+
+  // Japanese pattern: "35度40分57秒 139度45分10秒"
+  const japanesePattern = /^([+,-]?[0-9]+)度([0-9]+)分([0-9]+(\.[0-9]+)?)秒([\s]+)([+,-]?[0-9]+)度([0-9]+)分([0-9]+(\.[0-9]+)?)秒$/;
+  const m = trimmed.match(japanesePattern);
+
+  if (m) {
+    // Handle latitude with proper minus sign processing
+    const latDegRaw = parseFloat(m[1]);
+    const latMinus = latDegRaw < 0;
+    let lat = Math.abs(latDegRaw) + parseFloat(m[2]) / 60 + parseFloat(m[3]) / 3600;
+    if (latMinus) lat *= -1;
+
+    // Handle longitude with proper minus sign processing
+    const lngDegRaw = parseFloat(m[6]);
+    const lngMinus = lngDegRaw < 0;
+    let lng = Math.abs(lngDegRaw) + parseFloat(m[7]) / 60 + parseFloat(m[8]) / 3600;
+    if (lngMinus) lng *= -1;
+
+    return new LngLat(lng, lat);
+  }
+
+  // Fallback: extract all numbers and try to parse Western format
+  const numbers = input.match(/[-+]?\d+\.?\d*/g);
+  if (!numbers || numbers.length < 6) {
+    throw new Error("Invalid DMS format");
+  }
+
+  const latDeg = parseFloat(numbers[0]);
+  const latMin = parseFloat(numbers[1]);
+  const latSec = parseFloat(numbers[2]);
+  const lngDeg = parseFloat(numbers[3]);
+  const lngMin = parseFloat(numbers[4]);
+  const lngSec = parseFloat(numbers[5]);
+
+  let lat = Math.abs(latDeg) + latMin / 60 + latSec / 3600;
+  let lng = Math.abs(lngDeg) + lngMin / 60 + lngSec / 3600;
+
+  if (latDeg < 0) lat *= -1;
+  if (lngDeg < 0) lng *= -1;
+
+  // Check for S/W indicators (negative values)
+  if (input.includes("S") || input.includes("南")) lat = -Math.abs(lat);
+  if (input.includes("W") || input.includes("西")) lng = -Math.abs(lng);
+
+  return new LngLat(lng, lat);
 };
 
-const getLngLatFromMgrs = (_input: MgrsText): LngLat => {
-  // TODO
-  return new LngLat(139.763328, 35.675069);
+const getLngLatFromMgrs = (input: MgrsText): LngLat => {
+  // Use mgrs library to convert MGRS to lat/lng
+  // Remove any spaces from the input
+  const cleanedInput = input.replace(/\s/g, "");
+
+  try {
+    // mgrs.toPoint returns [lng, lat]
+    const [lng, lat] = mgrs.toPoint(cleanedInput);
+    return new LngLat(lng, lat);
+  } catch (error) {
+    throw new Error(`Invalid MGRS format: ${error instanceof Error ? error.message : String(error)}`);
+  }
 };
 
 interface AddressSearchResult {
@@ -66,42 +185,127 @@ interface AddressSearchResult {
   }[];
 }
 
+// MUNI master data cache
+let muniDataCache: Record<string, { prefCode: string; prefName: string; cityCode: string; cityName: string }> | null = null;
+
+// Load and parse MUNI master data from GSI
+const loadMuniData = async (): Promise<typeof muniDataCache> => {
+  if (muniDataCache) return muniDataCache;
+
+  try {
+    const response = await fetch("https://maps.gsi.go.jp/js/muni.js");
+    if (!response.ok) {
+      console.warn("Failed to load MUNI data");
+      return null;
+    }
+
+    const text = await response.text();
+    const muniData: Record<string, { prefCode: string; prefName: string; cityCode: string; cityName: string }> = {};
+
+    // Parse GSI.MUNI_ARRAY["CODE"] = 'REGION_ID,PREFECTURE,CODE,NAME';
+    const pattern = /GSI\.MUNI_ARRAY\["(\d+)"\]\s*=\s*'([^']+)'/g;
+    let match;
+
+    while ((match = pattern.exec(text)) !== null) {
+      const code = match[1];
+      const [prefCode, prefName, cityCode, cityName] = match[2].split(",");
+      muniData[code] = { prefCode, prefName, cityCode, cityName };
+    }
+
+    muniDataCache = muniData;
+    return muniData;
+  } catch (error) {
+    console.warn("Failed to load MUNI data:", error);
+    return null;
+  }
+};
+
 const geocodeFromAddress = async (
-  _input: AddressText,
+  input: AddressText,
 ): Promise<AddressSearchResult> => {
-  // TODO
-  await new Promise((r) => setTimeout(r, 3000));
-  return {
-    candidates: [
-      {
-        id: "tokyo-chiyoda-marunouchi",
-        lnglat: new LngLat(139.7649, 35.6812),
-        title: "丸の内",
-        subTitle: "東京都千代田区",
-        prefCode: 13,
-        cityCode: 13101,
-        isResidentialAreaName: true,
-      },
-      {
-        id: "tokyo-chiyoda-tokyostation",
-        lnglat: new LngLat(139.7671, 35.6812),
-        title: "東京駅",
-        subTitle: "東京都千代田区",
-        prefCode: 13,
-        cityCode: 13101,
-        isResidentialAreaName: false,
-      },
-      {
-        id: "osaka-kita-umeda",
-        lnglat: new LngLat(135.4983, 34.7025),
-        title: "梅田",
-        subTitle: "大阪府大阪市北区",
-        prefCode: 27,
-        cityCode: 27127,
-        isResidentialAreaName: true,
-      },
-    ],
-  };
+  try {
+    // Load MUNI data in parallel with geocoding request
+    const [muniData] = await Promise.all([loadMuniData()]);
+
+    // Use CSIS Simple Geocoding Service
+    const params = new URLSearchParams({
+      addr: input,
+      charset: "UTF8",
+    });
+
+    const response = await fetch(
+      `https://geocode.csis.u-tokyo.ac.jp/cgi-bin/simple_geocode.cgi?${params.toString()}`
+    );
+
+    if (!response.ok) {
+      console.warn("CSIS geocoding failed:", response.statusText);
+      return { candidates: [] };
+    }
+
+    const xmlText = await response.text();
+
+    // Parse XML response
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+
+    // Check for parsing errors
+    const parserError = xmlDoc.querySelector("parsererror");
+    if (parserError) {
+      console.warn("XML parsing error:", parserError.textContent);
+      return { candidates: [] };
+    }
+
+    // Extract candidates from XML
+    const candidateNodes = xmlDoc.querySelectorAll("candidate");
+    if (candidateNodes.length === 0) {
+      return { candidates: [] };
+    }
+
+    const candidates = Array.from(candidateNodes).map((node, index) => {
+      const address = node.querySelector("address")?.textContent || "";
+      const longitude = parseFloat(node.querySelector("longitude")?.textContent || "0");
+      const latitude = parseFloat(node.querySelector("latitude")?.textContent || "0");
+      const iLvl = node.querySelector("iLvl")?.textContent || "";
+
+      // Try to extract municipality code from address
+      // Format: Prefecture/Municipality/District/Block/Number
+      const addressParts = address.split("/");
+      const prefName = addressParts[0] || "";
+      const cityName = addressParts[1] || "";
+
+      // Find matching MUNI entry
+      let prefCode = 0;
+      let cityCode = 0;
+      if (muniData) {
+        const entry = Object.values(muniData).find(
+          (m) => m.prefName === prefName && m.cityName === cityName
+        );
+        if (entry) {
+          prefCode = parseInt(entry.prefCode, 10);
+          cityCode = parseInt(entry.cityCode, 10);
+        }
+      }
+
+      // Extract title and subtitle from address
+      const title = addressParts[2] || cityName || prefName;
+      const subTitle = `${prefName}${cityName}`;
+
+      return {
+        id: `csis-${index.toString()}-${latitude.toString()}-${longitude.toString()}`,
+        lnglat: new LngLat(longitude, latitude),
+        title,
+        subTitle,
+        prefCode,
+        cityCode,
+        isResidentialAreaName: iLvl !== "" && parseInt(iLvl, 10) >= 2,
+      };
+    });
+
+    return { candidates };
+  } catch (error) {
+    console.warn("Geocoding failed:", error);
+    return { candidates: [] };
+  }
 };
 
 interface GeocodeAddressResult {
