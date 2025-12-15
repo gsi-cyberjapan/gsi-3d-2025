@@ -17,11 +17,13 @@ type DetectedSearchInput =
 // Coordinate format patterns
 // Pattern 1: lat lng [z] または lat,lng[,z]
 // Examples: "35.00 135.00", "35.00,135.00", "35.00 135.00 15"
-const LNGLAT_PATTERN_1 = /^([-+]?[0-9]+(\.[0-9]+)?)([\s,]+)([-+]?[0-9]+(\.[0-9]+)?)(([\s,]+)([0-9]+(\.[0-9]+)?))?$/;
+const LNGLAT_PATTERN_1 =
+  /^([-+]?[0-9]+(\.[0-9]+)?)([\s,]+)([-+]?[0-9]+(\.[0-9]+)?)(([\s,]+)([0-9]+(\.[0-9]+)?))?$/;
 
 // Pattern 2: #z/lat/lng または z/lat/lng
 // Examples: "#15/35.00/135.00", "15/35.00/135.00"
-const LNGLAT_PATTERN_2 = /^[#]?([0-9]+(\.[0-9]+)?)([/]+)([-+]?[0-9]+(\.[0-9]+)?)([/]+)([-+]?[0-9]+(\.[0-9]+)?)$/;
+const LNGLAT_PATTERN_2 =
+  /^[#]?([0-9]+(\.[0-9]+)?)([/]+)([-+]?[0-9]+(\.[0-9]+)?)([/]+)([-+]?[0-9]+(\.[0-9]+)?)$/;
 
 const isLngLatText = (s: string): s is LngLatText => {
   const trimmed = s.trim();
@@ -31,7 +33,14 @@ const isLngLatText = (s: string): s is LngLatText => {
     if (m) {
       const lat = parseFloat(m[1]);
       const lng = parseFloat(m[4]);
-      return !isNaN(lat) && !isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
+      return (
+        !isNaN(lat) &&
+        !isNaN(lng) &&
+        lat >= -90 &&
+        lat <= 90 &&
+        lng >= -180 &&
+        lng <= 180
+      );
     }
   }
 
@@ -40,17 +49,25 @@ const isLngLatText = (s: string): s is LngLatText => {
     if (m) {
       const lat = parseFloat(m[4]);
       const lng = parseFloat(m[7]);
-      return !isNaN(lat) && !isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
+      return (
+        !isNaN(lat) &&
+        !isNaN(lng) &&
+        lat >= -90 &&
+        lat <= 90 &&
+        lng >= -180 &&
+        lng <= 180
+      );
     }
   }
 
   return false;
-};;
+};
 
 const isLngLatDmsText = (s: string): s is LngLatDmsText => {
   // Pattern: 度分秒形式
   // Example: "35度40分57秒 139度45分10秒"
-  const japanesePattern = /^([+,-]?[0-9]+)度([0-9]+)分([0-9]+(\.[0-9]+)?)秒([\s]+)([+,-]?[0-9]+)度([0-9]+)分([0-9]+(\.[0-9]+)?)秒$/;
+  const japanesePattern =
+    /^([+,-]?[0-9]+)度([0-9]+)分([0-9]+(\.[0-9]+)?)秒([\s]+)([+,-]?[0-9]+)度([0-9]+)分([0-9]+(\.[0-9]+)?)秒$/;
   if (japanesePattern.test(s.trim())) {
     return true;
   }
@@ -71,7 +88,8 @@ const isMgrsText = (s: string): s is MgrsText => {
 
   // Also support standard MGRS format
   // Format: zone(1-2 digits) + zone letter + 2-letter grid square + numerical location (even digits, 0-10 digits)
-  const mgrsPattern = /^\d{1,2}[C-X][A-Z]{2}(\d{2}|\d{4}|\d{6}|\d{8}|\d{10})?$/i;
+  const mgrsPattern =
+    /^\d{1,2}[C-X][A-Z]{2}(\d{2}|\d{4}|\d{6}|\d{8}|\d{10})?$/i;
   return mgrsPattern.test(s.replace(/\s/g, ""));
 };
 
@@ -104,26 +122,29 @@ const getLngLatFromLngLatString = (input: LngLatText): LngLat => {
   const parts = input.split(/[,\s]+/).map((p) => parseFloat(p.trim()));
   const [lat, lng] = parts;
   return new LngLat(lng, lat);
-};;
+};
 
 const getLngLatFromLngLatDms = (input: LngLatDmsText): LngLat => {
   const trimmed = input.trim();
 
   // Japanese pattern: "35度40分57秒 139度45分10秒"
-  const japanesePattern = /^([+,-]?[0-9]+)度([0-9]+)分([0-9]+(\.[0-9]+)?)秒([\s]+)([+,-]?[0-9]+)度([0-9]+)分([0-9]+(\.[0-9]+)?)秒$/;
+  const japanesePattern =
+    /^([+,-]?[0-9]+)度([0-9]+)分([0-9]+(\.[0-9]+)?)秒([\s]+)([+,-]?[0-9]+)度([0-9]+)分([0-9]+(\.[0-9]+)?)秒$/;
   const m = trimmed.match(japanesePattern);
 
   if (m) {
     // Handle latitude with proper minus sign processing
     const latDegRaw = parseFloat(m[1]);
     const latMinus = latDegRaw < 0;
-    let lat = Math.abs(latDegRaw) + parseFloat(m[2]) / 60 + parseFloat(m[3]) / 3600;
+    let lat =
+      Math.abs(latDegRaw) + parseFloat(m[2]) / 60 + parseFloat(m[3]) / 3600;
     if (latMinus) lat *= -1;
 
     // Handle longitude with proper minus sign processing
     const lngDegRaw = parseFloat(m[6]);
     const lngMinus = lngDegRaw < 0;
-    let lng = Math.abs(lngDegRaw) + parseFloat(m[7]) / 60 + parseFloat(m[8]) / 3600;
+    let lng =
+      Math.abs(lngDegRaw) + parseFloat(m[7]) / 60 + parseFloat(m[8]) / 3600;
     if (lngMinus) lng *= -1;
 
     return new LngLat(lng, lat);
@@ -165,7 +186,9 @@ const getLngLatFromMgrs = (input: MgrsText): LngLat => {
     const [lng, lat] = mgrs.toPoint(cleanedInput);
     return new LngLat(lng, lat);
   } catch (error) {
-    throw new Error(`Invalid MGRS format: ${error instanceof Error ? error.message : String(error)}`);
+    throw new Error(
+      `Invalid MGRS format: ${error instanceof Error ? error.message : String(error)}`,
+    );
   }
 };
 
@@ -185,7 +208,10 @@ interface AddressSearchResult {
 }
 
 // MUNI master data cache
-let muniDataCache: Record<string, { prefCode: string; prefName: string; cityCode: string; cityName: string }> | null = null;
+let muniDataCache: Record<
+  string,
+  { prefCode: string; prefName: string; cityCode: string; cityName: string }
+> | null = null;
 
 // Load and parse MUNI master data from GSI
 const loadMuniData = async (): Promise<typeof muniDataCache> => {
@@ -199,7 +225,10 @@ const loadMuniData = async (): Promise<typeof muniDataCache> => {
     }
 
     const text = await response.text();
-    const muniData: Record<string, { prefCode: string; prefName: string; cityCode: string; cityName: string }> = {};
+    const muniData: Record<
+      string,
+      { prefCode: string; prefName: string; cityCode: string; cityName: string }
+    > = {};
 
     // Parse GSI.MUNI_ARRAY["CODE"] = 'REGION_ID,PREFECTURE,CODE,NAME';
     const pattern = /GSI\.MUNI_ARRAY\["(\d+)"\]\s*=\s*'([^']+)'/g;
@@ -233,7 +262,7 @@ const geocodeFromAddress = async (
     });
 
     const response = await fetch(
-      `https://geocode.csis.u-tokyo.ac.jp/cgi-bin/simple_geocode.cgi?${params.toString()}`
+      `https://geocode.csis.u-tokyo.ac.jp/cgi-bin/simple_geocode.cgi?${params.toString()}`,
     );
 
     if (!response.ok) {
@@ -262,8 +291,12 @@ const geocodeFromAddress = async (
 
     const candidates = Array.from(candidateNodes).map((node, index) => {
       const address = node.querySelector("address")?.textContent || "";
-      const longitude = parseFloat(node.querySelector("longitude")?.textContent || "0");
-      const latitude = parseFloat(node.querySelector("latitude")?.textContent || "0");
+      const longitude = parseFloat(
+        node.querySelector("longitude")?.textContent || "0",
+      );
+      const latitude = parseFloat(
+        node.querySelector("latitude")?.textContent || "0",
+      );
       const iLvl = node.querySelector("iLvl")?.textContent || "";
 
       // Try to extract municipality code from address
@@ -277,7 +310,7 @@ const geocodeFromAddress = async (
       let cityCode = 0;
       if (muniData) {
         const entry = Object.values(muniData).find(
-          (m) => m.prefName === prefName && m.cityName === cityName
+          (m) => m.prefName === prefName && m.cityName === cityName,
         );
         if (entry) {
           prefCode = parseInt(entry.prefCode, 10);
