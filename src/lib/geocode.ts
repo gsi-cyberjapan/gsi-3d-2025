@@ -14,14 +14,20 @@ type DetectedSearchInput =
   | { kind: "mgrs"; value: MgrsText; raw: string }
   | { kind: "address"; value: AddressText; raw: string };
 
+// Coordinate format patterns
+// Pattern 1: lat lng [z] または lat,lng[,z]
+// Examples: "35.00 135.00", "35.00,135.00", "35.00 135.00 15"
+const LNGLAT_PATTERN_1 = /^([-+]?[0-9]+(\.[0-9]+)?)([\s,]+)([-+]?[0-9]+(\.[0-9]+)?)(([\s,]+)([0-9]+(\.[0-9]+)?))?$/;
+
+// Pattern 2: #z/lat/lng または z/lat/lng
+// Examples: "#15/35.00/135.00", "15/35.00/135.00"
+const LNGLAT_PATTERN_2 = /^[#]?([0-9]+(\.[0-9]+)?)([/]+)([-+]?[0-9]+(\.[0-9]+)?)([/]+)([-+]?[0-9]+(\.[0-9]+)?)$/;
+
 const isLngLatText = (s: string): s is LngLatText => {
   const trimmed = s.trim();
 
-  // Pattern 1: lat lng [z] または lat,lng[,z]
-  // Examples: "35.00 135.00", "35.00,135.00", "35.00 135.00 15"
-  const pattern1 = /^([-+]?[0-9]+(\.[0-9]+)?)([\s,]+)([-+]?[0-9]+(\.[0-9]+)?)(([\s,]+)([0-9]+(\.[0-9]+)?))?$/;
-  if (pattern1.test(trimmed)) {
-    const m = trimmed.match(pattern1);
+  if (LNGLAT_PATTERN_1.test(trimmed)) {
+    const m = trimmed.match(LNGLAT_PATTERN_1);
     if (m) {
       const lat = parseFloat(m[1]);
       const lng = parseFloat(m[4]);
@@ -29,11 +35,8 @@ const isLngLatText = (s: string): s is LngLatText => {
     }
   }
 
-  // Pattern 2: #z/lat/lng または z/lat/lng
-  // Examples: "#15/35.00/135.00", "15/35.00/135.00"
-  const pattern2 = /^[#]?([0-9]+(\.[0-9]+)?)([/]+)([-+]?[0-9]+(\.[0-9]+)?)([/]+)([-+]?[0-9]+(\.[0-9]+)?)$/;
-  if (pattern2.test(trimmed)) {
-    const m = trimmed.match(pattern2);
+  if (LNGLAT_PATTERN_2.test(trimmed)) {
+    const m = trimmed.match(LNGLAT_PATTERN_2);
     if (m) {
       const lat = parseFloat(m[4]);
       const lng = parseFloat(m[7]);
@@ -42,7 +45,7 @@ const isLngLatText = (s: string): s is LngLatText => {
   }
 
   return false;
-};
+};;
 
 const isLngLatDmsText = (s: string): s is LngLatDmsText => {
   // Pattern: 度分秒形式
@@ -83,18 +86,14 @@ const detectSearchInput = (raw: string): DetectedSearchInput => {
 const getLngLatFromLngLatString = (input: LngLatText): LngLat => {
   const trimmed = input.trim();
 
-  // Pattern 1: lat lng [z] または lat,lng[,z]
-  const pattern1 = /^([-+]?[0-9]+(\.[0-9]+)?)([\s,]+)([-+]?[0-9]+(\.[0-9]+)?)(([\s,]+)([0-9]+(\.[0-9]+)?))?$/;
-  const m1 = trimmed.match(pattern1);
+  const m1 = trimmed.match(LNGLAT_PATTERN_1);
   if (m1) {
     const lat = parseFloat(m1[1]);
     const lng = parseFloat(m1[4]);
     return new LngLat(lng, lat); // LngLat constructor takes (lng, lat)
   }
 
-  // Pattern 2: #z/lat/lng または z/lat/lng
-  const pattern2 = /^[#]?([0-9]+(\.[0-9]+)?)([/]+)([-+]?[0-9]+(\.[0-9]+)?)([/]+)([-+]?[0-9]+(\.[0-9]+)?)$/;
-  const m2 = trimmed.match(pattern2);
+  const m2 = trimmed.match(LNGLAT_PATTERN_2);
   if (m2) {
     const lat = parseFloat(m2[4]);
     const lng = parseFloat(m2[7]);
@@ -105,7 +104,7 @@ const getLngLatFromLngLatString = (input: LngLatText): LngLat => {
   const parts = input.split(/[,\s]+/).map((p) => parseFloat(p.trim()));
   const [lat, lng] = parts;
   return new LngLat(lng, lat);
-};
+};;
 
 const getLngLatFromLngLatDms = (input: LngLatDmsText): LngLat => {
   const trimmed = input.trim();
