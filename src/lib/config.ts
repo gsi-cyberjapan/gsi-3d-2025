@@ -202,5 +202,9 @@ export const OPTIONAL_LAYER_CONFIG = {
 } as const;
 
 export const GEOCODING_CONFIG = {
-  // TODO
+  /** GSI MUNI master data URL */
+  MUNI_DATA_URL: "https://maps.gsi.go.jp/js/muni.js",
+  /** CSIS Simple Geocoding Service URL */
+  CSIS_GEOCODE_URL:
+    "https://geocode.csis.u-tokyo.ac.jp/cgi-bin/simple_geocode.cgi",
 } as const;
