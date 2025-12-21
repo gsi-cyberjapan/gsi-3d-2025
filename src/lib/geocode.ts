@@ -51,7 +51,7 @@ const getLngLatFromMgrs = (_input: MgrsText): LngLat => {
   return new LngLat(139.763328, 35.675069);
 };
 
-interface AddressSearchResult {
+export interface AddressSearchResult {
   candidates: {
     id: string;
     lnglat: LngLat;
@@ -105,11 +105,13 @@ const geocodeFromAddress = async (
 };
 
 interface GeocodeAddressResult {
+  type: "address";
   detected: DetectedSearchInput;
   getAddressSearchResult: Promise<AddressSearchResult>;
 }
 
 interface GeocodePointResult {
+  type: "point";
   detected: DetectedSearchInput;
   lnglat: LngLat;
 }
@@ -121,21 +123,25 @@ export const geocode = (input: string): GeocodeResult => {
 
   if (detectedInput.kind === "lnglat") {
     return {
+      type: "point",
       detected: detectedInput,
       lnglat: getLngLatFromLngLatString(detectedInput.value),
     };
   } else if (detectedInput.kind === "lnglatDms") {
     return {
+      type: "point",
       detected: detectedInput,
       lnglat: getLngLatFromLngLatDms(detectedInput.value),
     };
   } else if (detectedInput.kind === "mgrs") {
     return {
+      type: "point",
       detected: detectedInput,
       lnglat: getLngLatFromMgrs(detectedInput.value),
     };
   } else {
     return {
+      type: "address",
       detected: detectedInput,
       getAddressSearchResult: geocodeFromAddress(detectedInput.value),
     };
