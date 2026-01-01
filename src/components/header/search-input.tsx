@@ -15,6 +15,7 @@ import { SearchSuggestList } from "./search-suggest-list";
 export const SearchInput = () => {
   const [input, setInput] = useState("");
   const geocode = useStore((state) => state.geocode);
+  const addressSearchResult = useStore((state) => state.addressSearchResult);
   const isAddressSearchSuggestOpen = useStore(
     (state) => state.isAddressSearchSuggestOpen,
   );
@@ -37,13 +38,16 @@ export const SearchInput = () => {
   }, [geocode, input]);
 
   return (
-    <div>
-      <InputGroup className="h-7 w-120">
+    <div className="h-7">
+      <InputGroup className="h-7 w-80">
         <InputGroupInput
           className="text-sm"
           value={input}
           onChange={(e) => {
             handleInputChange(e.target.value);
+          }}
+          onFocus={() => {
+            setIsAddressSearchSuggestOpen(addressSearchResult !== null);
           }}
           onKeyDown={(e) => {
             if (e.key !== "Enter") return;
@@ -62,7 +66,15 @@ export const SearchInput = () => {
         onOpenChange={setIsAddressSearchSuggestOpen}
       >
         <PopoverTrigger />
-        <PopoverContent className="absolute left-0 -top-5 p-2">
+        <PopoverContent
+          className="absolute left-0 -top-5 p-2 max-w-120"
+          onOpenAutoFocus={(e) => {
+            e.preventDefault();
+          }}
+          onCloseAutoFocus={(e) => {
+            e.preventDefault();
+          }}
+        >
           <SearchSuggestList />
         </PopoverContent>
       </Popover>

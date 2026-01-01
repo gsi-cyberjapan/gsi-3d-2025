@@ -17,7 +17,7 @@ export const Header = () => {
   return (
     <div className="flex border-b py-1 px-2 justify-between">
       <div className="flex items-center gap-4">
-        <Logo />
+        <Logo className="md:block hidden" />
         <SearchInput />
       </div>
       <div className="md:flex items-center gap-2 hidden">
@@ -37,7 +37,7 @@ export const Header = () => {
       </div>
       <DropdownMenu>
         <DropdownMenuTrigger className="md:hidden" asChild>
-          <Button size="icon-sm" variant="outline">
+          <Button size="icon-sm" className="size-7" variant="outline">
             <Menu />
           </Button>
         </DropdownMenuTrigger>

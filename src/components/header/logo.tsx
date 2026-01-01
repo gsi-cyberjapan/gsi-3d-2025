@@ -1,3 +1,7 @@
-export const Logo = () => {
-  return <div className="text-lg font-semibold">地理院地図</div>;
+import { cn } from "@/lib/utils";
+
+export const Logo = ({ className }: { className?: string }) => {
+  return (
+    <div className={cn("text-lg font-semibold", className)}>地理院地図</div>
+  );
 };

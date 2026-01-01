@@ -15,6 +15,7 @@ export interface GeocodingState {
   setIsAddressSearchSuggestOpen: (value: boolean) => void;
   /** ホバーしている住所検索のサジェスト */
   hoveringAddressSearchSuggestId: string | null;
+  setHoveringAddressSearchSuggestId: (candidateId: string | null) => void;
   /** 住所検索のサジェストの選択 */
   setSelectedAddressCandidate: (candidateId: string) => void;
   /** 選択された住所検索のサジェスト */
@@ -39,6 +40,9 @@ export const createGeocodingSlice: StateCreator<
     set({ isAddressSearchSuggestOpen: value });
   },
   hoveringAddressSearchSuggestId: null,
+  setHoveringAddressSearchSuggestId: (candidateId: string | null) => {
+    set({ hoveringAddressSearchSuggestId: candidateId });
+  },
   setSelectedAddressCandidate: (candidateId: string) => {
     const { addressSearchResult: suggest } = get();
     const target = suggest?.candidates.find((c) => c.id === candidateId);
@@ -50,24 +54,22 @@ export const createGeocodingSlice: StateCreator<
     const result = geocode(query);
 
     if (result.type === "point") {
-      console.log("point");
       set({
         resultLngLat: result.lnglat,
       });
       return;
     }
-    console.log("start address search");
 
     set({ isAddressSearchLoading: true, isAddressSearchSuggestOpen: true });
     const addressSearchResult = await result.getAddressSearchResult;
     set({ addressSearchResult, isAddressSearchLoading: false });
-    console.log("end address search");
   },
   clearAddressSearchResult: () => {
     set({
       addressSearchResult: null,
       selectedAddrssCandidate: null,
       hoveringAddressSearchSuggestId: null,
+      isAddressSearchSuggestOpen: false,
     });
   },
 });
