@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { getUTMFromLatLng } from "@/lib/geUTMFromLatLng";
 import { getElevationFromLatLng } from "@/lib/getElevationFromLatLng";
 import { Skeleton } from "../ui/skeleton";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface ViewState {
   latitude: number;
@@ -23,6 +24,7 @@ interface Props {
 export const CenterInfo = ({ mapId }: Props) => {
   const map = useMap()[mapId]?.getMap();
   const [viewState, setViewState] = useState<ViewState | null>(null);
+  const [addressViewMode, setAddressViewMode] = useState("kanji");
   const [stableViewState, setStableViewState] = useState<ViewState | null>(
     null,
   );
@@ -134,38 +136,56 @@ export const CenterInfo = ({ mapId }: Props) => {
     );
   }
   return (
-    <div className="text-xs text-muted-foreground">
-      <div
-        className={cn("font-semibold", {
-          "text-foreground": !isAddressPending && !isMoving,
-        })}
-      >
-        {address || "-"}
+    <div className="flex gap-2 justify-between w-full">
+      <div className="text-xs text-muted-foreground">
+        <div
+          className={cn("font-semibold", {
+            "text-foreground": !isAddressPending && !isMoving,
+          })}
+        >
+          {address || "-"}
+        </div>
+        <table>
+          <tbody>
+            <tr>
+              <td className="pr-2">緯度</td>
+              <td>{viewState.latitude}</td>
+            </tr>
+            <tr>
+              <td className="pr-2">経度</td>
+              <td>{viewState.longitude}</td>
+            </tr>
+            <tr>
+              <td className="pr-2">ズーム</td>
+              <td>{viewState.zoom}</td>
+            </tr>
+            <tr>
+              <td className="pr-2">UTM</td>
+              <td>{utm ?? "-"}</td>
+            </tr>
+            <tr>
+              <td className="pr-2">標高</td>
+              <td>
+                {elevation != undefined ? `${elevation.toString()}m` : "-"}
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-      <table>
-        <tbody>
-          <tr>
-            <td className="pr-2">緯度</td>
-            <td>{viewState.latitude}</td>
-          </tr>
-          <tr>
-            <td className="pr-2">経度</td>
-            <td>{viewState.longitude}</td>
-          </tr>
-          <tr>
-            <td className="pr-2">ズーム</td>
-            <td>{viewState.zoom}</td>
-          </tr>
-          <tr>
-            <td className="pr-2">UTM</td>
-            <td>{utm ?? "-"}</td>
-          </tr>
-          <tr>
-            <td className="pr-2">標高</td>
-            <td>{elevation != undefined ? `${elevation.toString()}m` : "-"}</td>
-          </tr>
-        </tbody>
-      </table>
+      <Tabs
+        defaultValue="account"
+        value={addressViewMode}
+        onValueChange={setAddressViewMode}
+      >
+        <TabsList className="h-6 rounded-sm">
+          <TabsTrigger className="text-xs size-5 rounded-sm" value="kanji">
+            漢
+          </TabsTrigger>
+          <TabsTrigger className="text-xs size-5 rounded-sm" value="kana">
+            あ
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
     </div>
   );
 };

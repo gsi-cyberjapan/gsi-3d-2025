@@ -62,20 +62,6 @@ export const BaseLayerSelector = () => {
               </SelectItem>
             ))}
         </SelectGroup>
-        <SelectGroup>
-          <SelectLabel>Globe</SelectLabel>
-          {baseLayers
-            .filter((l) => l.type === "globe")
-            .map((layer) => (
-              <SelectItem
-                key={layer.id}
-                value={layer.id}
-                className="cursor-pointer"
-              >
-                <BaseLayerSelectItem baseLayer={layer} />
-              </SelectItem>
-            ))}
-        </SelectGroup>
       </SelectContent>
     </Select>
   );
@@ -103,9 +89,7 @@ const BaseLayerSelectItem = ({
         {displayType && (
           <span className="text-muted-foreground">
             {(() => {
-              if (baseLayer.type === "globe") {
-                return "Globe";
-              } else if (baseLayer.type === "raster") {
+              if (baseLayer.type === "raster") {
                 return "Raster";
               } else {
                 return "Vector";
