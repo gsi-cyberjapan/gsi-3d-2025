@@ -1,6 +1,6 @@
 export const GENERAL_CONFIG = {
   /** アプリケーションのタイトル */
-  TITLE: "地理院地図",
+  TITLE: "3次元地図可視化サイト",
   /** アプリケーションの説明 */
   DESCRIPTION: "",
   /** アプリケーションの言語 */
