@@ -152,6 +152,7 @@ const SuggestItem = ({
       onClick={() => {
         setSelectedAddressCandidate(item.id);
         setIsAddressSearchSuggestOpen(false);
+        setHoveringAddressSearchSuggestId(null);
       }}
       onMouseEnter={() => {
         setHoveringAddressSearchSuggestId(item.id);
