@@ -11,16 +11,6 @@ interface RasterBaseLayer {
   minZoom: number;
 }
 
-interface GlobeBaseLayer {
-  id: string;
-  type: "globe";
-  label: string;
-  legendImageUrl: string;
-  errorImageUrl: string;
-  tileUrl: string;
-  maxZoom: number;
-}
-
 interface VectorBaseLayer {
   id: string;
   type: "vector";
@@ -31,7 +21,7 @@ interface VectorBaseLayer {
   minZoom: number;
 }
 
-export type BaseLayer = RasterBaseLayer | GlobeBaseLayer | VectorBaseLayer;
+export type BaseLayer = RasterBaseLayer | VectorBaseLayer;
 
 export const getBaseLayers = (): BaseLayer[] => {
   const baseLayers: BaseLayer[] = [];
@@ -61,16 +51,5 @@ export const getBaseLayers = (): BaseLayer[] => {
     });
   });
 
-  BASE_LAYER_CONFIG.GLOBE_LAYERS.forEach((layer) => {
-    baseLayers.push({
-      id: layer.ID,
-      type: "globe",
-      label: layer.TITLE,
-      legendImageUrl: layer.LEGEND_IMAGE_URL,
-      errorImageUrl: layer.ERROR_TILE_URL,
-      tileUrl: layer.TILE_URL,
-      maxZoom: layer.MAX_ZOOM,
-    });
-  });
   return baseLayers;
 };

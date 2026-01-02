@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/select";
 import { LayoutMode } from "@/hooks/store/mapManagerState";
 import { useStore } from "@/hooks/store/useStore";
-import { Columns2, Layers2, Square } from "lucide-react";
+import { Columns2, Layers2, Map } from "lucide-react";
 import { LayoutDetailButton } from "./layout-detail-button";
 
 export const LayoutSelector = () => {
@@ -63,7 +63,7 @@ const LayoutSelectItem = ({ layoutMode }: LayoutSelectItemProps) => {
         } else {
           return (
             <>
-              <Square />
+              <Map />
               <span>通常</span>
             </>
           );

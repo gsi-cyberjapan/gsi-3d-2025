@@ -9,8 +9,8 @@ import {
 } from "@/components/ui/select";
 import { useStore } from "@/hooks/store/useStore";
 import { MapId } from "@/hooks/store/mapManagerState";
-import { Label } from "../ui/label";
-import { Checkbox } from "../ui/checkbox";
+import { Label } from "../../ui/label";
+import { Checkbox } from "../../ui/checkbox";
 
 export const LayoutDetailSplit = () => {
   const focusMapId = useStore((state) => state.focusMapId);

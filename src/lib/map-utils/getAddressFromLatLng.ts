@@ -10,6 +10,12 @@ interface GsiReverseResult {
   };
 }
 
+// TODO 下記のレスポンスを返却するようにする
+// interface AddressResult {
+//   kana: string;
+//   kanji: string;
+// }
+
 export async function getAddressFromLatLng(
   lat: number,
   lon: number,

@@ -24,25 +24,6 @@ export const buildStyleFromBaseLayer = (
         },
       ],
     };
-  } else if (baseLayer.type === "globe") {
-    return {
-      version: 8,
-      sources: {
-        [baseLayer.id]: {
-          type: "raster",
-          tiles: [baseLayer.tileUrl],
-          tileSize: 256,
-          maxzoom: baseLayer.maxZoom,
-        },
-      },
-      layers: [
-        {
-          id: `${baseLayer.id}-layer`,
-          type: "raster",
-          source: baseLayer.id,
-        },
-      ],
-    };
   } else {
     return baseLayer.styleUrl;
   }

@@ -4,10 +4,11 @@ import {
   SidebarGroup,
   SidebarFooter,
 } from "@/components/ui/sidebar";
-import { BaseLayerSelector } from "../map-control/base-layer-selector";
-import { LayoutSelector } from "../layout-control/layout-selector";
-import { OptionalLayerSelector } from "../map-control/optional-layer-selector";
-import { OptionalLayerControler } from "../map-control/optional-layer-controler";
+import { BaseLayerSelector } from "./base-layer-selector";
+import { LayoutSelector } from "./layout-control/layout-selector";
+import { OptionalLayerSelector } from "./optional-layer/optional-layer-selector";
+import { OptionalLayerControler } from "./optional-layer/optional-layer-controler";
+import { GlobeModeCheckbox } from "./globe-mode-checkbox";
 
 export const Sidebar = () => {
   return (
@@ -36,6 +37,7 @@ export const Sidebar = () => {
         <div className="flex flex-col gap-1">
           <span className="text-xs text-muted-foreground">表示モード</span>
           <LayoutSelector />
+          <GlobeModeCheckbox />
         </div>
       </SidebarFooter>
     </UISidebar>

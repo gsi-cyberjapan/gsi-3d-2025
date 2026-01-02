@@ -12,13 +12,13 @@ interface Props {
 
 export const ZoomLevelController = ({ mapId }: Props) => {
   const map = useMap()[mapId]?.getMap();
-  const baseLayer = useStore((state) => state.maps[mapId].baseLayer);
+  const projection = useStore((state) => state.maps[mapId].projection);
 
   useEffect(() => {
     if (!map) return;
     const currentZoom = map.getZoom();
 
-    if (baseLayer.type === "globe") {
+    if (projection === "globe") {
       if (currentZoom > ZOOM_CONFIG.GLOBE_MAX_ZOOM) {
         map.setZoom(ZOOM_CONFIG.GLOBE_MAX_ZOOM);
       } else if (currentZoom < ZOOM_CONFIG.GLOBE_MIN_ZOOM) {
@@ -40,7 +40,7 @@ export const ZoomLevelController = ({ mapId }: Props) => {
       map.setMinZoom(null);
       map.setMaxZoom(null);
     };
-  }, [baseLayer, map]);
+  }, [projection, map]);
 
   return null;
 };
