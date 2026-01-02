@@ -199,8 +199,8 @@ export interface AddressSearchResult {
     lnglat: LngLat;
     title: string;
     subTitle: string;
-    prefCode: number;
-    cityCode: number;
+    prefCode: string;
+    cityCode: string;
     isResidentialAreaName: boolean;
   }[];
 }
@@ -273,15 +273,15 @@ const geocodeFromAddress = async (
         const prefName = addressParts[0] || "";
         const cityName = addressParts[1] || "";
 
-        let prefCode = 0;
-        let cityCode = 0;
+        let prefCode = "";
+        let cityCode = "";
         if (muniData) {
           const entry = Object.values(muniData).find(
             (m) => m.prefName === prefName && m.cityName === cityName,
           );
           if (entry) {
-            prefCode = parseInt(entry.prefCode, 10);
-            cityCode = parseInt(entry.cityCode, 10);
+            prefCode = entry.prefCode;
+            cityCode = entry.cityCode;
           }
         }
 

@@ -30,19 +30,19 @@ export const SearchSuggestList = () => {
     cityCode: "all",
     type: "all",
   });
+  const filteredSearchResult = searchResult?.candidates.filter(
+    ({ prefCode, cityCode, isResidentialAreaName }) =>
+      (filterOption.prefCode === "all" || prefCode === filterOption.prefCode) &&
+      (filterOption.cityCode === "all" || cityCode === filterOption.cityCode) &&
+      (filterOption.type === "all" ||
+        (filterOption.type === "place" && isResidentialAreaName) ||
+        (filterOption.type === "not-place" && !isResidentialAreaName)),
+  );
 
   if (isLoading) {
     return (
       <div className="h-70 w-full flex items-center justify-center text-muted-foreground">
         <Spinner />
-      </div>
-    );
-  }
-
-  if (searchResult?.candidates.length === 0) {
-    return (
-      <div className="h-70 w-full flex items-center justify-center text-muted-foreground text-xs">
-        入力された住所は見つかりませんでした
       </div>
     );
   }
@@ -55,7 +55,11 @@ export const SearchSuggestList = () => {
           className="cursor-pointer"
           value={filterOption.prefCode}
           onChange={(e) => {
-            setFilterOption({ ...filterOption, prefCode: e.target.value });
+            setFilterOption({
+              ...filterOption,
+              prefCode: e.target.value,
+              cityCode: "all",
+            });
           }}
         >
           <NativeSelectOption value="all">都道府県</NativeSelectOption>
@@ -112,9 +116,14 @@ export const SearchSuggestList = () => {
         </NativeSelect>
       </div>
       <div className="overflow-y-scroll scrollbar-transparent-thin max-h-[38vh] px-1">
-        {searchResult?.candidates.map((suggest) => (
+        {filteredSearchResult?.map((suggest) => (
           <SuggestItem key={suggest.id} item={suggest} />
         ))}
+        {filteredSearchResult?.length === 0 && (
+          <div className="h-50 w-full flex items-center justify-center text-muted-foreground text-xs">
+            入力された住所は見つかりませんでした
+          </div>
+        )}
       </div>
     </div>
   );
