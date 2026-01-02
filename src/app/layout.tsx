@@ -35,7 +35,7 @@ const RootLayout = ({
           content="width=device-width,initial-scale=1.0,maximum-scale=1.0"
         />
       </head>
-      <body className="antialiased">
+      <body className="antialiased overscroll-none">
         <QueryProvider>
           <ThemeProvider
             attribute="class"

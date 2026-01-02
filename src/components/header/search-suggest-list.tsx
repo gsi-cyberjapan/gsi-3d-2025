@@ -49,7 +49,7 @@ export const SearchSuggestList = () => {
 
   return (
     <div className="w-full">
-      <div className="flex gap-2 p-2">
+      <div className="grid grid-cols-2 md:grid-cols-3 auto-cols-auto gap-2 p-2 **:data-[slot=native-select-wrapper]:flex-1 **:data-[slot=native-select-wrapper]:min-w-0">
         <NativeSelect
           size="xs"
           className="cursor-pointer"
