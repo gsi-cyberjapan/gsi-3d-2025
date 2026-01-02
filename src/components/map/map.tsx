@@ -32,12 +32,12 @@ export const Map = ({ mapId, className, opacity }: Props) => {
   const baseLayer = useStore((state) => state.maps[mapId].baseLayer);
   const [mapLib, setMapLib] = useState<MapLibreType | null>(null);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
+  const projection = useStore((state) => state.maps[mapId].projection);
   const showLoading = !mapLib || !isMapLoaded;
   const mapStyle = useMemo(
     () => buildStyleFromBaseLayer(baseLayer),
     [baseLayer],
   );
-  const projection = "mercator";
 
   useEffect(() => {
     let cancelled = false;

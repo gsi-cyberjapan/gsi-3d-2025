@@ -12,16 +12,21 @@ interface OptionalLayerEntry {
   maxZoom?: number;
 }
 
+type Projection = "mercator" | "globe";
+
 export interface MapState {
   /** ベースとなるレイヤー */
   baseLayer: BaseLayer;
   /** オプションレイヤー */
   optionalLayers: OptionalLayerEntry[];
+  /** 投影モード */
+  projection: Projection;
 }
 
 export const MAP_INITIAL_STATE: MapState = {
   baseLayer: getBaseLayers()[0],
   optionalLayers: [],
+  projection: "mercator",
 };
 
 export interface MapStateWrapper {
@@ -43,6 +48,8 @@ export interface MapStateWrapper {
     mapId: MapId;
     layers: OptionalLayerEntry[];
   }) => void;
+  /** 投影モードの切り替え */
+  setProjection: ({ mapId, mode }: { mapId: MapId; mode: Projection }) => void;
 }
 
 export const createMapSlice: StateCreator<
@@ -76,6 +83,19 @@ export const createMapSlice: StateCreator<
           [mapId]: {
             ...state.maps[mapId],
             optionalLayers: layers,
+          },
+        },
+      };
+    });
+  },
+  setProjection: ({ mapId, mode }) => {
+    set((state) => {
+      return {
+        maps: {
+          ...state.maps,
+          [mapId]: {
+            ...state.maps[mapId],
+            projection: mode,
           },
         },
       };
