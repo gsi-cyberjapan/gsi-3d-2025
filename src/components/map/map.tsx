@@ -37,10 +37,7 @@ export const Map = ({ mapId, className, opacity }: Props) => {
     () => buildStyleFromBaseLayer(baseLayer),
     [baseLayer],
   );
-  const projection = useMemo(
-    () => (baseLayer.type === "globe" ? "globe" : "mercator"),
-    [baseLayer.type],
-  );
+  const projection = "mercator";
 
   useEffect(() => {
     let cancelled = false;

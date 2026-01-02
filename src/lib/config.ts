@@ -125,59 +125,6 @@ export const BASE_LAYER_CONFIG = {
       MAX_ZOOM: 17,
     },
   ],
-
-  /** Globeのベースレイヤー */
-  GLOBE_LAYERS: [
-    {
-      ID: "std-globe",
-      TITLE: "標準地図",
-      LEGEND_IMAGE_URL:
-        "https://cyberjapandata.gsi.go.jp/xyz/std/18/232801/103215.png",
-      TILE_URL: "https://maps.gsi.go.jp/xyz/std/{z}/{x}/{y}.png?_=20191214c",
-      ERROR_TILE_URL:
-        "https://raw.githubusercontent.com/gsi-cyberjapan/gsimaps/refs/heads/gh-pages/image/map/no-data-std.png",
-      MAX_ZOOM: 18,
-    },
-    {
-      ID: "pale-globe",
-      TITLE: "淡色地図",
-      LEGEND_IMAGE_URL:
-        "https://cyberjapandata.gsi.go.jp/xyz/pale/18/232801/103215.png",
-      TILE_URL: "https://maps.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png?_=20191214c",
-      ERROR_TILE_URL:
-        "https://raw.githubusercontent.com/gsi-cyberjapan/gsimaps/refs/heads/gh-pages/image/map/no-data-pale.png",
-      MAX_ZOOM: 18,
-    },
-    {
-      ID: "blank-globe",
-      TITLE: "白地図",
-      LEGEND_IMAGE_URL: "https://maps.gsi.go.jp/xyz/blank/14/14550/6447.png",
-      TILE_URL: "https://maps.gsi.go.jp/xyz/blank/{z}/{x}/{y}.png?_=20191214c",
-      ERROR_TILE_URL:
-        "https://raw.githubusercontent.com/gsi-cyberjapan/gsimaps/refs/heads/gh-pages/image/map/no-data-blank.png",
-      MAX_ZOOM: 18,
-    },
-    {
-      ID: "english-globe",
-      TITLE: "English",
-      LEGEND_IMAGE_URL: "https://maps.gsi.go.jp/xyz/english/11/1815/806.png",
-      TILE_URL:
-        "https://maps.gsi.go.jp/xyz/english/{z}/{x}/{y}.png?_=20191214c",
-      ERROR_TILE_URL:
-        "https://raw.githubusercontent.com/gsi-cyberjapan/gsimaps/refs/heads/gh-pages/image/map/no-data-english.png",
-      MAX_ZOOM: 18,
-    },
-    {
-      ID: "photo-globe",
-      TITLE: "写真",
-      LEGEND_IMAGE_URL:
-        "https://maps.gsi.go.jp/xyz/seamlessphoto/18/232801/103215.jpg",
-      TILE_URL: "https://maps.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg",
-      ERROR_TILE_URL:
-        "https://raw.githubusercontent.com/gsi-cyberjapan/gsimaps/refs/heads/gh-pages/image/map/no-data-ort.png",
-      MAX_ZOOM: 18,
-    },
-  ],
 } as const;
 
 export const OPTIONAL_LAYER_CONFIG = {
