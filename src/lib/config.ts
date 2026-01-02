@@ -66,16 +66,6 @@ export const BASE_LAYER_CONFIG = {
       MIN_ZOOM: 4,
       MAX_ZOOM: 16,
     },
-    {
-      ID: "photo-vector",
-      TITLE: "写真",
-      LEGEND_IMAGE_URL:
-        "http://raw.githubusercontent.com/gsi-cyberjapan/3dpc-3dtiles/refs/heads/main/public/images/seamlessphoto.png",
-      STYLE_URL:
-        "https://raw.githubusercontent.com/gsi-cyberjapan/3dpc-3dtiles/refs/heads/main/public/styles/seamlessphoto.json",
-      MIN_ZOOM: 4,
-      MAX_ZOOM: 16,
-    },
   ],
 
   /** Rasterのベースレイヤー */
