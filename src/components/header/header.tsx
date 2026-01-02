@@ -15,10 +15,10 @@ import { SearchInput } from "./search-input";
 
 export const Header = () => {
   return (
-    <div className="flex border-b py-1 px-2 justify-between">
-      <div className="flex items-center gap-4">
+    <div className="flex border-b py-1 px-2 gap-2 justify-between">
+      <div className="flex items-center gap-4 flex-1">
         <Logo className="md:block hidden" />
-        <SearchInput />
+        <SearchInput className="flex-1" />
       </div>
       <div className="md:flex items-center gap-2 hidden">
         <DropdownMenu>

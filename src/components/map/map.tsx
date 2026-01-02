@@ -15,6 +15,7 @@ import { ZoomLevelController } from "./zoom-level-controller";
 import { PositionSyncController } from "./position-sync-controller";
 import { OptionalLayers } from "./optional-layers";
 import { MapCenterLine } from "./map-center-line";
+import { SearchResultController } from "./search-result-controller";
 
 const ReactMaplibre = dynamic(
   () => import("react-map-gl/maplibre").then((m) => m.Map),
@@ -89,6 +90,7 @@ export const Map = ({ mapId, className, opacity }: Props) => {
             <OptionalLayers mapId={mapId} />
             {/* Mapインスタンスを直接操作するコンポーネント */}
             <ZoomLevelController mapId={mapId} />
+            <SearchResultController />
             <PositionSyncController />
           </ReactMaplibre>
         </div>

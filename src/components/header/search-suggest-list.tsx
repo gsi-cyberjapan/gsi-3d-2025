@@ -131,6 +131,10 @@ const SuggestItem = ({
   const setHoveringAddressSearchSuggestId = useStore(
     (state) => state.setHoveringAddressSearchSuggestId,
   );
+  const setIsAddressSearchSuggestOpen = useStore(
+    (state) => state.setIsAddressSearchSuggestOpen,
+  );
+
   return (
     <Button
       className="w-full p-0 justify-start px-1 rounded-xs"
@@ -138,6 +142,7 @@ const SuggestItem = ({
       size="xs"
       onClick={() => {
         setSelectedAddressCandidate(item.id);
+        setIsAddressSearchSuggestOpen(false);
       }}
       onMouseEnter={() => {
         setHoveringAddressSearchSuggestId(item.id);
