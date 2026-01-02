@@ -47,7 +47,7 @@ export const createGeocodingSlice: StateCreator<
     const { addressSearchResult: suggest } = get();
     const target = suggest?.candidates.find((c) => c.id === candidateId);
     if (!target) return;
-    set({ selectedAddrssCandidate: target });
+    set({ selectedAddrssCandidate: target, resultLngLat: target.lnglat });
   },
   selectedAddrssCandidate: null,
   geocode: async (query) => {
