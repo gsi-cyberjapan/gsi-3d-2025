@@ -1,3 +1,5 @@
+"use client";
+
 import { Logo } from "./logo";
 import { Button } from "../ui/button";
 import Link from "next/link";
@@ -12,8 +14,11 @@ import {
 import { GENERAL_CONFIG } from "@/lib/config";
 import { SettingDropdownContent } from "./setting-dropdown-content";
 import { ButtonGroup } from "../ui/button-group";
+import { useStore } from "@/hooks/store/useStore";
 
 export const Header = () => {
+  const setIsDrawWindowOpen = useStore((state) => state.setIsDrawWindowOpen);
+
   return (
     <div className="flex border-b py-1 px-2 justify-between">
       <Logo />
@@ -22,7 +27,13 @@ export const Header = () => {
           <Button size="xs" variant="outline">
             <Ruler /> 計測
           </Button>
-          <Button size="xs" variant="outline">
+          <Button
+            size="xs"
+            variant="outline"
+            onClick={() => {
+              setIsDrawWindowOpen(true);
+            }}
+          >
             <Pen /> 作図
           </Button>
           <DropdownMenu>
