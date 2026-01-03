@@ -60,16 +60,25 @@ const useDraggable = (defaultPosition?: { x: number; y: number }) => {
       }
 
       rafId = requestAnimationFrame(() => {
-        const newPos = {
-          x: e.clientX - dragStartPos.current.x,
-          y: e.clientY - dragStartPos.current.y,
-        };
+        const element = elementRef.current;
+        if (!element) return;
+
+        const rect = element.getBoundingClientRect();
+        let x = e.clientX - dragStartPos.current.x;
+        let y = e.clientY - dragStartPos.current.y;
+
+        // 画面外に出ないように制限
+        const maxX = window.innerWidth - rect.width;
+        const maxY = window.innerHeight - rect.height;
+
+        x = Math.max(0, Math.min(x, maxX));
+        y = Math.max(0, Math.min(y, maxY));
+
+        const newPos = { x, y };
         currentPos.current = newPos;
 
-        if (elementRef.current) {
-          elementRef.current.style.left = `${newPos.x.toString()}px`;
-          elementRef.current.style.top = `${newPos.y.toString()}px`;
-        }
+        element.style.left = `${newPos.x.toString()}px`;
+        element.style.top = `${newPos.y.toString()}px`;
       });
     };
 
