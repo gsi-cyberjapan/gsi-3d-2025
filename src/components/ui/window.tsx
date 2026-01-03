@@ -108,6 +108,8 @@ export const Window = ({
   const [position, setPosition] = React.useState(
     defaultPosition ?? getDefaultPosition(),
   );
+  const [isVisible, setIsVisible] = React.useState(false);
+  const [shouldRender, setShouldRender] = React.useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -126,7 +128,26 @@ export const Window = ({
     }));
   }, []);
 
-  if (!isOpen) return null;
+  React.useEffect(() => {
+    if (isOpen) {
+      setShouldRender(true);
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setIsVisible(true);
+        });
+      });
+    } else {
+      setIsVisible(false);
+      const timer = setTimeout(() => {
+        setShouldRender(false);
+      }, 200);
+      return () => {
+        clearTimeout(timer);
+      };
+    }
+  }, [isOpen]);
+
+  if (!shouldRender) return null;
 
   const windowContent = (
     <DndContext
@@ -137,7 +158,11 @@ export const Window = ({
       <DraggableContent
         title={title}
         onClose={onClose}
-        className={className}
+        className={cn(
+          className,
+          "transition-opacity duration-200",
+          isVisible ? "opacity-100" : "opacity-0",
+        )}
         position={position}
       >
         {children}
