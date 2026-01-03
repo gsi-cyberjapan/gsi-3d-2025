@@ -9,7 +9,7 @@ export const DrawWindow = () => {
 
   return (
     <Window
-      title="テスト"
+      title="作図"
       isOpen={isDrawWindowOpen}
       onClose={() => {
         setIsDrawWindowOpen(false);

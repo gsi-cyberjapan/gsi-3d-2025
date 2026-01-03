@@ -2,8 +2,19 @@
 
 import * as React from "react";
 import { createPortal } from "react-dom";
-import { XIcon, GripHorizontalIcon } from "lucide-react";
+import { XIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  DndContext,
+  useDraggable,
+  type DragEndEvent,
+  PointerSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import { CSS } from "@dnd-kit/utilities";
+import { restrictToWindowEdges } from "@dnd-kit/modifiers";
 
 interface WindowProps {
   title: string;
@@ -22,88 +33,85 @@ const getDefaultPosition = () => {
   };
 };
 
-const useDraggable = (defaultPosition?: { x: number; y: number }) => {
-  const [position, setPosition] = React.useState(
-    defaultPosition ?? getDefaultPosition(),
-  );
-  const [isDragging, setIsDragging] = React.useState(false);
-  const elementRef = React.useRef<HTMLDivElement>(null);
-  const dragStartPos = React.useRef({ x: 0, y: 0 });
-  const currentPos = React.useRef({ x: 0, y: 0 });
+const DraggableWindowContent = React.memo(({
+  title,
+  onClose,
+  children,
+  className,
+  isVisible,
+  position,
+}: {
+  title: string;
+  onClose?: () => void;
+  children?: React.ReactNode;
+  className?: string;
+  isVisible: boolean;
+  position: { x: number; y: number };
+}) => {
+  const { attributes, listeners, setNodeRef, transform, isDragging } =
+    useDraggable({
+      id: "window",
+    });
 
-  React.useEffect(() => {
-    if (!defaultPosition) {
-      const pos = getDefaultPosition();
-      setPosition(pos);
-      currentPos.current = pos;
-    } else {
-      currentPos.current = defaultPosition;
-    }
-  }, [defaultPosition]);
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    setIsDragging(true);
-    dragStartPos.current = {
-      x: e.clientX - currentPos.current.x,
-      y: e.clientY - currentPos.current.y,
-    };
+  const style: React.CSSProperties = {
+    top: `${position.y.toString()}px`,
+    left: `${position.x.toString()}px`,
+    transform: CSS.Transform.toString(transform),
+    willChange: isDragging ? "transform" : undefined,
   };
 
-  React.useEffect(() => {
-    if (!isDragging) return;
+  return (
+    <div
+      ref={setNodeRef}
+      className={cn(
+        "bg-background fixed z-9999 flex min-w-[300px] flex-col rounded-lg border shadow-lg",
+        "origin-center [backface-visibility:hidden] [transform-style:preserve-3d]",
+        isVisible
+          ? "animate-in fade-in-0 zoom-in-95"
+          : "animate-out fade-out-0 zoom-out-95",
+        isDragging && "cursor-grabbing shadow-2xl",
+        className,
+      )}
+      style={style}
+    >
+      {/* Header - Draggable */}
+      <div
+        className={cn(
+          "flex items-center justify-between gap-2 rounded-t-lg border-b px-2 py-1 bg-input/30",
+          "cursor-grab active:cursor-grabbing",
+          "select-none",
+        )}
+        style={{ touchAction: "none" }}
+        {...attributes}
+        {...listeners}
+      >
+        <div className="flex items-center gap-2">
+          <h2 className="text-sm font-semibold leading-none">{title}</h2>
+        </div>
+        {onClose && (
+          <button
+            onClick={onClose}
+            className={cn(
+              "ring-offset-background focus:ring-ring hover:bg-accent hover:text-accent-foreground",
+              "rounded-xs opacity-70 transition-opacity hover:opacity-100",
+              "focus:ring-2 focus:ring-offset-2 focus:outline-hidden",
+              "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+            )}
+            type="button"
+          >
+            <XIcon />
+            <span className="sr-only">Close</span>
+          </button>
+        )}
+      </div>
 
-    let rafId: number;
+      {/* Content */}
+      <div className="flex-1 p-2">{children}</div>
+    </div>
+  );
+});
 
-    const handleMouseMove = (e: MouseEvent) => {
-      if (rafId) {
-        cancelAnimationFrame(rafId);
-      }
-
-      rafId = requestAnimationFrame(() => {
-        const element = elementRef.current;
-        if (!element) return;
-
-        const rect = element.getBoundingClientRect();
-        let x = e.clientX - dragStartPos.current.x;
-        let y = e.clientY - dragStartPos.current.y;
-
-        // 画面外に出ないように制限
-        const maxX = window.innerWidth - rect.width;
-        const maxY = window.innerHeight - rect.height;
-
-        x = Math.max(0, Math.min(x, maxX));
-        y = Math.max(0, Math.min(y, maxY));
-
-        const newPos = { x, y };
-        currentPos.current = newPos;
-
-        element.style.left = `${newPos.x.toString()}px`;
-        element.style.top = `${newPos.y.toString()}px`;
-      });
-    };
-
-    const handleMouseUp = () => {
-      setIsDragging(false);
-      setPosition(currentPos.current);
-      if (rafId) {
-        cancelAnimationFrame(rafId);
-      }
-    };
-
-    document.addEventListener("mousemove", handleMouseMove);
-    document.addEventListener("mouseup", handleMouseUp);
-
-    return () => {
-      document.removeEventListener("mousemove", handleMouseMove);
-      document.removeEventListener("mouseup", handleMouseUp);
-      if (rafId) {
-        cancelAnimationFrame(rafId);
-      }
-    };
-  }, [isDragging]);
-
-  return { position, elementRef, handleMouseDown, isDragging };
-};
+DraggableWindowContent.displayName = "DraggableWindowContent";
 
 export const Window = ({
   title,
@@ -113,15 +121,39 @@ export const Window = ({
   className,
   defaultPosition,
 }: WindowProps) => {
-  const { position, elementRef, handleMouseDown, isDragging } =
-    useDraggable(defaultPosition);
   const [isVisible, setIsVisible] = React.useState(isOpen);
   const [shouldRender, setShouldRender] = React.useState(isOpen);
   const [mounted, setMounted] = React.useState(false);
+  const [position, setPosition] = React.useState(
+    defaultPosition ?? getDefaultPosition(),
+  );
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 8 },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: { delay: 0, tolerance: 5 },
+    }),
+  );
+
+  const handleDragEnd = React.useCallback((event: DragEndEvent) => {
+    const { delta } = event;
+    setPosition((prev) => ({
+      x: prev.x + delta.x,
+      y: prev.y + delta.y,
+    }));
+  }, []);
 
   React.useEffect(() => {
     setMounted(true);
   }, []);
+
+  React.useEffect(() => {
+    if (!defaultPosition) {
+      setPosition(getDefaultPosition());
+    }
+  }, [defaultPosition]);
 
   React.useEffect(() => {
     if (isOpen) {
@@ -143,56 +175,21 @@ export const Window = ({
   if (!mounted || !shouldRender) return null;
 
   const windowContent = (
-    <div
-      ref={elementRef}
-      className={cn(
-        "bg-background fixed z-[9999] flex min-w-[300px] flex-col rounded-lg border shadow-lg",
-        "origin-center",
-        !isDragging && "transition-all duration-200",
-        isVisible
-          ? "animate-in fade-in-0 zoom-in-95"
-          : "animate-out fade-out-0 zoom-out-95",
-        isDragging && "cursor-grabbing shadow-2xl transition-none",
-        className,
-      )}
-      style={{
-        top: `${position.y.toString()}px`,
-        left: `${position.x.toString()}px`,
-      }}
+    <DndContext
+      sensors={sensors}
+      modifiers={[restrictToWindowEdges]}
+      onDragEnd={handleDragEnd}
     >
-      {/* Header - Draggable */}
-      <div
-        className={cn(
-          "flex items-center justify-between gap-2 rounded-t-lg border-b px-4 py-3",
-          "cursor-grab active:cursor-grabbing",
-          "select-none",
-        )}
-        onMouseDown={handleMouseDown}
+      <DraggableWindowContent
+        title={title}
+        onClose={onClose}
+        className={className}
+        isVisible={isVisible}
+        position={position}
       >
-        <div className="flex items-center gap-2">
-          <GripHorizontalIcon className="text-muted-foreground size-4" />
-          <h2 className="text-sm font-semibold leading-none">{title}</h2>
-        </div>
-        {onClose && (
-          <button
-            onClick={onClose}
-            className={cn(
-              "ring-offset-background focus:ring-ring hover:bg-accent hover:text-accent-foreground",
-              "rounded-xs opacity-70 transition-opacity hover:opacity-100",
-              "focus:ring-2 focus:ring-offset-2 focus:outline-hidden",
-              "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-            )}
-            type="button"
-          >
-            <XIcon />
-            <span className="sr-only">Close</span>
-          </button>
-        )}
-      </div>
-
-      {/* Content */}
-      <div className="flex-1 p-4">{children}</div>
-    </div>
+        {children}
+      </DraggableWindowContent>
+    </DndContext>
   );
 
   return createPortal(windowContent, document.body);

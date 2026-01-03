@@ -64,7 +64,11 @@ export const Header = () => {
                 <Ruler /> 計測
               </div>
             </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                setIsDrawWindowOpen(true);
+              }}
+            >
               <div className="flex gap-2 items-center">
                 <Pen /> 作図
               </div>
