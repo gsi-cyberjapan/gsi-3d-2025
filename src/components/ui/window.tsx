@@ -33,87 +33,69 @@ const getDefaultPosition = () => {
   };
 };
 
-const DraggableWindowContent = React.memo(
-  ({
-    title,
-    onClose,
-    children,
-    className,
-    isVisible,
-    position,
-  }: {
-    title: string;
-    onClose?: () => void;
-    children?: React.ReactNode;
-    className?: string;
-    isVisible: boolean;
-    position: { x: number; y: number };
-  }) => {
-    const { attributes, listeners, setNodeRef, transform, isDragging } =
-      useDraggable({
-        id: "window",
-      });
+const DraggableContent = ({
+  title,
+  onClose,
+  children,
+  className,
+  position,
+}: {
+  title: string;
+  onClose?: () => void;
+  children?: React.ReactNode;
+  className?: string;
+  position: { x: number; y: number };
+}) => {
+  const { attributes, listeners, setNodeRef, transform, isDragging } =
+    useDraggable({ id: "window" });
 
-    const style: React.CSSProperties = {
-      top: `${position.y.toString()}px`,
-      left: `${position.x.toString()}px`,
-      transform: CSS.Transform.toString(transform),
-      willChange: isDragging ? "transform" : undefined,
-    };
+  const style: React.CSSProperties = {
+    top: `${position.y.toString()}px`,
+    left: `${position.x.toString()}px`,
+    transform: CSS.Transform.toString(transform),
+    willChange: isDragging ? "transform" : undefined,
+  };
 
-    return (
+  return (
+    <div
+      ref={setNodeRef}
+      className={cn(
+        "fixed z-9999 flex min-w-[300px] flex-col rounded-lg border bg-background shadow-lg",
+        isDragging && "cursor-grabbing shadow-2xl",
+        className,
+      )}
+      style={style}
+    >
       <div
-        ref={setNodeRef}
         className={cn(
-          "bg-background fixed z-9999 flex min-w-[300px] flex-col rounded-lg border shadow-lg",
-          "origin-center [backface-visibility:hidden] [transform-style:preserve-3d]",
-          isVisible
-            ? "animate-in fade-in-0 zoom-in-95"
-            : "animate-out fade-out-0 zoom-out-95",
-          isDragging && "cursor-grabbing shadow-2xl",
-          className,
+          "flex items-center justify-between gap-2 rounded-t-lg border-b bg-input/30 px-2 py-1",
+          "cursor-grab select-none active:cursor-grabbing",
         )}
-        style={style}
+        style={{ touchAction: "none" }}
+        {...attributes}
+        {...listeners}
       >
-        {/* Header - Draggable */}
-        <div
-          className={cn(
-            "flex items-center justify-between gap-2 rounded-t-lg border-b px-2 py-1 bg-input/30",
-            "cursor-grab active:cursor-grabbing",
-            "select-none",
-          )}
-          style={{ touchAction: "none" }}
-          {...attributes}
-          {...listeners}
-        >
-          <div className="flex items-center gap-2">
-            <h2 className="text-sm font-semibold leading-none">{title}</h2>
-          </div>
-          {onClose && (
-            <button
-              onClick={onClose}
-              className={cn(
-                "ring-offset-background focus:ring-ring hover:bg-accent hover:text-accent-foreground",
-                "rounded-xs opacity-70 transition-opacity hover:opacity-100",
-                "focus:ring-2 focus:ring-offset-2 focus:outline-hidden",
-                "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-              )}
-              type="button"
-            >
-              <XIcon />
-              <span className="sr-only">Close</span>
-            </button>
-          )}
-        </div>
-
-        {/* Content */}
-        <div className="flex-1 p-2">{children}</div>
+        <h2 className="text-sm font-semibold leading-none">{title}</h2>
+        {onClose && (
+          <button
+            onClick={onClose}
+            className={cn(
+              "rounded-xs opacity-70 transition-opacity hover:opacity-100",
+              "hover:bg-accent hover:text-accent-foreground",
+              "focus:outline-hidden focus:ring-2 focus:ring-ring focus:ring-offset-2 ring-offset-background",
+              "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+            )}
+            type="button"
+          >
+            <XIcon />
+            <span className="sr-only">Close</span>
+          </button>
+        )}
       </div>
-    );
-  },
-);
-
-DraggableWindowContent.displayName = "DraggableWindowContent";
+      <div className="flex-1 p-2">{children}</div>
+    </div>
+  );
+};
 
 export const Window = ({
   title,
@@ -123,9 +105,6 @@ export const Window = ({
   className,
   defaultPosition,
 }: WindowProps) => {
-  const [isVisible, setIsVisible] = React.useState(isOpen);
-  const [shouldRender, setShouldRender] = React.useState(isOpen);
-  const [mounted, setMounted] = React.useState(false);
   const [position, setPosition] = React.useState(
     defaultPosition ?? getDefaultPosition(),
   );
@@ -147,34 +126,7 @@ export const Window = ({
     }));
   }, []);
 
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  React.useEffect(() => {
-    if (!defaultPosition) {
-      setPosition(getDefaultPosition());
-    }
-  }, [defaultPosition]);
-
-  React.useEffect(() => {
-    if (isOpen) {
-      setShouldRender(true);
-      requestAnimationFrame(() => {
-        setIsVisible(true);
-      });
-    } else {
-      setIsVisible(false);
-      const timer = setTimeout(() => {
-        setShouldRender(false);
-      }, 200);
-      return () => {
-        clearTimeout(timer);
-      };
-    }
-  }, [isOpen]);
-
-  if (!mounted || !shouldRender) return null;
+  if (!isOpen) return null;
 
   const windowContent = (
     <DndContext
@@ -182,15 +134,14 @@ export const Window = ({
       modifiers={[restrictToWindowEdges]}
       onDragEnd={handleDragEnd}
     >
-      <DraggableWindowContent
+      <DraggableContent
         title={title}
         onClose={onClose}
         className={className}
-        isVisible={isVisible}
         position={position}
       >
         {children}
-      </DraggableWindowContent>
+      </DraggableContent>
     </DndContext>
   );
 
