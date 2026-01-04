@@ -4,7 +4,14 @@ import { MapId } from "@/hooks/store/mapManagerState";
 import { useStore } from "@/hooks/store/useStore";
 import { useEffect, useRef } from "react";
 import { useMap } from "react-map-gl/maplibre";
-import { TerraDraw, TerraDrawMarkerMode } from "terra-draw";
+import {
+  TerraDraw,
+  TerraDrawCircleMode,
+  TerraDrawPointMode,
+  TerraDrawLineStringMode,
+  TerraDrawFreehandLineStringMode,
+  TerraDrawPolygonMode,
+} from "terra-draw";
 import { TerraDrawMapLibreGLAdapter } from "terra-draw-maplibre-gl-adapter";
 
 export const DrawController = ({ mapId }: { mapId: MapId }) => {
@@ -31,7 +38,13 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
       if (drawRef.current) return;
       const draw = new TerraDraw({
         adapter: new TerraDrawMapLibreGLAdapter({ map }),
-        modes: [new TerraDrawMarkerMode()],
+        modes: [
+          new TerraDrawPointMode(),
+          new TerraDrawCircleMode(),
+          new TerraDrawLineStringMode(),
+          new TerraDrawFreehandLineStringMode(),
+          new TerraDrawPolygonMode(),
+        ],
       });
       drawRef.current = draw;
       draw.start();

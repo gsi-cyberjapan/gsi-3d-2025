@@ -2,18 +2,18 @@ import { StateCreator } from "zustand";
 import { GlobalState } from "./useStore";
 
 export type DrawMode =
-  | "marker"
-  | "line"
-  | "freehand"
+  | "point"
+  | "linestring"
+  | "freehand-linestring"
   | "polygon"
   | "text"
   | "circle"
   | "select";
 
 const DRAW_MODES = [
-  "marker",
-  "line",
-  "freehand",
+  "point",
+  "linestring",
+  "freehand-linestring",
   "polygon",
   "text",
   "circle",
@@ -44,7 +44,7 @@ export const createDrawSlice: StateCreator<GlobalState, [], [], DrawState> = (
       };
     });
   },
-  drawMode: "marker",
+  drawMode: "point",
   setDrawMode: (mode) => {
     set(() => {
       return {
