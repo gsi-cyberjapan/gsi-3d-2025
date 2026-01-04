@@ -24,6 +24,8 @@ export const isDrawMode = (v: string): v is DrawMode => {
   return (DRAW_MODES as readonly string[]).includes(v);
 };
 
+export type FeatureId = string | number;
+
 export interface DrawState {
   /** 作図ウィンドウが表示中かどうか */
   isDrawWindowOpen: boolean;
@@ -31,6 +33,9 @@ export interface DrawState {
   /** 作図モード */
   drawMode: DrawMode;
   setDrawMode: (mode: DrawMode) => void;
+  /** 編集対象のFeatureID */
+  editingFeatureId: FeatureId | undefined;
+  setEditingFeatureId: (featureId: FeatureId | undefined) => void;
 }
 
 export const createDrawSlice: StateCreator<GlobalState, [], [], DrawState> = (
@@ -49,6 +54,14 @@ export const createDrawSlice: StateCreator<GlobalState, [], [], DrawState> = (
     set(() => {
       return {
         drawMode: mode,
+      };
+    });
+  },
+  editingFeatureId: undefined,
+  setEditingFeatureId: (id) => {
+    set(() => {
+      return {
+        editingFeatureId: id,
       };
     });
   },
