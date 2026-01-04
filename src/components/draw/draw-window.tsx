@@ -2,6 +2,8 @@
 
 import { useStore } from "@/hooks/store/useStore";
 import { Window } from "../ui/window";
+import { DrawModeSelector } from "./draw-mode-selector";
+import { DrawFileButton } from "./draw-file-button";
 
 export const DrawWindow = () => {
   const isDrawWindowOpen = useStore((state) => state.isDrawWindowOpen);
@@ -15,8 +17,11 @@ export const DrawWindow = () => {
         setIsDrawWindowOpen(false);
       }}
     >
-      <div>
-        <p>これはテストウィンドウです</p>
+      <div className="grid gap-2">
+        <div className="flex gap-2">
+          <DrawFileButton />
+          <DrawModeSelector />
+        </div>
       </div>
     </Window>
   );

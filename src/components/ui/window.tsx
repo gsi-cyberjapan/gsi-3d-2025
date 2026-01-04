@@ -28,8 +28,8 @@ interface WindowProps {
 const getDefaultPosition = () => {
   if (typeof window === "undefined") return { x: 0, y: 0 };
   return {
-    x: Math.max(50, (window.innerWidth - 300) / 2),
-    y: Math.max(50, (window.innerHeight - 200) / 2),
+    x: Math.max(50, window.innerWidth / 2),
+    y: Math.max(50, window.innerHeight / 2),
   };
 };
 
@@ -60,7 +60,7 @@ const DraggableContent = ({
     <div
       ref={setNodeRef}
       className={cn(
-        "fixed z-9999 flex min-w-[300px] flex-col rounded-lg border bg-background shadow-lg",
+        "fixed z-20 flex flex-col rounded-lg border bg-background shadow-lg",
         isDragging && "cursor-grabbing shadow-2xl",
         className,
       )}

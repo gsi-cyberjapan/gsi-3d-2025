@@ -24,7 +24,7 @@ export const Header = () => {
       <Logo />
       <div className="md:flex items-center gap-2 hidden">
         <ButtonGroup>
-          <Button size="xs" variant="outline">
+          <Button size="xs" variant="outline" disabled>
             <Ruler /> 計測
           </Button>
           <Button
@@ -59,7 +59,7 @@ export const Header = () => {
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           <DropdownMenuGroup>
-            <DropdownMenuItem>
+            <DropdownMenuItem disabled>
               <div className="flex gap-2 items-center">
                 <Ruler /> 計測
               </div>
