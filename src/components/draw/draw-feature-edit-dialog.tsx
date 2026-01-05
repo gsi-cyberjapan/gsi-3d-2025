@@ -6,7 +6,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { useStore } from "@/hooks/store/useStore";
 
@@ -23,14 +22,10 @@ export const DrawFeatureEditDigalog = () => {
       open={editingFeatureId !== undefined}
       onOpenChange={handleOnOpenChange}
     >
-      <DialogTrigger>Open</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Are you absolutely sure?</DialogTitle>
-          <DialogDescription>
-            This action cannot be undone. This will permanently delete your
-            account and remove your data from our servers.
-          </DialogDescription>
+          <DialogTitle>編集</DialogTitle>
+          <DialogDescription>WIP</DialogDescription>
         </DialogHeader>
       </DialogContent>
     </Dialog>
