@@ -29,7 +29,13 @@ const RootLayout = ({
       className={notoSansJP.className}
       suppressHydrationWarning
     >
-      <body className="antialiased">
+      <head>
+        <meta
+          name="viewport"
+          content="width=device-width,initial-scale=1.0,maximum-scale=1.0"
+        />
+      </head>
+      <body className="antialiased overscroll-none">
         <QueryProvider>
           <ThemeProvider
             attribute="class"

@@ -15,13 +15,17 @@ import { GENERAL_CONFIG } from "@/lib/config";
 import { SettingDropdownContent } from "./setting-dropdown-content";
 import { ButtonGroup } from "../ui/button-group";
 import { useStore } from "@/hooks/store/useStore";
+import { SearchInput } from "./search-input";
 
 export const Header = () => {
   const setIsDrawWindowOpen = useStore((state) => state.setIsDrawWindowOpen);
 
   return (
-    <div className="flex border-b py-1 px-2 justify-between">
-      <Logo />
+    <div className="flex border-b py-1 px-2 gap-2 justify-between">
+      <div className="flex items-center gap-4 flex-1">
+        <Logo className="md:block hidden" />
+        <SearchInput className="flex-1" />
+      </div>
       <div className="md:flex items-center gap-2 hidden">
         <ButtonGroup>
           <Button size="xs" variant="outline" disabled>
@@ -53,7 +57,7 @@ export const Header = () => {
       </div>
       <DropdownMenu>
         <DropdownMenuTrigger className="md:hidden" asChild>
-          <Button size="icon-sm" variant="outline">
+          <Button size="icon-sm" className="size-7" variant="outline">
             <Menu />
           </Button>
         </DropdownMenuTrigger>
