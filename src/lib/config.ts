@@ -141,7 +141,9 @@ export const OPTIONAL_LAYER_CONFIG = {
 export const GEOCODING_CONFIG = {
   /** GSI MUNI master data URL */
   MUNI_DATA_URL: "https://maps.gsi.go.jp/js/muni.js",
-  /** CSIS Simple Geocoding Service URL */
-  CSIS_GEOCODE_URL:
-    "https://geocode.csis.u-tokyo.ac.jp/cgi-bin/simple_geocode.cgi",
+  /** GSI Address Search API URL */
+  ADDRESS_SEARCH_URL: "https://msearch.gsi.go.jp/address-search/AddressSearch",
+  /** GSI Reverse Geocoder URL */
+  REVERSE_GEOCODE_URL:
+    "https://mreversegeocoder.gsi.go.jp/reverse-geocoder/LonLatToAddress",
 } as const;
