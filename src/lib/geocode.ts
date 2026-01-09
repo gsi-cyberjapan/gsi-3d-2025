@@ -202,106 +202,160 @@ export interface AddressSearchResult {
     prefCode: string;
     cityCode: string;
     isResidentialAreaName: boolean;
+    dataSource?: number;
+    ilvl?: number;
+    zl?: number;
+    addressCode?: string;
   }[];
+}
+
+interface GsiAddressFeature {
+  type: "Feature";
+  geometry: {
+    type: "Point";
+    coordinates: [number, number];
+  };
+  properties: {
+    title: string;
+    addressCode?: string;
+    dataSource?: number;
+    ilvl?: number;
+    zl?: number;
+  };
 }
 
 const geocodeFromAddress = async (
   input: AddressText,
 ): Promise<AddressSearchResult> => {
   try {
-    const [muniData] = await Promise.all([getMuniData()]);
+    const muniData = await getMuniData();
 
     const params = new URLSearchParams({
-      addr: input,
-      charset: "UTF8",
+      q: input,
+      lang: "ja,en",
+      zl: "T",
+      ilvl: "T",
+      sort_il: "1",
     });
 
     const response = await fetch(
-      `${GEOCODING_CONFIG.CSIS_GEOCODE_URL}?${params.toString()}`,
+      `${GEOCODING_CONFIG.ADDRESS_SEARCH_URL}?${params.toString()}`,
     );
 
     if (!response.ok) {
-      console.warn("CSIS geocoding failed:", response.statusText);
+      console.error("GSI address search failed:", response.statusText);
       return { candidates: [] };
     }
 
-    const xmlText = await response.text();
+    const data: unknown = await response.json();
 
-    const parser = new DOMParser();
-    const xmlDoc = parser.parseFromString(xmlText, "text/xml");
-
-    const parserError = xmlDoc.querySelector("parsererror");
-    if (parserError) {
-      console.warn("XML parsing error:", parserError.textContent);
+    if (!Array.isArray(data) || data.length === 0) {
       return { candidates: [] };
     }
 
-    const candidateNodes = xmlDoc.querySelectorAll("candidate");
-    if (candidateNodes.length === 0) {
-      return { candidates: [] };
-    }
+    const features = data as GsiAddressFeature[];
 
-    const candidates = Array.from(candidateNodes)
-      .map((node) => {
-        const address = node.querySelector("address")?.textContent || "";
-        const longitudeText = node.querySelector("longitude")?.textContent;
-        const latitudeText = node.querySelector("latitude")?.textContent;
+    const candidatesWithPending: {
+      candidate: AddressSearchResult["candidates"][0];
+      needsReverseGeocode: boolean;
+    }[] = [];
 
-        if (!longitudeText || !latitudeText) {
-          console.warn(
-            "Missing longitude or latitude in geocoding result:",
-            address,
-          );
-          return null;
+    for (const feature of features) {
+      const { coordinates } = feature.geometry;
+      const [lng, lat] = coordinates;
+      const { title, addressCode, dataSource, ilvl, zl } = feature.properties;
+
+      let prefCode = "";
+      let cityCode = "";
+      let prefName = "";
+      let cityName = "";
+      let hasMuniEntry = false;
+
+      if (addressCode) {
+        const muniEntry = muniData?.[addressCode];
+        if (muniEntry) {
+          prefCode = muniEntry.prefCode;
+          prefName = muniEntry.prefName;
+          cityCode = muniEntry.cityCode;
+          cityName = muniEntry.cityName;
+          hasMuniEntry = true;
         }
+      }
 
-        const longitude = parseFloat(longitudeText);
-        const latitude = parseFloat(latitudeText);
+      const candidate = {
+        id: `gsi-${generateShortId()}`,
+        lnglat: new LngLat(lng, lat),
+        title,
+        subTitle: `${prefName}${cityName}`,
+        prefCode,
+        cityCode,
+        isResidentialAreaName: dataSource === 5,
+        dataSource,
+        ilvl,
+        zl,
+        addressCode,
+      };
 
-        if (isNaN(longitude) || isNaN(latitude)) {
-          console.warn(
-            "Invalid longitude or latitude in geocoding result:",
-            address,
-          );
-          return null;
-        }
+      candidatesWithPending.push({
+        candidate,
+        needsReverseGeocode: !addressCode || !hasMuniEntry,
+      });
+    }
 
-        const iLvl = node.querySelector("iLvl")?.textContent || "";
+    const needsReverseGeocodeList = candidatesWithPending.filter(
+      (item) => item.needsReverseGeocode,
+    );
 
-        // Format: Prefecture/Municipality/District/Block/Number
-        const addressParts = address.split("/");
-        const prefName = addressParts[0] || "";
-        const cityName = addressParts[1] || "";
+    if (needsReverseGeocodeList.length > 0) {
+      await Promise.all(
+        needsReverseGeocodeList.map(async (item) => {
+          try {
+            const { lng, lat } = item.candidate.lnglat;
+            const reverseParams = new URLSearchParams({
+              lon: lng.toString(),
+              lat: lat.toString(),
+            });
 
-        let prefCode = "";
-        let cityCode = "";
-        if (muniData) {
-          const entry = Object.values(muniData).find(
-            (m) => m.prefName === prefName && m.cityName === cityName,
-          );
-          if (entry) {
-            prefCode = entry.prefCode;
-            cityCode = entry.cityCode;
+            const reverseResponse = await fetch(
+              `${GEOCODING_CONFIG.REVERSE_GEOCODE_URL}?${reverseParams.toString()}`,
+            );
+
+            if (!reverseResponse.ok) {
+              console.error(
+                "Reverse geocoding failed:",
+                reverseResponse.statusText,
+              );
+              return;
+            }
+
+            const reverseData: unknown = await reverseResponse.json();
+
+            if (
+              reverseData &&
+              typeof reverseData === "object" &&
+              "results" in reverseData &&
+              reverseData.results &&
+              typeof reverseData.results === "object" &&
+              "muniCd" in reverseData.results
+            ) {
+              const muniCd = reverseData.results.muniCd;
+              const addressCodeStr = String(muniCd);
+              const muniEntry = muniData?.[addressCodeStr];
+              if (muniEntry) {
+                item.candidate.prefCode = muniEntry.prefCode;
+                item.candidate.cityCode = muniEntry.cityCode;
+                item.candidate.subTitle = `${muniEntry.prefName}${muniEntry.cityName}`;
+                item.candidate.addressCode = addressCodeStr;
+              }
+            }
+          } catch (error) {
+            console.error("Reverse geocoding error:", error);
           }
-        }
-
-        const title = addressParts[2] || cityName || prefName;
-        const subTitle = `${prefName}${cityName}`;
-
-        return {
-          id: `csis-${generateShortId()}`,
-          lnglat: new LngLat(longitude, latitude),
-          title,
-          subTitle,
-          prefCode,
-          cityCode,
-          isResidentialAreaName: iLvl !== "" && parseInt(iLvl, 10) >= 2,
-        };
-      })
-      .filter(
-        (candidate): candidate is NonNullable<typeof candidate> =>
-          candidate !== null,
+        }),
       );
+    }
+
+    const candidates = candidatesWithPending.map((item) => item.candidate);
 
     return { candidates };
   } catch (error) {
