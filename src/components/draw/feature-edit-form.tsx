@@ -3,6 +3,7 @@
 import { EditingFeature } from "@/hooks/store/drawState";
 import { useStore } from "@/hooks/store/useStore";
 import { FieldGroup, FieldLabel, Field } from "../ui/field";
+import { ColorPicker } from "../ui/color-picker";
 
 interface FeatureEditFormProps {
   feature: EditingFeature;
@@ -17,9 +18,10 @@ export const FeatureEditForm = ({ feature }: FeatureEditFormProps) => {
   }
 
   return (
-    <FieldGroup>
-      <Field>
+    <FieldGroup className="gap-4">
+      <Field orientation="horizontal">
         <FieldLabel>塗りつぶしの色</FieldLabel>
+        <ColorPicker value={properties.fillColor as string} />
       </Field>
     </FieldGroup>
   );

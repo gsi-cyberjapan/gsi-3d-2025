@@ -42,7 +42,27 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
     if (typeof value === "string" && value.startsWith("#")) {
       return value as `#${string}`;
     }
+    drawRef.current.updateFeatureProperties(featureId, {
+      [key]: defaultValue,
+    });
     return defaultValue as `#${string}`;
+  };
+
+  const getNumberProperty = (
+    featureId: string | number | undefined,
+    key: string,
+    defaultValue: number = 0,
+  ) => {
+    if (!featureId || !drawRef.current) return defaultValue;
+    const ss = drawRef.current.getSnapshotFeature(featureId);
+    const value = ss?.properties[key];
+    if (typeof value === "number") {
+      return value;
+    }
+    drawRef.current.updateFeatureProperties(featureId, {
+      [key]: defaultValue,
+    });
+    return defaultValue;
   };
 
   useEffect(() => {
@@ -67,6 +87,7 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
           new TerraDrawCircleMode({
             styles: {
               fillColor: ({ id }) => getStylingColorProperty(id, "fillColor"),
+              fillOpacity: ({ id }) => getNumberProperty(id, "fillColor", 0.6),
             },
           }),
           new TerraDrawLineStringMode(),

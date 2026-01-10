@@ -15,7 +15,7 @@ import { ZoomLevelController } from "./zoom-level-controller";
 import { PositionSyncController } from "./position-sync-controller";
 import { OptionalLayers } from "./optional-layers";
 import { MapCenterLine } from "./map-center-line";
-import { DrawController } from "./draw-controller";
+import { DrawController } from "../draw/draw-controller";
 import { SearchResultController } from "./search-result-controller";
 
 const ReactMaplibre = dynamic(

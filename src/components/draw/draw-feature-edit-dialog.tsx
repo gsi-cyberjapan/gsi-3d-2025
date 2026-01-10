@@ -25,7 +25,7 @@ export const DrawFeatureEditDigalog = () => {
       open={editingFeature !== undefined}
       onOpenChange={handleOnOpenChange}
     >
-      <DialogContent className="w-100 p-3">
+      <DialogContent className="w-80 p-3">
         <DialogHeader>
           <DialogTitle>作図の編集</DialogTitle>
         </DialogHeader>
