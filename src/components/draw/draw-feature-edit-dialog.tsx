@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { useStore } from "@/hooks/store/useStore";
 import { Button } from "../ui/button";
-import { FeatureEditForm } from "./feature-edit-form";
+import { DrawFeatureEditForm } from "./draw-feature-edit-form";
 
 export const DrawFeatureEditDigalog = () => {
   const editingFeature = useStore((state) => state.editingFeature);
@@ -29,7 +29,7 @@ export const DrawFeatureEditDigalog = () => {
         <DialogHeader>
           <DialogTitle>作図の編集</DialogTitle>
         </DialogHeader>
-        {editingFeature && <FeatureEditForm feature={editingFeature} />}
+        {editingFeature && <DrawFeatureEditForm feature={editingFeature} />}
         <DialogFooter>
           <DialogTrigger asChild>
             <Button size="sm">閉じる</Button>

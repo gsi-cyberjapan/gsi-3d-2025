@@ -2,6 +2,7 @@
 
 import { MapId } from "@/hooks/store/mapManagerState";
 import { useStore } from "@/hooks/store/useStore";
+import { getCircleModeStyle } from "@/lib/draw/getCircleModeStyle";
 import { useCallback, useEffect, useRef } from "react";
 import { useMap } from "react-map-gl/maplibre";
 import {
@@ -27,43 +28,13 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
   const handleDrawFinish = useCallback(
     (id: string | number) => {
       setEditingFeature({ featureId: id, mapId });
+      drawRef.current?.updateFeatureProperties(id, {
+        mapId,
+        source: "terradraw",
+      });
     },
     [setEditingFeature, mapId],
   );
-
-  const getStylingColorProperty = (
-    featureId: string | number | undefined,
-    key: string,
-    defaultValue: string = "#f63b3b",
-  ): `#${string}` => {
-    if (!featureId || !drawRef.current) return defaultValue as `#${string}`;
-    const ss = drawRef.current.getSnapshotFeature(featureId);
-    const value = ss?.properties[key];
-    if (typeof value === "string" && value.startsWith("#")) {
-      return value as `#${string}`;
-    }
-    drawRef.current.updateFeatureProperties(featureId, {
-      [key]: defaultValue,
-    });
-    return defaultValue as `#${string}`;
-  };
-
-  const getNumberProperty = (
-    featureId: string | number | undefined,
-    key: string,
-    defaultValue: number = 0,
-  ) => {
-    if (!featureId || !drawRef.current) return defaultValue;
-    const ss = drawRef.current.getSnapshotFeature(featureId);
-    const value = ss?.properties[key];
-    if (typeof value === "number") {
-      return value;
-    }
-    drawRef.current.updateFeatureProperties(featureId, {
-      [key]: defaultValue,
-    });
-    return defaultValue;
-  };
 
   useEffect(() => {
     if (!drawRef.current || !startedRef.current) return;
@@ -84,12 +55,7 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
         adapter: new TerraDrawMapLibreGLAdapter({ map }),
         modes: [
           new TerraDrawPointMode(),
-          new TerraDrawCircleMode({
-            styles: {
-              fillColor: ({ id }) => getStylingColorProperty(id, "fillColor"),
-              fillOpacity: ({ id }) => getNumberProperty(id, "fillColor", 0.6),
-            },
-          }),
+          new TerraDrawCircleMode(),
           new TerraDrawLineStringMode(),
           new TerraDrawFreehandLineStringMode(),
           new TerraDrawPolygonMode(),
@@ -106,6 +72,9 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
       });
       drawRef.current = draw;
       draw.start();
+      drawRef.current.updateModeOptions("circle", {
+        styles: getCircleModeStyle(draw),
+      });
       draw.on("finish", handleDrawFinish);
       startedRef.current = true;
       setTerraDraw({ mapId, td: draw });

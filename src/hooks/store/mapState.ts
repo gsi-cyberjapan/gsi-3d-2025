@@ -108,13 +108,11 @@ export const createMapSlice: StateCreator<
     });
   },
   setTerraDraw: ({ mapId, td }) => {
+    const current = get().maps[mapId].td;
+    if (current) {
+      return;
+    }
     set((state) => {
-      const current = get().maps[mapId].td;
-      if (current) {
-        throw new Error(
-          "TerraDraw instance is already set. Did you initialize it twice?",
-        );
-      }
       return {
         maps: {
           ...state.maps,

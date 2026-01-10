@@ -83,7 +83,7 @@ export const ColorPicker = ({
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <ColorPickerOutput />
+            {/* <ColorPickerOutput /> */}
             <ColorPickerFormat />
           </div>
         </IoColorPicker>
