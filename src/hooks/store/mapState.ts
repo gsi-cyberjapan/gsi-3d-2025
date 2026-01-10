@@ -2,6 +2,7 @@ import { StateCreator } from "zustand";
 import { GlobalState } from "./useStore";
 import { MapId } from "./mapManagerState";
 import { BaseLayer, getBaseLayers } from "@/lib/getBaseLayers";
+import { TerraDraw } from "terra-draw";
 
 interface OptionalLayerEntry {
   layerId: string;
@@ -21,12 +22,15 @@ export interface MapState {
   optionalLayers: OptionalLayerEntry[];
   /** 投影モード */
   projection: Projection;
+  /** TerraDrawのインスタンス */
+  td: TerraDraw | null;
 }
 
 export const MAP_INITIAL_STATE: MapState = {
   baseLayer: getBaseLayers()[0],
   optionalLayers: [],
   projection: "mercator",
+  td: null,
 };
 
 export interface MapStateWrapper {
@@ -50,6 +54,8 @@ export interface MapStateWrapper {
   }) => void;
   /** 投影モードの切り替え */
   setProjection: ({ mapId, mode }: { mapId: MapId; mode: Projection }) => void;
+  /** TerraDrawインスタンスのセット */
+  setTerraDraw: ({ mapId, td }: { mapId: MapId; td: TerraDraw }) => void;
 }
 
 export const createMapSlice: StateCreator<
@@ -57,7 +63,7 @@ export const createMapSlice: StateCreator<
   [],
   [],
   MapStateWrapper
-> = (set) => ({
+> = (set, get) => ({
   maps: {
     main: MAP_INITIAL_STATE,
     sub: MAP_INITIAL_STATE,
@@ -96,6 +102,25 @@ export const createMapSlice: StateCreator<
           [mapId]: {
             ...state.maps[mapId],
             projection: mode,
+          },
+        },
+      };
+    });
+  },
+  setTerraDraw: ({ mapId, td }) => {
+    set((state) => {
+      const current = get().maps[mapId].td;
+      if (current) {
+        throw new Error(
+          "TerraDraw instance is already set. Did you initialize it twice?",
+        );
+      }
+      return {
+        maps: {
+          ...state.maps,
+          [mapId]: {
+            ...state.maps[mapId],
+            td,
           },
         },
       };

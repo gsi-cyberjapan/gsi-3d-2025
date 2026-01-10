@@ -2,7 +2,7 @@
 
 import { MapId } from "@/hooks/store/mapManagerState";
 import { useStore } from "@/hooks/store/useStore";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useMap } from "react-map-gl/maplibre";
 import {
   TerraDraw,
@@ -20,12 +20,16 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
   const drawRef = useRef<TerraDraw | null>(null);
   const isDrawWindowOpen = useStore((state) => state.isDrawWindowOpen);
   const setEditingFeatureId = useStore((state) => state.setEditingFeatureId);
+  const setTerraDraw = useStore((state) => state.setTerraDraw);
   const startedRef = useRef(false);
   const drawMode = useStore((state) => state.drawMode);
 
-  const handleDrawFinish = (id: string | number) => {
-    setEditingFeatureId(id);
-  };
+  const handleDrawFinish = useCallback(
+    (id: string | number) => {
+      setEditingFeatureId(id);
+    },
+    [setEditingFeatureId],
+  );
 
   useEffect(() => {
     if (!drawRef.current || !startedRef.current) return;
@@ -65,6 +69,7 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
       draw.start();
       draw.on("finish", handleDrawFinish);
       startedRef.current = true;
+      setTerraDraw({ mapId, td: draw });
     };
 
     if (map.isStyleLoaded()) {
@@ -81,7 +86,7 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
         drawRef.current = null;
       }
     };
-  }, [map]);
+  }, [map, handleDrawFinish, mapId, setTerraDraw]);
 
   return null;
 };
