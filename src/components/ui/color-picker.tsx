@@ -1,79 +1,44 @@
 "use client";
 
-import { useMemo } from "react";
-import Color from "color";
-import { Popover, PopoverTrigger, PopoverContent } from "./popover";
+import { Popover, PopoverContent } from "./popover";
 import {
-  ColorPicker as IoColorPicker,
-  ColorPickerAlpha,
+  ColorPicker,
   ColorPickerEyeDropper,
-  ColorPickerFormat,
   ColorPickerHue,
-  ColorPickerSelection,
-  type ColorPickerProps as IoColorPickerProps,
-} from "@/components/ui/shadcn-io/color-picker";
-import { cn } from "@/lib/utils";
+  ColorPickerAlpha,
+  ColorPickerOutput,
+  ColorPickerFormat,
+} from "./shadcn-io/color-picker";
+import { FormEventHandler } from "react";
+import Color from "color";
+import { PopoverTrigger } from "@radix-ui/react-popover";
+import { useState } from "react";
 
-export interface ColorPickerProps {
-  value?: string;
-  defaultValue?: string;
-  onChange?: (color: string) => void;
-  disabled?: boolean;
-  className?: string;
+interface ColorPickerPopover {
+  value: string;
+  onValueChange:
+    | (FormEventHandler<HTMLDivElement> &
+        ((value: Parameters<typeof Color.rgb>[0]) => void))
+    | undefined;
 }
 
-export const ColorPicker = ({
+export const ColorPickerPopover = ({
   value,
-  defaultValue = "#000000",
-  onChange,
-  disabled = false,
-  className,
-}: ColorPickerProps) => {
-  // Convert color string to display color with opacity
-  const displayColor = useMemo(() => {
-    try {
-      const color = Color(value || defaultValue);
-      // Always use hexa format to preserve alpha
-      return color.hexa();
-    } catch {
-      return defaultValue;
-    }
-  }, [value, defaultValue]);
-
-  // Handle color change from the picker
-  const handleChange: IoColorPickerProps["onChange"] = (rgba) => {
-    if (onChange && rgba) {
-      const [r, g, b, a] = rgba as [number, number, number, number];
-      const color = Color.rgb(r, g, b).alpha(a);
-      // Use hexa format to preserve alpha channel
-      onChange(color.hexa());
-    }
-  };
+  onValueChange,
+}: ColorPickerPopover) => {
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <button
-          type="button"
-          disabled={disabled}
-          className={cn(
-            "size-8 rounded-md border border-input transition-colors",
-            "hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-            "disabled:cursor-not-allowed disabled:opacity-50",
-            className,
-          )}
-          style={{ backgroundColor: displayColor }}
-          aria-label="色を選択"
-        />
+    <Popover open={isOpen} onOpenChange={setIsOpen}>
+      <PopoverTrigger>
+        <div className="rounded-md border size-6" />
       </PopoverTrigger>
-      <PopoverContent className="p-0">
-        <IoColorPicker
-          className="max-w-sm rounded-md border p-4 shadow-sm h-80"
+      <PopoverContent>
+        <ColorPicker
+          className="max-w-sm rounded-md border bg-background p-4 shadow-sm h-100"
           value={value}
-          defaultValue={defaultValue}
-          onChange={handleChange}
+          onChange={onValueChange}
         >
-          <ColorPickerSelection />
           <div className="flex items-center gap-4">
             <ColorPickerEyeDropper />
             <div className="grid w-full gap-1">
@@ -82,10 +47,10 @@ export const ColorPicker = ({
             </div>
           </div>
           <div className="flex items-center gap-2">
-            {/* <ColorPickerOutput /> */}
+            <ColorPickerOutput />
             <ColorPickerFormat />
           </div>
-        </IoColorPicker>
+        </ColorPicker>
       </PopoverContent>
     </Popover>
   );

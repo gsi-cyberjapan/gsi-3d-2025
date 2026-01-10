@@ -3,10 +3,9 @@
 import { EditingFeature } from "@/hooks/store/drawState";
 import { useStore } from "@/hooks/store/useStore";
 import { FieldGroup, FieldLabel, Field } from "../ui/field";
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { GeoJSONStoreFeatures } from "terra-draw";
-import { ColorPicker } from "../ui/color-picker";
-import Color from "color";
+import { ColorPickerPopover } from "../ui/color-picker";
 
 interface FeatureEditFormProps {
   feature: EditingFeature;
@@ -30,11 +29,15 @@ export const DrawFeatureEditForm = ({ feature }: FeatureEditFormProps) => {
   return (
     <FieldGroup className="gap-4">
       {["circle"].includes(properties.mode as string) && (
-        <Field orientation="horizontal">
+        <Field>
           <FieldLabel>塗りつぶしの色</FieldLabel>
-          <ColorPicker
-            onChange={(c) => {
-              console.log(c);
+          <ColorPickerPopover
+            value={properties.fillColor as string}
+            onValueChange={(color) => {
+              handlePropertiesChange({
+                ...properties,
+                fillColor: color as string,
+              });
             }}
           />
         </Field>

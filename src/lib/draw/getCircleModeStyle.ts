@@ -1,6 +1,6 @@
 import { TerraDraw, GeoJSONStoreFeatures } from "terra-draw";
 
-const DEFAULT_FILL_COLOR = "#0011FF82";
+const DEFAULT_FILL_COLOR = "#0011FF10";
 
 export const getCircleModeStyle = (
   td: TerraDraw,
