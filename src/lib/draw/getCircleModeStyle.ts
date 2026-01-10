@@ -1,11 +1,12 @@
 import { TerraDraw, GeoJSONStoreFeatures } from "terra-draw";
 
-const DEFAULT_FILL_COLOR = "#3449eb";
+const DEFAULT_FILL_COLOR = "#0011FF82";
 
 export const getCircleModeStyle = (
   td: TerraDraw,
 ): Partial<{
   fillColor: (feature: GeoJSONStoreFeatures) => `#${string}`;
+  fillOpacity: 1;
 }> => {
   return {
     fillColor: ({ id }) => {
@@ -24,5 +25,6 @@ export const getCircleModeStyle = (
       td.updateFeatureProperties(id, { fillColor: DEFAULT_FILL_COLOR });
       return DEFAULT_FILL_COLOR;
     },
+    fillOpacity: 1,
   };
 };

@@ -9,7 +9,6 @@ import {
   ColorPickerEyeDropper,
   ColorPickerFormat,
   ColorPickerHue,
-  ColorPickerOutput,
   ColorPickerSelection,
   type ColorPickerProps as IoColorPickerProps,
 } from "@/components/ui/shadcn-io/color-picker";
