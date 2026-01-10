@@ -1,5 +1,6 @@
 import { StateCreator } from "zustand";
 import { GlobalState } from "./useStore";
+import { MapId } from "./mapManagerState";
 
 export type DrawMode =
   | "point"
@@ -25,6 +26,7 @@ export const isDrawMode = (v: string): v is DrawMode => {
 };
 
 export type FeatureId = string | number;
+export type EditingFeature = { featureId: FeatureId; mapId: MapId };
 
 export interface DrawState {
   /** 作図ウィンドウが表示中かどうか */
@@ -34,8 +36,8 @@ export interface DrawState {
   drawMode: DrawMode;
   setDrawMode: (mode: DrawMode) => void;
   /** 編集対象のFeatureID */
-  editingFeatureId: FeatureId | undefined;
-  setEditingFeatureId: (featureId: FeatureId | undefined) => void;
+  editingFeature: EditingFeature | undefined;
+  setEditingFeature: (feature: EditingFeature | undefined) => void;
 }
 
 export const createDrawSlice: StateCreator<GlobalState, [], [], DrawState> = (
@@ -57,11 +59,11 @@ export const createDrawSlice: StateCreator<GlobalState, [], [], DrawState> = (
       };
     });
   },
-  editingFeatureId: undefined,
-  setEditingFeatureId: (id) => {
+  editingFeature: undefined,
+  setEditingFeature: (feature) => {
     set(() => {
       return {
-        editingFeatureId: id,
+        editingFeature: feature,
       };
     });
   },

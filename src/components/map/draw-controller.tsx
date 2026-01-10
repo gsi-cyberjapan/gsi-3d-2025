@@ -19,17 +19,31 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
   const map = useMap()[mapId]?.getMap();
   const drawRef = useRef<TerraDraw | null>(null);
   const isDrawWindowOpen = useStore((state) => state.isDrawWindowOpen);
-  const setEditingFeatureId = useStore((state) => state.setEditingFeatureId);
+  const setEditingFeature = useStore((state) => state.setEditingFeature);
   const setTerraDraw = useStore((state) => state.setTerraDraw);
   const startedRef = useRef(false);
   const drawMode = useStore((state) => state.drawMode);
 
   const handleDrawFinish = useCallback(
     (id: string | number) => {
-      setEditingFeatureId(id);
+      setEditingFeature({ featureId: id, mapId });
     },
-    [setEditingFeatureId],
+    [setEditingFeature, mapId],
   );
+
+  const getStylingColorProperty = (
+    featureId: string | number | undefined,
+    key: string,
+    defaultValue: string = "#f63b3b",
+  ): `#${string}` => {
+    if (!featureId || !drawRef.current) return defaultValue as `#${string}`;
+    const ss = drawRef.current.getSnapshotFeature(featureId);
+    const value = ss?.properties[key];
+    if (typeof value === "string" && value.startsWith("#")) {
+      return value as `#${string}`;
+    }
+    return defaultValue as `#${string}`;
+  };
 
   useEffect(() => {
     if (!drawRef.current || !startedRef.current) return;
@@ -50,7 +64,11 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
         adapter: new TerraDrawMapLibreGLAdapter({ map }),
         modes: [
           new TerraDrawPointMode(),
-          new TerraDrawCircleMode(),
+          new TerraDrawCircleMode({
+            styles: {
+              fillColor: ({ id }) => getStylingColorProperty(id, "fillColor"),
+            },
+          }),
           new TerraDrawLineStringMode(),
           new TerraDrawFreehandLineStringMode(),
           new TerraDrawPolygonMode(),

@@ -3,30 +3,38 @@
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import { useStore } from "@/hooks/store/useStore";
+import { Button } from "../ui/button";
+import { FeatureEditForm } from "./feature-edit-form";
 
 export const DrawFeatureEditDigalog = () => {
-  const editingFeatureId = useStore((state) => state.editingFeatureId);
-  const setEditingFeatureId = useStore((state) => state.setEditingFeatureId);
+  const editingFeature = useStore((state) => state.editingFeature);
+  const setEditingFeature = useStore((state) => state.setEditingFeature);
 
   const handleOnOpenChange = (value: boolean) => {
-    if (!value) setEditingFeatureId(undefined);
+    if (!value) setEditingFeature(undefined);
   };
 
   return (
     <Dialog
-      open={editingFeatureId !== undefined}
+      open={editingFeature !== undefined}
       onOpenChange={handleOnOpenChange}
     >
-      <DialogContent>
+      <DialogContent className="w-100 p-3">
         <DialogHeader>
-          <DialogTitle>編集</DialogTitle>
-          <DialogDescription>WIP</DialogDescription>
+          <DialogTitle>作図の編集</DialogTitle>
         </DialogHeader>
+        {editingFeature && <FeatureEditForm feature={editingFeature} />}
+        <DialogFooter>
+          <DialogTrigger asChild>
+            <Button size="sm">閉じる</Button>
+          </DialogTrigger>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
