@@ -118,33 +118,6 @@ From `.cursorrules`:
 
 MapLibre GL and PMTiles protocol must be loaded asynchronously and cached. See `src/lib/getMaplibreWhithProtocol.ts` for the singleton pattern used to ensure protocol is only registered once.
 
-### Map Layout Modes
-
-When switching layout modes via `setLayoutMode()`:
-- `single`: Only main map visible, position sync disabled
-- `split`: Both maps visible side-by-side, position sync enabled by default
-- `overlay`: Sub map overlays main map with opacity control, position sync enabled
-
-**Important:** The `setLayoutMode` action automatically updates `activeMapIds`, `focusMapId`, and `isSyncPosition` to maintain consistent state.
-
-### TerraDraw Integration
-
-TerraDraw modes available:
-- `point`, `linestring`, `freehand-linestring`, `polygon`, `circle`, `select`
-- Mode switching is controlled via `drawMode` state
-- Drawing is only active when `isDrawWindowOpen` is true
-- On feature completion, `finish` event sets `editingFeatureId` to trigger edit dialog
-
-### Configuration
-
-All configuration is centralized in `src/lib/config.ts`:
-- `GENERAL_CONFIG`: App metadata
-- `LAYOUT_CONFIG`: Responsive breakpoints
-- `ZOOM_CONFIG`: Zoom level constraints
-- `BASE_LAYER_CONFIG`: Base layer definitions
-- `OPTIONAL_LAYER_CONFIG`: Remote layer URLs
-- `GEOCODING_CONFIG`: Geocoding service URLs
-
 ## Testing & Quality
 
 The project uses:
