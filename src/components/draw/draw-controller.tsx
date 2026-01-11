@@ -60,35 +60,7 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
           new TerraDrawLineStringMode(),
           new TerraDrawFreehandLineStringMode(),
           new TerraDrawPolygonMode(),
-          new TerraDrawSelectMode({
-            flags: {
-              point: {
-                feature: {
-                  draggable: true,
-                },
-              },
-              linestring: {
-                feature: {
-                  draggable: true,
-                  coordinates: {
-                    midpoints: true,
-                    draggable: true,
-                    deletable: true,
-                  },
-                },
-              },
-              polygon: {
-                feature: {
-                  draggable: true,
-                  coordinates: {
-                    midpoints: true,
-                    draggable: true,
-                    deletable: true,
-                  },
-                },
-              },
-            },
-          }),
+          new TerraDrawSelectMode(),
         ],
       });
       drawRef.current = draw;

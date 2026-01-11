@@ -21,7 +21,7 @@ export const DrawFeatureEditForm = ({ feature }: FeatureEditFormProps) => {
 
   const handlePropertiesChange = (p: GeoJSONStoreFeatures["properties"]) => {
     setProperties(p);
-    td?.updateFeatureProperties(feature.featureId, omit(p, "mode"));
+    td?.updateFeatureProperties(feature.featureId, omit(p, "mode", "selected"));
   };
 
   if (!properties) {
