@@ -28,9 +28,13 @@ export const DrawFeatureEditForm = ({ feature }: FeatureEditFormProps) => {
     return null;
   }
 
+  const mode = properties.mode as string;
+  const isPolygonOrCircle = ["circle", "polygon"].includes(mode);
+  const isLine = ["linestring", "freehand-linestring"].includes(mode);
+
   return (
     <FieldGroup className="gap-4">
-      {["circle"].includes(properties.mode as string) && (
+      {isPolygonOrCircle && (
         <Field>
           <FieldLabel>塗りつぶしの色</FieldLabel>
           <InputColor
@@ -46,40 +50,50 @@ export const DrawFeatureEditForm = ({ feature }: FeatureEditFormProps) => {
         </Field>
       )}
       <Field>
-        <FieldLabel>枠線の色</FieldLabel>
+        <FieldLabel>{isLine ? "線の色" : "枠線の色"}</FieldLabel>
         <InputColor
           alpha
-          value={properties.outlineColor as string}
+          value={
+            (isLine
+              ? properties.lineStringColor
+              : properties.outlineColor) as string
+          }
           onChange={(color) => {
             handlePropertiesChange({
               ...properties,
-              outlineColor: color,
+              ...(isLine
+                ? { lineStringColor: color }
+                : { outlineColor: color }),
             });
           }}
         />
       </Field>
-      {["circle"].includes(properties.mode as string) && (
-        <Field>
-          <FieldLabel>線の太さ</FieldLabel>
-          <Input
-            type="number"
-            className="h-7"
-            min="1"
-            max="20"
-            step="1"
-            value={properties.outlineWidth as number}
-            onChange={(e) => {
-              const value = Number(e.target.value);
-              if (value > 0) {
-                handlePropertiesChange({
-                  ...properties,
-                  outlineWidth: value,
-                });
-              }
-            }}
-          />
-        </Field>
-      )}
+      <Field>
+        <FieldLabel>線の太さ</FieldLabel>
+        <Input
+          type="number"
+          className="h-7"
+          min="1"
+          max="20"
+          step="1"
+          value={
+            (isLine
+              ? properties.lineStringWidth
+              : properties.outlineWidth) as number
+          }
+          onChange={(e) => {
+            const value = Number(e.target.value);
+            if (value > 0) {
+              handlePropertiesChange({
+                ...properties,
+                ...(isLine
+                  ? { lineStringWidth: value }
+                  : { outlineWidth: value }),
+              });
+            }
+          }}
+        />
+      </Field>
     </FieldGroup>
   );
 };

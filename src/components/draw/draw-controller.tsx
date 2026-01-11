@@ -3,6 +3,8 @@
 import { MapId } from "@/hooks/store/mapManagerState";
 import { useStore } from "@/hooks/store/useStore";
 import { getCircleModeStyle } from "@/lib/draw/getCircleModeStyle";
+import { getLineStringModeStyle } from "@/lib/draw/getLineStringModeStyle";
+import { getPolygonModeStyle } from "@/lib/draw/getPolygonModeStyle";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useMap } from "react-map-gl/maplibre";
 import {
@@ -65,6 +67,26 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
                   draggable: true,
                 },
               },
+              linestring: {
+                feature: {
+                  draggable: true,
+                  coordinates: {
+                    midpoints: true,
+                    draggable: true,
+                    deletable: true,
+                  },
+                },
+              },
+              polygon: {
+                feature: {
+                  draggable: true,
+                  coordinates: {
+                    midpoints: true,
+                    draggable: true,
+                    deletable: true,
+                  },
+                },
+              },
             },
           }),
         ],
@@ -73,6 +95,15 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
       draw.start();
       drawRef.current.updateModeOptions("circle", {
         styles: getCircleModeStyle(draw),
+      });
+      drawRef.current.updateModeOptions("linestring", {
+        styles: getLineStringModeStyle(draw),
+      });
+      drawRef.current.updateModeOptions("freehand-linestring", {
+        styles: getLineStringModeStyle(draw),
+      });
+      drawRef.current.updateModeOptions("polygon", {
+        styles: getPolygonModeStyle(draw),
       });
       draw.on("finish", handleDrawFinish);
 
