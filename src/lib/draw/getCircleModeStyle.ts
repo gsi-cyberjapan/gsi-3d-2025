@@ -2,6 +2,7 @@ import { TerraDraw, GeoJSONStoreFeatures } from "terra-draw";
 
 const DEFAULT_FILL_COLOR = "#0011FF10";
 const DEFAULT_OUTLINE_COLOR = "#0011FFFF";
+const DEFAULT_OUTLINE_WIDTH = 2;
 
 export const getCircleModeStyle = (
   td: TerraDraw,
@@ -9,6 +10,7 @@ export const getCircleModeStyle = (
   fillColor: (feature: GeoJSONStoreFeatures) => `#${string}`;
   fillOpacity: 1;
   outlineColor: (feature: GeoJSONStoreFeatures) => `#${string}`;
+  outlineWidth: (feature: GeoJSONStoreFeatures) => number;
 }> => {
   return {
     fillColor: ({ id }) => {
@@ -44,6 +46,19 @@ export const getCircleModeStyle = (
 
       td.updateFeatureProperties(id, { outlineColor: DEFAULT_OUTLINE_COLOR });
       return DEFAULT_OUTLINE_COLOR;
+    },
+
+    outlineWidth: ({ id }) => {
+      if (!id) return DEFAULT_OUTLINE_WIDTH;
+      const ss = td.getSnapshotFeature(id);
+      const outlineWidth = ss?.properties.outlineWidth;
+
+      if (typeof outlineWidth === "number" && outlineWidth > 0) {
+        return outlineWidth;
+      }
+
+      td.updateFeatureProperties(id, { outlineWidth: DEFAULT_OUTLINE_WIDTH });
+      return DEFAULT_OUTLINE_WIDTH;
     },
   };
 };

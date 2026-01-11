@@ -7,6 +7,7 @@ import { useState } from "react";
 import { GeoJSONStoreFeatures } from "terra-draw";
 import { omit } from "@/lib/utils";
 import { InputColor } from "../ui/input-color-picker";
+import { Input } from "../ui/input";
 
 interface FeatureEditFormProps {
   feature: EditingFeature;
@@ -57,6 +58,28 @@ export const DrawFeatureEditForm = ({ feature }: FeatureEditFormProps) => {
           }}
         />
       </Field>
+      {["circle"].includes(properties.mode as string) && (
+        <Field>
+          <FieldLabel>線の太さ</FieldLabel>
+          <Input
+            type="number"
+            className="h-7"
+            min="1"
+            max="20"
+            step="1"
+            value={properties.outlineWidth as number}
+            onChange={(e) => {
+              const value = Number(e.target.value);
+              if (value > 0) {
+                handlePropertiesChange({
+                  ...properties,
+                  outlineWidth: value,
+                });
+              }
+            }}
+          />
+        </Field>
+      )}
     </FieldGroup>
   );
 };
