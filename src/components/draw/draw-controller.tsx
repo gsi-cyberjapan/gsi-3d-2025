@@ -3,7 +3,7 @@
 import { MapId } from "@/hooks/store/mapManagerState";
 import { useStore } from "@/hooks/store/useStore";
 import { getCircleModeStyle } from "@/lib/draw/getCircleModeStyle";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useMap } from "react-map-gl/maplibre";
 import {
   TerraDraw,
@@ -22,7 +22,7 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
   const isDrawWindowOpen = useStore((state) => state.isDrawWindowOpen);
   const setEditingFeature = useStore((state) => state.setEditingFeature);
   const setTerraDraw = useStore((state) => state.setTerraDraw);
-  const startedRef = useRef(false);
+  const [isStart, setIsStart] = useState(false);
   const drawMode = useStore((state) => state.drawMode);
 
   const handleDrawFinish = useCallback(
@@ -37,14 +37,13 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
   );
 
   useEffect(() => {
-    if (!drawRef.current || !startedRef.current) return;
-
+    if (!drawRef.current || !isStart) return;
     if (isDrawWindowOpen) {
       drawRef.current.setMode(drawMode);
     } else {
       drawRef.current.setMode("static");
     }
-  }, [isDrawWindowOpen, drawMode]);
+  }, [isDrawWindowOpen, drawMode, isStart]);
 
   useEffect(() => {
     if (!map) return;
@@ -76,7 +75,8 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
         styles: getCircleModeStyle(draw),
       });
       draw.on("finish", handleDrawFinish);
-      startedRef.current = true;
+
+      setIsStart(true);
       setTerraDraw({ mapId, td: draw });
     };
 
@@ -90,7 +90,7 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
       map.off("style.load", setup);
       if (drawRef.current) {
         drawRef.current.off("finish", handleDrawFinish);
-        drawRef.current.stop();
+        // drawRef.current.stop();
         drawRef.current = null;
       }
     };
