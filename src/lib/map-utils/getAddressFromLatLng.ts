@@ -1,62 +1,156 @@
 /**
  * 緯度・経度から住所文字列を取得（都道府県・市区町村・町名）
- * 国土地理院 reverse-geocoder + muni.js を使用
+ * 国土地理院 lv01_plg GeoJSON を使用
  */
 
-interface GsiReverseResult {
-  results?: {
-    muniCd?: string;
-    lv01Nm?: string;
+interface GeoJSONFeature {
+  type: string;
+  geometry?: {
+    type: string;
+    coordinates: number[][][] | number[][][][];
+  };
+  properties?: {
+    pref?: string;
+    muni?: string;
+    LV01?: string;
+    pref_kana?: string;
+    muni_kana?: string;
+    Lv01_kana?: string;
   };
 }
 
-// TODO 下記のレスポンスを返却するようにする
-// interface AddressResult {
-//   kana: string;
-//   kanji: string;
-// }
+interface GeoJSONResponse {
+  type: string;
+  features?: GeoJSONFeature[];
+}
+
+interface AddressResult {
+  kana: string;
+  kanji: string;
+}
+
+/**
+ * 緯度経度からタイル座標を計算
+ */
+function getTileInfo(lat: number, lng: number, z: number) {
+  const lng_rad = (lng * Math.PI) / 180;
+  const R = 128 / Math.PI;
+  const worldCoordX = R * (lng_rad + Math.PI);
+  const pixelCoordX = worldCoordX * Math.pow(2, z);
+  const tileCoordX = Math.floor(pixelCoordX / 256);
+
+  const lat_rad = (lat * Math.PI) / 180;
+  const worldCoordY =
+    (-R / 2) * Math.log((1 + Math.sin(lat_rad)) / (1 - Math.sin(lat_rad))) +
+    128;
+  const pixelCoordY = worldCoordY * Math.pow(2, z);
+  const tileCoordY = Math.floor(pixelCoordY / 256);
+
+  return {
+    x: tileCoordX,
+    y: tileCoordY,
+    pX: Math.floor(pixelCoordX - tileCoordX * 256),
+    pY: Math.floor(pixelCoordY - tileCoordY * 256),
+  };
+}
+
+/**
+ * ポイントがポリゴン内に含まれるかチェック
+ */
+function isPointInPolygon(point: number[], polygon: number[][]): boolean {
+  let wn = 0;
+
+  for (let i = 0; i < polygon.length - 1; i++) {
+    if (polygon[i][1] <= point[1] && polygon[i + 1][1] > point[1]) {
+      const vt =
+        (point[1] - polygon[i][1]) / (polygon[i + 1][1] - polygon[i][1]);
+      if (
+        point[0] <
+        polygon[i][0] + vt * (polygon[i + 1][0] - polygon[i][0])
+      ) {
+        ++wn;
+      }
+    } else if (polygon[i][1] > point[1] && polygon[i + 1][1] <= point[1]) {
+      const vt =
+        (point[1] - polygon[i][1]) / (polygon[i + 1][1] - polygon[i][1]);
+      if (
+        point[0] <
+        polygon[i][0] + vt * (polygon[i + 1][0] - polygon[i][0])
+      ) {
+        --wn;
+      }
+    }
+  }
+  return wn != 0;
+}
 
 export async function getAddressFromLatLng(
   lat: number,
   lon: number,
-): Promise<string | null> {
-  // --- 1. 逆ジオコーディング API 呼び出し ---
-  const url = `https://mreversegeocoder.gsi.go.jp/reverse-geocoder/LonLatToAddress?lat=${lat.toString()}&lon=${lon.toString()}`;
+): Promise<AddressResult | null> {
+  // タイル座標を計算 (zoom level 14)
+  const tileInfo = getTileInfo(lat, lon, 14);
+
+  // GeoJSON を取得
+  const url = `https://cyberjapandata.gsi.go.jp/xyz/lv01_plg/14/${tileInfo.x}/${tileInfo.y}.geojson`;
   const res = await fetch(url);
   if (!res.ok) return null;
 
-  const json = (await res.json()) as GsiReverseResult;
+  const data = (await res.json()) as GeoJSONResponse;
 
-  const muniCd = json.results?.muniCd;
-  const townName = json.results?.lv01Nm;
+  if (!data.features) return null;
 
-  if (!muniCd || !townName) return null;
+  // ポイントが含まれる feature を探す
+  const targetPos = [lon, lat];
+  let hitFeature: GeoJSONFeature | null = null;
 
-  // --- 2. muni コード → 都道府県・市区町村名 を取得 ---
-  // ★ muni.js は JS ファイルなので JSON ではない
-  const muniJsUrl = "https://maps.gsi.go.jp/js/muni.js"; // http → https に修正
+  for (const feature of data.features) {
+    if (!feature.geometry) continue;
 
-  const muniRes = await fetch(muniJsUrl);
-  if (!muniRes.ok) {
-    // 都道府県・市区町村が取れなくても町名だけ返す
-    return townName;
+    let coords = feature.geometry.coordinates;
+    if (feature.geometry.type !== "MultiPolygon") {
+      coords = [coords as number[][][]];
+    }
+
+    for (const polygon of coords as number[][][][]) {
+      // 外側のポリゴンでチェック
+      let ret = isPointInPolygon(targetPos, polygon[0]);
+      if (ret) {
+        // くりぬきポリゴン内なら除外
+        for (let k = 1; k < polygon.length; k++) {
+          const ret2 = isPointInPolygon(targetPos, polygon[k]);
+          if (ret2) {
+            ret = false;
+            break;
+          }
+        }
+        if (ret) {
+          hitFeature = feature;
+          break;
+        }
+      }
+    }
+    if (hitFeature) break;
   }
 
-  const muniJsText = await muniRes.text();
+  if (!hitFeature || !hitFeature.properties) return null;
 
-  // 例: GSI.MUNI_ARRAY["13101"] = '13,東京都,13101,千代田区';
-  const pattern = new RegExp(
-    String.raw`GSI\.MUNI_ARRAY\["${muniCd}"\]\s*=\s*'([^']+)'`,
-  );
-  const match = muniJsText.match(pattern);
+  const properties = hitFeature.properties;
 
-  if (!match) {
-    // 対応が見つからなければとりあえず町名だけ返す
-    return townName;
-  }
+  // 漢字の住所を生成
+  const kanji =
+    (properties.pref || "") +
+    (properties.muni || "") +
+    (properties.LV01 || "");
 
-  const record = match[1]; // "13,東京都,13101,千代田区"
-  const [, prefecture, , city] = record.split(",");
+  // かなの住所を生成
+  const kana =
+    (properties.pref_kana || "") +
+    (properties.muni_kana || "") +
+    (properties.Lv01_kana || "");
 
-  return `${prefecture} ${city} ${townName}`;
+  return {
+    kana,
+    kanji,
+  };
 }
