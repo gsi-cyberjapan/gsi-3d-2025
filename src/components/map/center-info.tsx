@@ -143,11 +143,11 @@ export const CenterInfo = ({ mapId }: Props) => {
             "text-foreground": !isAddressPending && !isMoving,
           })}
         >
-          {address
-            ? addressViewMode === "kanji"
-              ? address.kanji
-              : address.kana
-            : "-"}
+          {(() => {
+            if (!address) return "-";
+            if (addressViewMode === "kanji") return address.kanji;
+            return address.kana;
+          })()}
         </div>
         <table>
           <tbody>

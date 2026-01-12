@@ -146,4 +146,11 @@ export const GEOCODING_CONFIG = {
   /** GSI Reverse Geocoder URL */
   REVERSE_GEOCODE_URL:
     "https://mreversegeocoder.gsi.go.jp/reverse-geocoder/LonLatToAddress",
+  /** GSI Address Tile (GeoJSON) Config */
+  ADDRESS_TILE: {
+    /** ベースURL */
+    BASE_URL: "https://cyberjapandata.gsi.go.jp/xyz/lv01_plg",
+    /** ズームレベル */
+    ZOOM: 14,
+  },
 } as const;

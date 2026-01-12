@@ -3,6 +3,8 @@
  * 国土地理院 lv01_plg GeoJSON を使用
  */
 
+import { GEOCODING_CONFIG } from "@/lib/config";
+
 interface GeoJSONFeature {
   type: string;
   geometry?: {
@@ -82,11 +84,12 @@ export async function getAddressFromLatLng(
   lat: number,
   lon: number,
 ): Promise<AddressResult | null> {
-  // タイル座標を計算 (zoom level 14)
-  const tileInfo = getTileInfo(lat, lon, 14);
+  // タイル座標を計算
+  const zoom = GEOCODING_CONFIG.ADDRESS_TILE.ZOOM;
+  const tileInfo = getTileInfo(lat, lon, zoom);
 
   // GeoJSON を取得
-  const url = `https://cyberjapandata.gsi.go.jp/xyz/lv01_plg/14/${tileInfo.x.toString()}/${tileInfo.y.toString()}.geojson`;
+  const url = `${GEOCODING_CONFIG.ADDRESS_TILE.BASE_URL}/${zoom.toString()}/${tileInfo.x.toString()}/${tileInfo.y.toString()}.geojson`;
   const res = await fetch(url);
   if (!res.ok) return null;
 
