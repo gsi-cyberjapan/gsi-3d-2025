@@ -64,19 +64,13 @@ function isPointInPolygon(point: number[], polygon: number[][]): boolean {
     if (polygon[i][1] <= point[1] && polygon[i + 1][1] > point[1]) {
       const vt =
         (point[1] - polygon[i][1]) / (polygon[i + 1][1] - polygon[i][1]);
-      if (
-        point[0] <
-        polygon[i][0] + vt * (polygon[i + 1][0] - polygon[i][0])
-      ) {
+      if (point[0] < polygon[i][0] + vt * (polygon[i + 1][0] - polygon[i][0])) {
         ++wn;
       }
     } else if (polygon[i][1] > point[1] && polygon[i + 1][1] <= point[1]) {
       const vt =
         (point[1] - polygon[i][1]) / (polygon[i + 1][1] - polygon[i][1]);
-      if (
-        point[0] <
-        polygon[i][0] + vt * (polygon[i + 1][0] - polygon[i][0])
-      ) {
+      if (point[0] < polygon[i][0] + vt * (polygon[i + 1][0] - polygon[i][0])) {
         --wn;
       }
     }
@@ -92,7 +86,7 @@ export async function getAddressFromLatLng(
   const tileInfo = getTileInfo(lat, lon, 14);
 
   // GeoJSON を取得
-  const url = `https://cyberjapandata.gsi.go.jp/xyz/lv01_plg/14/${tileInfo.x}/${tileInfo.y}.geojson`;
+  const url = `https://cyberjapandata.gsi.go.jp/xyz/lv01_plg/14/${tileInfo.x.toString()}/${tileInfo.y.toString()}.geojson`;
   const res = await fetch(url);
   if (!res.ok) return null;
 
@@ -139,9 +133,7 @@ export async function getAddressFromLatLng(
 
   // 漢字の住所を生成
   const kanji =
-    (properties.pref || "") +
-    (properties.muni || "") +
-    (properties.LV01 || "");
+    (properties.pref || "") + (properties.muni || "") + (properties.LV01 || "");
 
   // かなの住所を生成
   const kana =
