@@ -289,7 +289,7 @@ export const InputColor = ({
   useEffect(() => {
     updateColorValues(value);
     setHexInputValue(value.toUpperCase());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [value]);
 
   // Get current hex value for display

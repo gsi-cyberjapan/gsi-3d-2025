@@ -58,7 +58,9 @@ export const DrawModeSelector = () => {
           <Tooltip key={m.value}>
             <TooltipTrigger asChild>
               <TabsTrigger
-                disabled={["text", "point", "select"].includes(m.value)}
+                disabled={["text", "point", "select", "polygon"].includes(
+                  m.value,
+                )}
                 className="text-xs size-5 rounded-sm aria-selected:bg-blue-600 dark:aria-selected:text-foreground"
                 value={m.value}
               >

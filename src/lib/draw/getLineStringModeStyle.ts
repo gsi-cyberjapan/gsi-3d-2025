@@ -34,7 +34,7 @@ export const getLineStringModeStyle = (
       const ss = td.getSnapshotFeature(id);
       const lineWidth = ss?.properties.lineStringWidth;
 
-      if (typeof lineWidth === "number" && lineWidth > 0) {
+      if (typeof lineWidth === "number") {
         return lineWidth;
       }
 

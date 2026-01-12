@@ -53,7 +53,7 @@ export const getCircleModeStyle = (
       const ss = td.getSnapshotFeature(id);
       const outlineWidth = ss?.properties.outlineWidth;
 
-      if (typeof outlineWidth === "number" && outlineWidth > 0) {
+      if (typeof outlineWidth === "number") {
         return outlineWidth;
       }
 

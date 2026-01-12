@@ -18,19 +18,26 @@ export const DrawFeatureEditForm = ({ feature }: FeatureEditFormProps) => {
   const [properties, setProperties] = useState(
     td?.getSnapshotFeature(feature.featureId)?.properties,
   );
-
+  const mode = properties?.mode as string | undefined;
+  const isLine = mode && ["linestring", "freehand-linestring"].includes(mode);
+  const [widthInput, setWidthInput] = useState<string>(
+    String(
+      properties
+        ? ((isLine
+            ? properties.lineStringWidth
+            : properties.outlineWidth) as number)
+        : 2,
+    ),
+  );
   const handlePropertiesChange = (p: GeoJSONStoreFeatures["properties"]) => {
     setProperties(p);
     td?.updateFeatureProperties(feature.featureId, omit(p, "mode", "selected"));
   };
+  const isPolygonOrCircle = mode && ["circle", "polygon"].includes(mode);
 
   if (!properties) {
     return null;
   }
-
-  const mode = properties.mode as string;
-  const isPolygonOrCircle = ["circle", "polygon"].includes(mode);
-  const isLine = ["linestring", "freehand-linestring"].includes(mode);
 
   return (
     <FieldGroup className="gap-4">
@@ -73,22 +80,16 @@ export const DrawFeatureEditForm = ({ feature }: FeatureEditFormProps) => {
         <Input
           type="number"
           className="h-7"
-          min="1"
-          max="20"
-          step="1"
-          value={
-            (isLine
-              ? properties.lineStringWidth
-              : properties.outlineWidth) as number
-          }
+          value={widthInput}
           onChange={(e) => {
-            const value = Number(e.target.value);
-            if (value > 0) {
+            setWidthInput(e.target.value);
+            const numValue = Number(e.target.value);
+            if (!isNaN(numValue) && numValue >= 0) {
               handlePropertiesChange({
                 ...properties,
                 ...(isLine
-                  ? { lineStringWidth: value }
-                  : { outlineWidth: value }),
+                  ? { lineStringWidth: numValue }
+                  : { outlineWidth: numValue }),
               });
             }
           }}

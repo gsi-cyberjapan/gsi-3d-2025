@@ -51,7 +51,7 @@ export const createDrawSlice: StateCreator<GlobalState, [], [], DrawState> = (
       };
     });
   },
-  drawMode: "point",
+  drawMode: "circle",
   setDrawMode: (mode) => {
     set(() => {
       return {
