@@ -289,7 +289,6 @@ export const InputColor = ({
   useEffect(() => {
     updateColorValues(value);
     setHexInputValue(value.toUpperCase());
-     
   }, [value]);
 
   // Get current hex value for display
