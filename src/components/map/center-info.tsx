@@ -178,10 +178,16 @@ export const CenterInfo = ({ mapId }: Props) => {
       </div>
       <Tabs value={addressViewMode} onValueChange={setAddressViewMode}>
         <TabsList className="h-6 rounded-sm">
-          <TabsTrigger className="text-xs size-5 rounded-sm" value="kanji">
+          <TabsTrigger
+            className="text-xs size-5 rounded-sm dark:data-[state=active]:bg-blue-600"
+            value="kanji"
+          >
             漢
           </TabsTrigger>
-          <TabsTrigger className="text-xs size-5 rounded-sm" value="kana">
+          <TabsTrigger
+            className="text-xs size-5 rounded-sm dark:data-[state=active]:bg-blue-600"
+            value="kana"
+          >
             あ
           </TabsTrigger>
         </TabsList>
