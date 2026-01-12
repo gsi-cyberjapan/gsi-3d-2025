@@ -2,12 +2,20 @@ import { TerraDraw, GeoJSONStoreFeatures } from "terra-draw";
 
 const DEFAULT_LINESTRING_COLOR = "#0011FFFF";
 const DEFAULT_LINESTRING_WIDTH = 2;
+const DEFAULT_CLOSING_POINT_COLOR = "#FFFFFFFF";
+const DEFAULT_SNAPPINGT_POINT_COLOR = "#FFFFFFFF";
+const DEFAULT_CLOSING_POINT_OUTLINE_COLOR = "#0011FFFF";
+const DEFAULT_SNAPPING_POINT_OUTLINE_COLOR = "#0011FFFF";
 
 export const getLineStringModeStyle = (
   td: TerraDraw,
 ): Partial<{
   lineStringColor: (feature: GeoJSONStoreFeatures) => `#${string}`;
   lineStringWidth: (feature: GeoJSONStoreFeatures) => number;
+  snappingPointColor: `#${string}`;
+  snappingPointOutlineColor: `#${string}`;
+  closingPointColor: `#${string}`;
+  closingPointOutlineColor: `#${string}`;
 }> => {
   return {
     lineStringColor: ({ id }) => {
@@ -43,5 +51,9 @@ export const getLineStringModeStyle = (
       });
       return DEFAULT_LINESTRING_WIDTH;
     },
+    closingPointColor: DEFAULT_CLOSING_POINT_COLOR,
+    closingPointOutlineColor: DEFAULT_CLOSING_POINT_OUTLINE_COLOR,
+    snappingPointColor: DEFAULT_SNAPPINGT_POINT_COLOR,
+    snappingPointOutlineColor: DEFAULT_SNAPPING_POINT_OUTLINE_COLOR,
   };
 };
