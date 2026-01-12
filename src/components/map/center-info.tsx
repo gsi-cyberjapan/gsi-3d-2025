@@ -176,11 +176,7 @@ export const CenterInfo = ({ mapId }: Props) => {
           </tbody>
         </table>
       </div>
-      <Tabs
-        defaultValue="account"
-        value={addressViewMode}
-        onValueChange={setAddressViewMode}
-      >
+      <Tabs value={addressViewMode} onValueChange={setAddressViewMode}>
         <TabsList className="h-6 rounded-sm">
           <TabsTrigger className="text-xs size-5 rounded-sm" value="kanji">
             漢
