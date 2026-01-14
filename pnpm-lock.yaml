@@ -20,6 +20,9 @@ importers:
       '@dnd-kit/utilities':
         specifier: ^3.2.2
         version: 3.2.2(react@19.2.0)
+      '@fulcrum/tokml':
+        specifier: ^0.7.2
+        version: 0.7.2
       '@geolonia/normalize-japanese-addresses':
         specifier: ^3.1.3
         version: 3.1.3
@@ -345,6 +348,10 @@ packages:
 
   '@floating-ui/utils@0.2.10':
     resolution: {integrity: sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ==}
+
+  '@fulcrum/tokml@0.7.2':
+    resolution: {integrity: sha512-FHq8k2nL0bITqmLDh2G6o9wuNYI08F+CmxH4prtM56lfSUpf9fMhwZhlBz4qxPIBuWl6OGUCUx+Md3FK2TTRBg==}
+    hasBin: true
 
   '@geolonia/japanese-addresses-v2@0.0.5':
     resolution: {integrity: sha512-oQsBRSCGVp18xDpHMGjudJuOmr5NNu4D+LSljAGW2w2oyDTa7KM34Id6ZSILBs/PqvKGfvpMCb8aOfW+tblMWg==}
@@ -3719,6 +3726,11 @@ snapshots:
       react-dom: 19.2.0(react@19.2.0)
 
   '@floating-ui/utils@0.2.10': {}
+
+  '@fulcrum/tokml@0.7.2':
+    dependencies:
+      minimist: 1.2.8
+      rw: 1.3.3
 
   '@geolonia/japanese-addresses-v2@0.0.5': {}
 
