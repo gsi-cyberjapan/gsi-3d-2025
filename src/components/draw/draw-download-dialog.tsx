@@ -119,7 +119,7 @@ export const DrawDownloadDialog = ({
           {hasFeatures && (
             <div className="flex flex-col gap-2">
               <Label className="text-sm font-medium">プレビュー</Label>
-              <pre className="bg-muted max-h-48 overflow-auto rounded-md p-3 text-xs">
+              <pre className="bg-muted max-h-48 overflow-auto whitespace-pre-wrap break-all rounded-md p-3 text-xs">
                 <code>{previewContent}</code>
               </pre>
             </div>
