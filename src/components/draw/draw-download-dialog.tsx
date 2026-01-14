@@ -145,13 +145,13 @@ export const DrawDownloadDialog = ({
           </Button>
           <Button
             size="sm"
+            className="w-[100px]"
             onClick={() => {
               void handleDownload();
             }}
             disabled={!hasFeatures || isDownloading}
           >
-            {isDownloading && <Spinner className="mr-2" />}
-            {isDownloading ? "ダウンロード中..." : "ダウンロード"}
+            {isDownloading ? <Spinner /> : "ダウンロード"}
           </Button>
         </DialogFooter>
       </DialogContent>
