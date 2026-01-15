@@ -15,8 +15,8 @@ import {
   TerraDrawFreehandLineStringMode,
   TerraDrawPolygonMode,
   TerraDrawSelectMode,
-  ValidateNotSelfIntersecting,
 } from "terra-draw";
+import { validatePolygonNotSelfIntersecting } from "@/lib/draw/validatePolygonNotSelfIntersecting";
 import { TerraDrawMapLibreGLAdapter } from "terra-draw-maplibre-gl-adapter";
 
 export const DrawController = ({ mapId }: { mapId: MapId }) => {
@@ -61,7 +61,7 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
           new TerraDrawLineStringMode(),
           new TerraDrawFreehandLineStringMode(),
           new TerraDrawPolygonMode({
-            validation: ValidateNotSelfIntersecting,
+            validation: validatePolygonNotSelfIntersecting,
           }),
           new TerraDrawSelectMode(),
         ],
