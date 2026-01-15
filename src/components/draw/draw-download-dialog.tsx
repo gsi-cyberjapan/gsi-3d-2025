@@ -145,7 +145,7 @@ export const DrawDownloadDialog = ({
           </Button>
           <Button
             size="sm"
-            className="w-[100px]"
+            className="w-26"
             onClick={() => {
               void handleDownload();
             }}
