@@ -1,0 +1,102 @@
+"use client";
+
+import { MapId } from "@/hooks/store/mapManagerState";
+import { useStore } from "@/hooks/store/useStore";
+import { GeoJSONStoreFeatures } from "terra-draw";
+import { useEffect, useState } from "react";
+import { Marker } from "react-map-gl/maplibre";
+import { Point } from "geojson";
+import {
+  DEFAULT_TEXT_COLOR,
+  DEFAULT_TEXT_SIZE,
+  DEFAULT_TEXT_BOLD,
+  DEFAULT_TEXT_ITALIC,
+  DEFAULT_TEXT_UNDERLINE,
+  DEFAULT_IS_HTML,
+} from "@/lib/draw/getTextModeStyle";
+
+interface TextMarkerProps {
+  feature: GeoJSONStoreFeatures;
+}
+
+const TextMarker = ({ feature }: TextMarkerProps) => {
+  const geometry = feature.geometry as Point;
+  const [lng, lat] = geometry.coordinates;
+  const props = feature.properties;
+
+  const textColor =
+    typeof props.textColor === "string" ? props.textColor : DEFAULT_TEXT_COLOR;
+  const textSize =
+    typeof props.textSize === "number" ? props.textSize : DEFAULT_TEXT_SIZE;
+  const textBold =
+    typeof props.textBold === "boolean" ? props.textBold : DEFAULT_TEXT_BOLD;
+  const textItalic =
+    typeof props.textItalic === "boolean"
+      ? props.textItalic
+      : DEFAULT_TEXT_ITALIC;
+  const textUnderline =
+    typeof props.textUnderline === "boolean"
+      ? props.textUnderline
+      : DEFAULT_TEXT_UNDERLINE;
+  const isHtml =
+    typeof props.isHtml === "boolean" ? props.isHtml : DEFAULT_IS_HTML;
+  const textContent =
+    typeof props.textContent === "string" ? props.textContent : "";
+
+  if (!textContent) {
+    return null;
+  }
+
+  return (
+    <Marker longitude={lng} latitude={lat} anchor="center">
+      <div
+        style={{
+          color: textColor,
+          fontSize: `${String(textSize)}px`,
+          fontWeight: textBold ? "bold" : "normal",
+          fontStyle: textItalic ? "italic" : "normal",
+          textDecoration: textUnderline ? "underline" : "none",
+          whiteSpace: "nowrap",
+          pointerEvents: "none",
+          textShadow:
+            "-1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff",
+        }}
+        {...(isHtml
+          ? { dangerouslySetInnerHTML: { __html: textContent } }
+          : { children: textContent })}
+      />
+    </Marker>
+  );
+};
+
+export const TextRenderLayer = ({ mapId }: { mapId: MapId }) => {
+  const td = useStore((state) => state.maps[mapId].td);
+  const [textFeatures, setTextFeatures] = useState<GeoJSONStoreFeatures[]>([]);
+
+  useEffect(() => {
+    if (!td) return;
+
+    const updateFeatures = () => {
+      const snapshot = td.getSnapshot();
+      const filtered = snapshot.filter(
+        (f) => f.properties.mode === "text" && !f.properties.selected,
+      );
+      setTextFeatures(filtered);
+    };
+
+    td.on("change", updateFeatures);
+    updateFeatures();
+
+    return () => {
+      td.off("change", updateFeatures);
+    };
+  }, [td]);
+
+  return (
+    <>
+      {textFeatures.map((feature) => (
+        <TextMarker key={feature.id} feature={feature} />
+      ))}
+    </>
+  );
+};

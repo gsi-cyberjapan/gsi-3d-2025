@@ -2,9 +2,11 @@
 
 import { MapId } from "@/hooks/store/mapManagerState";
 import { useStore } from "@/hooks/store/useStore";
+import { createTextMode } from "@/lib/draw/createTextMode";
 import { getCircleModeStyle } from "@/lib/draw/getCircleModeStyle";
 import { getLineStringModeStyle } from "@/lib/draw/getLineStringModeStyle";
 import { getPolygonModeStyle } from "@/lib/draw/getPolygonModeStyle";
+import { getTextModeStyle } from "@/lib/draw/getTextModeStyle";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useMap } from "react-map-gl/maplibre";
 import {
@@ -63,6 +65,7 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
           new TerraDrawPolygonMode({
             validation: ValidateNotSelfIntersecting,
           }),
+          createTextMode(),
           new TerraDrawSelectMode(),
         ],
       });
@@ -79,6 +82,9 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
       });
       drawRef.current.updateModeOptions("polygon", {
         styles: getPolygonModeStyle(draw),
+      });
+      drawRef.current.updateModeOptions("text", {
+        styles: getTextModeStyle(draw),
       });
       draw.on("finish", handleDrawFinish);
 

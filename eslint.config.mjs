@@ -58,6 +58,8 @@ const eslintConfig = defineConfig([
       "react/self-closing-comp": "error",
       "react/jsx-pascal-case": "error",
       "react/no-danger": "error",
+      // TypeScript provides type checking for props, so prop-types is not needed
+      "react/prop-types": "off",
     },
   },
 
