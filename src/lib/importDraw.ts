@@ -1,6 +1,15 @@
 import { TerraDraw, GeoJSONStoreFeatures } from "terra-draw";
 import { kml } from "@tmcw/togeojson";
 import { DrawMode } from "@/hooks/store/drawState";
+import {
+  DEFAULT_TEXT_COLOR,
+  DEFAULT_TEXT_SIZE,
+  DEFAULT_TEXT_BOLD,
+  DEFAULT_TEXT_ITALIC,
+  DEFAULT_TEXT_UNDERLINE,
+  DEFAULT_IS_HTML,
+  DEFAULT_TEXT_CONTENT,
+} from "@/lib/draw/getTextModeStyle";
 
 export type ImportFormat = "geojson" | "kml";
 
@@ -29,9 +38,21 @@ interface SimplestyleProperties {
 /**
  * Map geometry type to TerraDraw mode
  */
-function getModeFromGeometry(geometryType: string): DrawMode | null {
+function getModeFromGeometry(
+  geometryType: string,
+  properties: Record<string, unknown>,
+): DrawMode | null {
   switch (geometryType) {
     case "Point":
+      // Check if this point should be a text feature
+      // Text features have textContent, text, or name properties
+      if (
+        properties.textContent !== undefined ||
+        properties.text !== undefined ||
+        properties.name !== undefined
+      ) {
+        return "text";
+      }
       return "point";
     case "LineString":
       return "linestring";
@@ -96,6 +117,51 @@ function convertSimplestyleToTerraDraw(
   delete terraDrawProps["fill-opacity"];
 
   return terraDrawProps;
+}
+
+/**
+ * Initialize text properties for text mode features
+ */
+function initializeTextProperties(
+  properties: Record<string, unknown>,
+): Record<string, unknown> {
+  const textProps: Record<string, unknown> = { ...properties };
+
+  // Set textContent from various possible sources
+  if (!textProps.textContent) {
+    textProps.textContent =
+      (properties.text as string) ||
+      (properties.name as string) ||
+      (properties.title as string) ||
+      DEFAULT_TEXT_CONTENT;
+  }
+
+  // Initialize text styling properties with defaults if missing
+  if (textProps.textColor === undefined) {
+    textProps.textColor = DEFAULT_TEXT_COLOR;
+  }
+  if (textProps.textSize === undefined) {
+    textProps.textSize = DEFAULT_TEXT_SIZE;
+  }
+  if (textProps.textBold === undefined) {
+    textProps.textBold = DEFAULT_TEXT_BOLD;
+  }
+  if (textProps.textItalic === undefined) {
+    textProps.textItalic = DEFAULT_TEXT_ITALIC;
+  }
+  if (textProps.textUnderline === undefined) {
+    textProps.textUnderline = DEFAULT_TEXT_UNDERLINE;
+  }
+  if (textProps.isHtml === undefined) {
+    textProps.isHtml = DEFAULT_IS_HTML;
+  }
+
+  // Clean up alternative property names
+  delete textProps.text;
+  delete textProps.name;
+  delete textProps.title;
+
+  return textProps;
 }
 
 /**
@@ -236,9 +302,11 @@ export function importDrawData(
 
     for (const feature of featureCollection.features) {
       const geometryType = feature.geometry.type;
+      const properties = feature.properties || {};
 
       // Check if geometry type is supported
-      const mode = getModeFromGeometry(geometryType);
+      // Pass properties to detect text features
+      const mode = getModeFromGeometry(geometryType, properties);
       if (!mode) {
         result.failed++;
         result.errors.push(
@@ -254,12 +322,19 @@ export function importDrawData(
         continue;
       }
 
-      // Convert properties
-      const properties = feature.properties || {};
-      const terraDrawProps = convertSimplestyleToTerraDraw(
-        properties as SimplestyleProperties,
-        geometryType,
-      );
+      // Convert properties based on feature mode
+      let terraDrawProps: Record<string, unknown>;
+
+      if (mode === "text") {
+        // Initialize text properties
+        terraDrawProps = initializeTextProperties(properties);
+      } else {
+        // Convert simplestyle for geometric features
+        terraDrawProps = convertSimplestyleToTerraDraw(
+          properties as SimplestyleProperties,
+          geometryType,
+        );
+      }
 
       // Set mode and source
       terraDrawProps.mode = mode;
