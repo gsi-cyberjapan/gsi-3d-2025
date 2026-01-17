@@ -32,7 +32,9 @@ export const CenterInfo = ({ mapId }: Props) => {
   );
   const [addressViewMode, setAddressViewMode] = useState("kanji");
   const [infoMode, setInfoMode] = useState<InfoMode>("center");
-  const [stableViewState, setStableViewState] = useState<ViewState | null>(null);
+  const [stableViewState, setStableViewState] = useState<ViewState | null>(
+    null,
+  );
   const [isMoving, setIsMoving] = useState(false);
   const frameRef = useRef<number | null>(null);
   const debounceRef = useRef<number | null>(null);
@@ -171,80 +173,76 @@ export const CenterInfo = ({ mapId }: Props) => {
     );
   }
   return (
-      <div className="text-xs text-muted-foreground">
-       
-        <div
-          className={cn("font-semibold", {
-            "text-foreground": isAddressReady,
-          })}
-        >
-          {(() => {
-            if (!address) return "-";
-            if (addressViewMode === "kanji") return address.kanji;
-            return address.kana;
-          })()}
-        </div>
-        <table>
-          <tbody>
-            <tr>
-              <td className="pr-2">緯度</td>
-              <td>{displayViewState?.latitude ?? "-"}</td>
-            </tr>
-            <tr>
-              <td className="pr-2">経度</td>
-              <td>{displayViewState?.longitude ?? "-"}</td>
-            </tr>
-            <tr>
-              <td className="pr-2">ズーム</td>
-              <td>{displayViewState?.zoom ?? "-"}</td>
-            </tr>
-            <tr>
-              <td className="pr-2">UTM</td>
-              <td>{utm ?? "-"}</td>
-            </tr>
-            <tr>
-              <td className="pr-2">標高</td>
-              <td>
-                {elevation != undefined ? `${elevation.toString()}m` : "-"}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <div className="flex gap-2 py-1">
-          <Tabs value={addressViewMode} onValueChange={setAddressViewMode}>
-            <TabsList className="h-6 rounded-sm">
-              <TabsTrigger
-                className="text-xs size-5 rounded-sm dark:data-[state=active]:bg-blue-600"
-                value="kanji"
-              >
-                漢
-              </TabsTrigger>
-              <TabsTrigger
-                className="text-xs size-5 rounded-sm dark:data-[state=active]:bg-blue-600"
-                value="kana"
-              >
-                あ
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-          <Tabs value={infoMode} onValueChange={handleInfoModeChange}>
-            <TabsList className="h-6 rounded-sm">
-              <TabsTrigger
-                className="text-xs px-2 size-5 rounded-sm dark:data-[state=active]:bg-blue-600"
-                value="center"
-              >
-                <Locate />
-              </TabsTrigger>
-              <TabsTrigger
-                className="text-xs px-2 size-5 rounded-sm dark:data-[state=active]:bg-blue-600"
-                value="click"
-              >
-                <Pointer />
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
+    <div className="text-xs text-muted-foreground">
+      <div
+        className={cn("font-semibold", {
+          "text-foreground": isAddressReady,
+        })}
+      >
+        {(() => {
+          if (!address) return "-";
+          if (addressViewMode === "kanji") return address.kanji;
+          return address.kana;
+        })()}
       </div>
-      
+      <table>
+        <tbody>
+          <tr>
+            <td className="pr-2">緯度</td>
+            <td>{displayViewState?.latitude ?? "-"}</td>
+          </tr>
+          <tr>
+            <td className="pr-2">経度</td>
+            <td>{displayViewState?.longitude ?? "-"}</td>
+          </tr>
+          <tr>
+            <td className="pr-2">ズーム</td>
+            <td>{displayViewState?.zoom ?? "-"}</td>
+          </tr>
+          <tr>
+            <td className="pr-2">UTM</td>
+            <td>{utm ?? "-"}</td>
+          </tr>
+          <tr>
+            <td className="pr-2">標高</td>
+            <td>{elevation != undefined ? `${elevation.toString()}m` : "-"}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div className="flex gap-2 py-1">
+        <Tabs value={addressViewMode} onValueChange={setAddressViewMode}>
+          <TabsList className="h-6 rounded-sm">
+            <TabsTrigger
+              className="text-xs size-5 rounded-sm dark:data-[state=active]:bg-blue-600"
+              value="kanji"
+            >
+              漢
+            </TabsTrigger>
+            <TabsTrigger
+              className="text-xs size-5 rounded-sm dark:data-[state=active]:bg-blue-600"
+              value="kana"
+            >
+              あ
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+        <Tabs value={infoMode} onValueChange={handleInfoModeChange}>
+          <TabsList className="h-6 rounded-sm">
+            <TabsTrigger
+              className="text-xs px-2 size-5 rounded-sm dark:data-[state=active]:bg-blue-600"
+              value="center"
+            >
+              <Locate />
+            </TabsTrigger>
+            <TabsTrigger
+              className="text-xs px-2 size-5 rounded-sm dark:data-[state=active]:bg-blue-600"
+              value="click"
+            >
+              <Pointer />
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
+    </div>
   );
 };
