@@ -5,7 +5,6 @@ import { useStore } from "@/hooks/store/useStore";
 import { GeoJSONStoreFeatures } from "terra-draw";
 import { useEffect, useState } from "react";
 import { Marker } from "react-map-gl/maplibre";
-import { Point } from "geojson";
 import {
   DEFAULT_TEXT_COLOR,
   DEFAULT_TEXT_SIZE,
@@ -20,7 +19,10 @@ interface TextMarkerProps {
 }
 
 const TextMarker = ({ feature }: TextMarkerProps) => {
-  const geometry = feature.geometry as Point;
+  const geometry = feature.geometry;
+  if (geometry.type !== "Point") {
+    return null;
+  }
   const [lng, lat] = geometry.coordinates;
   const props = feature.properties;
 
