@@ -9,28 +9,63 @@ This is a 3D map visualization application built with Next.js 16 (App Router), R
 ## Development Commands
 
 ```bash
-# Development server
-pnpm dev
-
-# Build for production (static export)
-pnpm build
-
-# Serve production build locally
-pnpm start
-
-# Linting
-pnpm lint
-
-# Auto-fix linting and formatting issues
-pnpm fix
-
-# Check formatting
-pnpm format
+pnpm dev       # Development server
+pnpm build     # Build for production (static export)
+pnpm lint      # Linting
+pnpm fix       # Auto-fix linting and formatting issues
+pnpm format    # Check formatting
 ```
 
-**Package Manager:** This project uses `pnpm` (version 10.13.1). Always use `pnpm` for package management.
+**Package Manager:** `pnpm` (10.13.1) | **Node:** 24.4.1 (Volta)
 
-**Node Version:** 24.4.1 (managed via Volta)
+## Code Quality Requirements
+
+### CRITICAL RULES - YOU MUST FOLLOW THESE
+
+#### ❌ eslint-disable is PROHIBITED
+
+Never use `eslint-disable` comments in any form. If ESLint reports an error, fix the underlying issue instead of disabling the rule.
+
+#### ✅ Always Verify After Implementation
+
+After making any code changes, you **MUST** run these commands and ensure they all succeed:
+
+```bash
+pnpm lint      # Must pass with no errors
+pnpm build     # Must complete successfully
+pnpm format    # Must pass with no formatting issues
+```
+
+**Never skip this verification step.** If any command fails, fix the issues before considering the task complete.
+
+#### ✅ React Best Practices
+
+**Avoid Unnecessary `useEffect` Hooks:**
+- Don't use `useEffect` to synchronize state that can be derived
+- Prefer derived state from props or store values
+- Use `useEffect` only for true side effects (subscriptions, API calls, etc.)
+- Always specify dependency arrays for `useEffect`, `useMemo`, `useCallback`
+
+#### ✅ Follow Existing Patterns
+
+**Read Before Writing:**
+- Always read existing code in the same area before implementing new features
+- Understand the established patterns and conventions
+- Match the style and structure of existing code
+
+**Naming Conventions:**
+- Components: PascalCase (e.g., `DrawController.tsx`)
+- Utilities/Hooks: camelCase (e.g., `useStore.ts`, `geocode.ts`)
+- Types/Interfaces: PascalCase (e.g., `MapId`, `DrawMode`)
+- Constants: SCREAMING_SNAKE_CASE (e.g., `BASE_LAYER_CONFIG`)
+
+**Coding Style:**
+- Arrow function components: `export const ComponentName = () => { ... }`
+- Props destructuring required
+- Self-closing tags when no children: `<Component />`
+- Boolean props without values: `<Button disabled />`
+- Use `"use client"` directive for client components
+- Import path alias: Use `@/` instead of relative paths when possible
 
 ## Architecture
 
@@ -80,47 +115,25 @@ Maps are rendered using `react-map-gl/maplibre` with a controller pattern:
 
 ### Japanese Address Geocoding
 
-Uses two services:
-1. `@geolonia/normalize-japanese-addresses` for local normalization
-2. CSIS Simple Geocoding Service for lat/lng lookup
-3. GSI MUNI master data for municipality codes
-
-Implementation: `src/lib/geocode.ts`
+Uses `@geolonia/normalize-japanese-addresses`, CSIS Simple Geocoding Service, and GSI MUNI data. Implementation: `src/lib/geocode.ts`
 
 ## Code Conventions
 
 ### Git Commit Messages
 
-From `.cursorrules`:
-- Always use Angular convention prefixes: `feat:`, `fix:`, `docs:`, `style:`, `refactor:`, `perf:`, `test:`, `chore:`
-- Keep message under 50 characters INCLUDING the prefix
-- Use imperative mood (e.g., "add feature" not "added feature")
-- No periods at the end
-- Always use English
+From `.cursorrules` - Always use Angular convention:
+- **Prefixes:** `feat:`, `fix:`, `docs:`, `style:`, `refactor:`, `perf:`, `test:`, `chore:`
+- **Length:** Under 50 characters INCLUDING the prefix
+- **Mood:** Imperative (e.g., "add feature" not "added feature")
+- **Ending:** No periods at the end
+- **Language:** Always use English
 
 ### TypeScript
 
-- Path alias: `@/*` maps to `./src/*`
-- Strict mode enabled
-- Target ES2017
-- React 19 JSX transform (`jsx: "react-jsx"`)
-
-### UI Components
-
-- Uses Radix UI primitives with custom styling
-- Tailwind CSS 4 with `@tailwindcss/postcss`
-- Theme system via `next-themes`
-- Component library in `src/components/ui/`
+- Path alias: `@/*` → `./src/*`, Strict mode, ES2017, React 19 JSX transform
 
 ## Important Implementation Details
 
 ### MapLibre GL Protocol Registration
 
 MapLibre GL and PMTiles protocol must be loaded asynchronously and cached. See `src/lib/getMaplibreWhithProtocol.ts` for the singleton pattern used to ensure protocol is only registered once.
-
-## Testing & Quality
-
-The project uses:
-- ESLint with Next.js config, Prettier integration, and unused imports plugin
-- React Query plugin for proper query usage
-- TypeScript strict mode for type safety
