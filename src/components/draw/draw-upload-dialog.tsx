@@ -119,6 +119,22 @@ export const DrawUploadDialog = ({
       // Import features
       const result = importDrawData(td, content, format, selectedFile.name);
 
+      // Force style re-evaluation for imported features
+      // TerraDraw only evaluates styles when modes are active
+      // We temporarily cycle through modes to trigger style application
+      if (result.added > 0) {
+        const currentMode = td.getMode();
+
+        // Briefly switch to select mode and back to trigger style re-evaluation
+        // This forces TerraDraw to re-render all features with their style functions
+        td.setMode("select");
+
+        // Use setTimeout to ensure the mode change is processed
+        setTimeout(() => {
+          td.setMode(currentMode);
+        }, 0);
+      }
+
       // Update UI
       setUploadResult(result);
     } catch (error) {
