@@ -3,7 +3,7 @@
 import { MapId } from "@/hooks/store/mapManagerState";
 import { useStore } from "@/hooks/store/useStore";
 import { GeoJSONStoreFeatures } from "terra-draw";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Marker } from "react-map-gl/maplibre";
 import {
   DEFAULT_TEXT_COLOR,
@@ -45,6 +45,7 @@ const TextMarker = ({ feature }: TextMarkerProps) => {
   const textContent =
     typeof props.textContent === "string" ? props.textContent : "";
 
+  // 空のテキストは表示しない
   if (!textContent) {
     return null;
   }
@@ -58,7 +59,7 @@ const TextMarker = ({ feature }: TextMarkerProps) => {
           fontWeight: textBold ? "bold" : "normal",
           fontStyle: textItalic ? "italic" : "normal",
           textDecoration: textUnderline ? "underline" : "none",
-          whiteSpace: "nowrap",
+          whiteSpace: "pre-wrap",
           pointerEvents: "none",
           textShadow:
             "-1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff",
@@ -75,24 +76,41 @@ export const TextRenderLayer = ({ mapId }: { mapId: MapId }) => {
   const td = useStore((state) => state.maps[mapId].td);
   const [textFeatures, setTextFeatures] = useState<GeoJSONStoreFeatures[]>([]);
 
+  // TerraDraw のスナップショットを取得してテキストフィーチャーをフィルター
+  const getTextFeatures = useCallback(() => {
+    if (!td) return [];
+    const snapshot = td.getSnapshot();
+    return snapshot.filter((f) => f.properties.mode === "text");
+  }, [td]);
+
   useEffect(() => {
     if (!td) return;
 
     const updateFeatures = () => {
-      const snapshot = td.getSnapshot();
-      const filtered = snapshot.filter(
-        (f) => f.properties.mode === "text" && !f.properties.selected,
-      );
-      setTextFeatures(filtered);
+      setTextFeatures(getTextFeatures());
     };
 
+    // change イベント（ジオメトリ変更）をリッスン
     td.on("change", updateFeatures);
     updateFeatures();
 
+    // 定期的にスナップショットをポーリングしてプロパティ変更を検出
+    const intervalId = setInterval(() => {
+      const current = getTextFeatures();
+      setTextFeatures((prev) => {
+        // 配列の内容が変わっていれば更新
+        if (JSON.stringify(prev) !== JSON.stringify(current)) {
+          return current;
+        }
+        return prev;
+      });
+    }, 100);
+
     return () => {
       td.off("change", updateFeatures);
+      clearInterval(intervalId);
     };
-  }, [td]);
+  }, [td, getTextFeatures]);
 
   return (
     <>

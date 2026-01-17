@@ -50,7 +50,10 @@ export const DrawFeatureEditForm = ({ feature }: FeatureEditFormProps) => {
   });
   const handlePropertiesChange = (p: GeoJSONStoreFeatures["properties"]) => {
     setProperties(p);
-    td?.updateFeatureProperties(feature.featureId, omit(p, "mode", "selected"));
+    td?.updateFeatureProperties(
+      feature.featureId,
+      omit(p, "mode", "selected", "marker"),
+    );
   };
   const isPolygonOrCircle = mode && ["circle", "polygon"].includes(mode);
 
