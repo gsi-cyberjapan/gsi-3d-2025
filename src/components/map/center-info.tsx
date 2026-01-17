@@ -10,6 +10,7 @@ import { getUTMFromLatLng } from "@/lib/map-utils/geUTMFromLatLng";
 import { getElevationFromLatLng } from "@/lib/map-utils/getElevationFromLatLng";
 import { Skeleton } from "../ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Locate, Pointer } from "lucide-react";
 
 interface ViewState {
   latitude: number;
@@ -21,44 +22,62 @@ interface Props {
   mapId: MapId;
 }
 
+type InfoMode = "center" | "click";
+
 export const CenterInfo = ({ mapId }: Props) => {
   const map = useMap()[mapId]?.getMap();
   const [viewState, setViewState] = useState<ViewState | null>(null);
-  const [addressViewMode, setAddressViewMode] = useState("kanji");
-  const [stableViewState, setStableViewState] = useState<ViewState | null>(
+  const [clickedViewState, setClickedViewState] = useState<ViewState | null>(
     null,
   );
+  const [addressViewMode, setAddressViewMode] = useState("kanji");
+  const [infoMode, setInfoMode] = useState<InfoMode>("center");
+  const [stableViewState, setStableViewState] = useState<ViewState | null>(null);
   const [isMoving, setIsMoving] = useState(false);
   const frameRef = useRef<number | null>(null);
   const debounceRef = useRef<number | null>(null);
+  const isCenterMode = infoMode === "center";
+  const displayViewState = isCenterMode ? viewState : clickedViewState;
+  const displayStableViewState = isCenterMode
+    ? stableViewState
+    : clickedViewState;
   const { data: address, isFetching: isAddressPending } = useQuery({
-    queryKey: ["center-address", stableViewState],
+    queryKey: ["center-address", displayStableViewState],
     queryFn: async () => {
-      if (stableViewState == null) return null;
+      if (displayStableViewState == null) return null;
       return await getAddressFromLatLng(
-        stableViewState.latitude,
-        stableViewState.longitude,
+        displayStableViewState.latitude,
+        displayStableViewState.longitude,
       );
     },
     placeholderData: (previous) => previous,
     staleTime: 1000 * 60 * 5,
   });
   const { data: elevation } = useQuery({
-    queryKey: ["center-elevetion", stableViewState],
+    queryKey: ["center-elevetion", displayStableViewState],
     queryFn: async () => {
-      if (stableViewState == null) return null;
+      if (displayStableViewState == null) return null;
       return await getElevationFromLatLng(
-        stableViewState.latitude,
-        stableViewState.longitude,
+        displayStableViewState.latitude,
+        displayStableViewState.longitude,
       );
     },
     placeholderData: (previous) => previous,
     staleTime: 1000 * 60 * 5,
   });
   const utm = useMemo(() => {
-    if (viewState === null) return null;
-    return getUTMFromLatLng(viewState.latitude, viewState.longitude);
-  }, [viewState]);
+    if (displayViewState === null) return null;
+    return getUTMFromLatLng(
+      displayViewState.latitude,
+      displayViewState.longitude,
+    );
+  }, [displayViewState]);
+  const isAddressReady = !isAddressPending && (isCenterMode ? !isMoving : true);
+  const handleInfoModeChange = useCallback((value: string) => {
+    if (value === "center" || value === "click") {
+      setInfoMode(value);
+    }
+  }, []);
 
   const commitStableViewState = useCallback(() => {
     if (!map) return;
@@ -104,14 +123,30 @@ export const CenterInfo = ({ mapId }: Props) => {
     }, 300);
   }, [commitStableViewState, map]);
 
+  const handleMapOnClick = useCallback(
+    (event: { lngLat: { lat: number; lng: number } }) => {
+      if (!map) return;
+      const zoom = map.getZoom();
+      setClickedViewState({
+        latitude: event.lngLat.lat,
+        longitude: event.lngLat.lng,
+        zoom,
+      });
+      setInfoMode("click");
+    },
+    [map],
+  );
+
   useEffect(() => {
     if (!map) return;
 
     void map.once("load", commitStableViewState);
     map.on("move", handleMapOnMove);
+    map.on("click", handleMapOnClick);
 
     return () => {
       map.off("move", handleMapOnMove);
+      map.off("click", handleMapOnClick);
 
       if (frameRef.current != null) {
         cancelAnimationFrame(frameRef.current);
@@ -122,7 +157,7 @@ export const CenterInfo = ({ mapId }: Props) => {
         debounceRef.current = null;
       }
     };
-  }, [commitStableViewState, handleMapOnMove, map]);
+  }, [commitStableViewState, handleMapOnMove, map, handleMapOnClick]);
 
   if (!viewState) {
     return (
@@ -136,11 +171,11 @@ export const CenterInfo = ({ mapId }: Props) => {
     );
   }
   return (
-    <div className="flex gap-2 justify-between w-full">
       <div className="text-xs text-muted-foreground">
+       
         <div
           className={cn("font-semibold", {
-            "text-foreground": !isAddressPending && !isMoving,
+            "text-foreground": isAddressReady,
           })}
         >
           {(() => {
@@ -153,15 +188,15 @@ export const CenterInfo = ({ mapId }: Props) => {
           <tbody>
             <tr>
               <td className="pr-2">緯度</td>
-              <td>{viewState.latitude}</td>
+              <td>{displayViewState?.latitude ?? "-"}</td>
             </tr>
             <tr>
               <td className="pr-2">経度</td>
-              <td>{viewState.longitude}</td>
+              <td>{displayViewState?.longitude ?? "-"}</td>
             </tr>
             <tr>
               <td className="pr-2">ズーム</td>
-              <td>{viewState.zoom}</td>
+              <td>{displayViewState?.zoom ?? "-"}</td>
             </tr>
             <tr>
               <td className="pr-2">UTM</td>
@@ -175,23 +210,41 @@ export const CenterInfo = ({ mapId }: Props) => {
             </tr>
           </tbody>
         </table>
+        <div className="flex gap-2 py-1">
+          <Tabs value={addressViewMode} onValueChange={setAddressViewMode}>
+            <TabsList className="h-6 rounded-sm">
+              <TabsTrigger
+                className="text-xs size-5 rounded-sm dark:data-[state=active]:bg-blue-600"
+                value="kanji"
+              >
+                漢
+              </TabsTrigger>
+              <TabsTrigger
+                className="text-xs size-5 rounded-sm dark:data-[state=active]:bg-blue-600"
+                value="kana"
+              >
+                あ
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+          <Tabs value={infoMode} onValueChange={handleInfoModeChange}>
+            <TabsList className="h-6 rounded-sm">
+              <TabsTrigger
+                className="text-xs px-2 size-5 rounded-sm dark:data-[state=active]:bg-blue-600"
+                value="center"
+              >
+                <Locate />
+              </TabsTrigger>
+              <TabsTrigger
+                className="text-xs px-2 size-5 rounded-sm dark:data-[state=active]:bg-blue-600"
+                value="click"
+              >
+                <Pointer />
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
       </div>
-      <Tabs value={addressViewMode} onValueChange={setAddressViewMode}>
-        <TabsList className="h-6 rounded-sm">
-          <TabsTrigger
-            className="text-xs size-5 rounded-sm dark:data-[state=active]:bg-blue-600"
-            value="kanji"
-          >
-            漢
-          </TabsTrigger>
-          <TabsTrigger
-            className="text-xs size-5 rounded-sm dark:data-[state=active]:bg-blue-600"
-            value="kana"
-          >
-            あ
-          </TabsTrigger>
-        </TabsList>
-      </Tabs>
-    </div>
+      
   );
 };
