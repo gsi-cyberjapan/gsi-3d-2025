@@ -16,6 +16,7 @@ import { PositionSyncController } from "./position-sync-controller";
 import { OptionalLayers } from "./optional-layers";
 import { MapCenterLine } from "./map-center-line";
 import { DrawController } from "../draw/draw-controller";
+import { TextRenderLayer } from "../draw/text-render-layer";
 import { SearchResultController } from "./search-result-controller";
 
 const ReactMaplibre = dynamic(
@@ -88,6 +89,7 @@ export const Map = ({ mapId, className, opacity }: Props) => {
             <OptionalLayers mapId={mapId} />
             {/* Mapインスタンスを直接操作するコンポーネント */}
             <DrawController mapId={mapId} />
+            <TextRenderLayer mapId={mapId} />
             <ZoomLevelController mapId={mapId} />
             <SearchResultController />
             <PositionSyncController />

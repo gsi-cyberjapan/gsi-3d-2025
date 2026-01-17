@@ -2,9 +2,20 @@
 
 import { MapId } from "@/hooks/store/mapManagerState";
 import { useStore } from "@/hooks/store/useStore";
+import { createTextMode } from "@/lib/draw/createTextMode";
 import { getCircleModeStyle } from "@/lib/draw/getCircleModeStyle";
 import { getLineStringModeStyle } from "@/lib/draw/getLineStringModeStyle";
 import { getPolygonModeStyle } from "@/lib/draw/getPolygonModeStyle";
+import {
+  getTextModeStyle,
+  DEFAULT_TEXT_COLOR,
+  DEFAULT_TEXT_SIZE,
+  DEFAULT_TEXT_BOLD,
+  DEFAULT_TEXT_ITALIC,
+  DEFAULT_TEXT_UNDERLINE,
+  DEFAULT_IS_HTML,
+  DEFAULT_TEXT_CONTENT,
+} from "@/lib/draw/getTextModeStyle";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useMap } from "react-map-gl/maplibre";
 import {
@@ -30,11 +41,30 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
 
   const handleDrawFinish = useCallback(
     (id: string | number) => {
+      const feature = drawRef.current?.getSnapshotFeature(id);
+      const isTextMode = feature?.properties.mode === "text";
+
       setEditingFeature({ featureId: id, mapId });
-      drawRef.current?.updateFeatureProperties(id, {
-        mapId,
-        source: "terradraw",
-      });
+
+      // テキストモードの場合はテキストプロパティを初期化
+      if (isTextMode) {
+        drawRef.current?.updateFeatureProperties(id, {
+          mapId,
+          source: "terradraw",
+          textContent: DEFAULT_TEXT_CONTENT,
+          textColor: DEFAULT_TEXT_COLOR,
+          textSize: DEFAULT_TEXT_SIZE,
+          textBold: DEFAULT_TEXT_BOLD,
+          textItalic: DEFAULT_TEXT_ITALIC,
+          textUnderline: DEFAULT_TEXT_UNDERLINE,
+          isHtml: DEFAULT_IS_HTML,
+        });
+      } else {
+        drawRef.current?.updateFeatureProperties(id, {
+          mapId,
+          source: "terradraw",
+        });
+      }
     },
     [setEditingFeature, mapId],
   );
@@ -63,6 +93,7 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
           new TerraDrawPolygonMode({
             validation: ValidateNotSelfIntersecting,
           }),
+          createTextMode(),
           new TerraDrawSelectMode(),
         ],
       });
@@ -79,6 +110,9 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
       });
       drawRef.current.updateModeOptions("polygon", {
         styles: getPolygonModeStyle(draw),
+      });
+      drawRef.current.updateModeOptions("text", {
+        styles: getTextModeStyle(),
       });
       draw.on("finish", handleDrawFinish);
 
