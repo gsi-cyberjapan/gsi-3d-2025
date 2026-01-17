@@ -79,13 +79,13 @@ export const DrawDownloadDialog = ({
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="main" id="map-main" />
                   <Label htmlFor="map-main" className="cursor-pointer">
-                    メイン地図
+                    左の地図
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="sub" id="map-sub" />
                   <Label htmlFor="map-sub" className="cursor-pointer">
-                    サブ地図
+                    右の地図
                   </Label>
                 </div>
               </RadioGroup>
