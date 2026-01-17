@@ -26,11 +26,17 @@ const TextMarker = ({ feature }: TextMarkerProps) => {
   const [lng, lat] = geometry.coordinates;
 
   const textColor =
-    typeof feature.properties.textColor === "string" ? feature.properties.textColor : DEFAULT_TEXT_COLOR;
+    typeof feature.properties.textColor === "string"
+      ? feature.properties.textColor
+      : DEFAULT_TEXT_COLOR;
   const textSize =
-    typeof feature.properties.textSize === "number" ? feature.properties.textSize : DEFAULT_TEXT_SIZE;
+    typeof feature.properties.textSize === "number"
+      ? feature.properties.textSize
+      : DEFAULT_TEXT_SIZE;
   const textBold =
-    typeof feature.properties.textBold === "boolean" ? feature.properties.textBold : DEFAULT_TEXT_BOLD;
+    typeof feature.properties.textBold === "boolean"
+      ? feature.properties.textBold
+      : DEFAULT_TEXT_BOLD;
   const textItalic =
     typeof feature.properties.textItalic === "boolean"
       ? feature.properties.textItalic
@@ -40,9 +46,13 @@ const TextMarker = ({ feature }: TextMarkerProps) => {
       ? feature.properties.textUnderline
       : DEFAULT_TEXT_UNDERLINE;
   const isHtml =
-    typeof feature.properties.isHtml === "boolean" ? feature.properties.isHtml : DEFAULT_IS_HTML;
+    typeof feature.properties.isHtml === "boolean"
+      ? feature.properties.isHtml
+      : DEFAULT_IS_HTML;
   const textContent =
-    typeof feature.properties.textContent === "string" ? feature.properties.textContent : "";
+    typeof feature.properties.textContent === "string"
+      ? feature.properties.textContent
+      : "";
 
   // 空のテキストは表示しない
   if (!textContent) {
