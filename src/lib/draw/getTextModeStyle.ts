@@ -16,6 +16,10 @@ export const getTextModeStyle = (): Partial<{
   pointWidth: () => number;
   pointOutlineColor: () => `#${string}`;
   pointOutlineWidth: () => number;
+  editedPointColor: () => `#${string}`;
+  editedPointWidth: () => number;
+  editedPointOutlineColor: () => `#${string}`;
+  editedPointOutlineWidth: () => number;
 }> => {
   return {
     // テキストモードでは点を透明にして非表示にする
@@ -23,5 +27,10 @@ export const getTextModeStyle = (): Partial<{
     pointWidth: () => DEFAULT_POINT_WIDTH,
     pointOutlineColor: () => DEFAULT_POINT_OUTLINE_COLOR,
     pointOutlineWidth: () => DEFAULT_POINT_OUTLINE_WIDTH,
+    // 編集中のポイントも透明にする
+    editedPointColor: () => DEFAULT_POINT_COLOR,
+    editedPointWidth: () => DEFAULT_POINT_WIDTH,
+    editedPointOutlineColor: () => DEFAULT_POINT_OUTLINE_COLOR,
+    editedPointOutlineWidth: () => DEFAULT_POINT_OUTLINE_WIDTH,
   };
 };

@@ -19,6 +19,7 @@ import { DrawController } from "../draw/draw-controller";
 import { TextRenderLayer } from "../draw/text-render-layer";
 import { IconRenderLayer } from "../draw/icon-render-layer";
 import { SearchResultController } from "./search-result-controller";
+import { SelectionActionButtons } from "../draw/selection-action-buttons";
 
 const ReactMaplibre = dynamic(
   () => import("react-map-gl/maplibre").then((m) => m.Map),
@@ -92,6 +93,7 @@ export const Map = ({ mapId, className, opacity }: Props) => {
             <DrawController mapId={mapId} />
             <TextRenderLayer mapId={mapId} />
             <IconRenderLayer mapId={mapId} />
+            <SelectionActionButtons mapId={mapId} />
             <ZoomLevelController mapId={mapId} />
             <SearchResultController />
             <PositionSyncController />

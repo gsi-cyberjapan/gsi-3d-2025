@@ -20,6 +20,7 @@ import {
   getPointModeStyle,
   DEFAULT_MARKER_SIZE,
 } from "@/lib/draw/getPointModeStyle";
+import { getSelectModeStyle } from "@/lib/draw/getSelectModeStyle";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useMap } from "react-map-gl/maplibre";
 import {
@@ -40,6 +41,7 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
   const isDrawWindowOpen = useStore((state) => state.isDrawWindowOpen);
   const setEditingFeature = useStore((state) => state.setEditingFeature);
   const setTerraDraw = useStore((state) => state.setTerraDraw);
+  const setSelectedFeature = useStore((state) => state.setSelectedFeature);
   const [isStart, setIsStart] = useState(false);
   const drawMode = useStore((state) => state.drawMode);
   const hiddenSources = useStore((state) => state.hiddenSources);
@@ -52,7 +54,12 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
   }, [selectedMarkerSymbol]);
 
   const handleDrawFinish = useCallback(
-    (id: string | number) => {
+    (id: string | number, context: { action: string }) => {
+      // 新規フィーチャー作成時のみ編集ダイアログを開く
+      if (context.action !== "draw") {
+        return;
+      }
+
       const feature = drawRef.current?.getSnapshotFeature(id);
       const featureMode = feature?.properties.mode;
       const isTextMode = featureMode === "text";
@@ -91,6 +98,17 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
     [setEditingFeature, mapId],
   );
 
+  const handleSelect = useCallback(
+    (id: string | number) => {
+      setSelectedFeature({ featureId: id, mapId });
+    },
+    [setSelectedFeature, mapId],
+  );
+
+  const handleDeselect = useCallback(() => {
+    setSelectedFeature(null);
+  }, [setSelectedFeature]);
+
   useEffect(() => {
     if (!drawRef.current || !isStart) return;
     if (isDrawWindowOpen) {
@@ -99,6 +117,13 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
       drawRef.current.setMode("static");
     }
   }, [isDrawWindowOpen, drawMode, isStart]);
+
+  // モード切替時に選択を解除
+  useEffect(() => {
+    if (drawMode !== "select") {
+      setSelectedFeature(null);
+    }
+  }, [drawMode, setSelectedFeature]);
 
   // hiddenSources 変更時にスタイルを再登録
   useEffect(() => {
@@ -115,6 +140,9 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
     });
     drawRef.current.updateModeOptions("polygon", {
       styles: getPolygonModeStyle(drawRef.current),
+    });
+    drawRef.current.updateModeOptions("select", {
+      styles: getSelectModeStyle(drawRef.current),
     });
   }, [hiddenSources, isStart]);
 
@@ -134,7 +162,52 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
             validation: ValidateNotSelfIntersecting,
           }),
           createTextMode(),
-          new TerraDrawSelectMode(),
+          new TerraDrawSelectMode({
+            flags: {
+              polygon: {
+                feature: {
+                  draggable: true,
+                  coordinates: {
+                    midpoints: true,
+                    draggable: true,
+                    deletable: true,
+                  },
+                },
+              },
+              linestring: {
+                feature: {
+                  draggable: true,
+                  coordinates: {
+                    midpoints: true,
+                    draggable: true,
+                    deletable: true,
+                  },
+                },
+              },
+              "freehand-linestring": {
+                feature: {
+                  draggable: true,
+                  coordinates: {
+                    midpoints: true,
+                    draggable: true,
+                    deletable: true,
+                  },
+                },
+              },
+              circle: {
+                feature: {
+                  draggable: true,
+                  coordinates: {
+                    midpoints: false,
+                    draggable: true,
+                    deletable: false,
+                  },
+                },
+              },
+              point: { feature: { draggable: false } },
+              text: { feature: { draggable: false } },
+            },
+          }),
         ],
       });
       drawRef.current = draw;
@@ -157,7 +230,12 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
       drawRef.current.updateModeOptions("point", {
         styles: getPointModeStyle(),
       });
+      drawRef.current.updateModeOptions("select", {
+        styles: getSelectModeStyle(draw),
+      });
       draw.on("finish", handleDrawFinish);
+      draw.on("select", handleSelect);
+      draw.on("deselect", handleDeselect);
 
       setIsStart(true);
       setTerraDraw({ mapId, td: draw });
@@ -173,11 +251,20 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
       map.off("style.load", setup);
       if (drawRef.current) {
         drawRef.current.off("finish", handleDrawFinish);
+        drawRef.current.off("select", handleSelect);
+        drawRef.current.off("deselect", handleDeselect);
         // drawRef.current.stop();
         drawRef.current = null;
       }
     };
-  }, [map, handleDrawFinish, mapId, setTerraDraw]);
+  }, [
+    map,
+    handleDrawFinish,
+    handleSelect,
+    handleDeselect,
+    mapId,
+    setTerraDraw,
+  ]);
 
   return null;
 };
