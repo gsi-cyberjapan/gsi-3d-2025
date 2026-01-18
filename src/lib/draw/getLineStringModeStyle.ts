@@ -1,5 +1,8 @@
 import { TerraDraw, GeoJSONStoreFeatures } from "terra-draw";
 import { colorToRgba } from "@/lib/colorConverter";
+import { isFeatureHidden } from "./getPolygonModeStyle";
+
+const TRANSPARENT = "#00000000" as const;
 
 // Default simplestyle values
 export const DEFAULT_STROKE = "#0011FF";
@@ -24,6 +27,8 @@ export const getLineStringModeStyle = (
   return {
     lineStringColor: ({ id }) => {
       if (!id) return colorToRgba(DEFAULT_STROKE, DEFAULT_STROKE_OPACITY);
+      if (isFeatureHidden(td, id)) return TRANSPARENT;
+
       const ss = td.getSnapshotFeature(id);
       const stroke = ss?.properties.stroke;
       const strokeOpacity = ss?.properties["stroke-opacity"];
@@ -45,6 +50,8 @@ export const getLineStringModeStyle = (
 
     lineStringWidth: ({ id }) => {
       if (!id) return DEFAULT_STROKE_WIDTH;
+      if (isFeatureHidden(td, id)) return 0;
+
       const ss = td.getSnapshotFeature(id);
       const strokeWidth = ss?.properties["stroke-width"];
 

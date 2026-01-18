@@ -4,6 +4,8 @@ import { useStore } from "@/hooks/store/useStore";
 import { Window } from "../ui/window";
 import { DrawModeSelector } from "./draw-mode-selector";
 import { DrawFileButton } from "./draw-file-button";
+import { FeatureSourceList } from "./feature-source-list";
+import { Separator } from "@/components/ui/separator";
 
 export const DrawWindow = () => {
   const isDrawWindowOpen = useStore((state) => state.isDrawWindowOpen);
@@ -18,10 +20,12 @@ export const DrawWindow = () => {
       }}
     >
       <div className="grid gap-2">
-        <div className="flex gap-2">
+        <div className="flex gap-2 justify-between">
           <DrawFileButton />
           <DrawModeSelector />
         </div>
+        <Separator />
+        <FeatureSourceList />
       </div>
     </Window>
   );

@@ -38,6 +38,9 @@ export interface DrawState {
   /** 編集対象のFeatureID */
   editingFeature: EditingFeature | undefined;
   setEditingFeature: (feature: EditingFeature | undefined) => void;
+  /** 非表示のソースキー（"main:terradraw", "sub:sample.geojson"など） */
+  hiddenSources: Set<string>;
+  toggleSourceVisibility: (sourceKey: string) => void;
 }
 
 export const createDrawSlice: StateCreator<GlobalState, [], [], DrawState> = (
@@ -64,6 +67,20 @@ export const createDrawSlice: StateCreator<GlobalState, [], [], DrawState> = (
     set(() => {
       return {
         editingFeature: feature,
+      };
+    });
+  },
+  hiddenSources: new Set<string>(),
+  toggleSourceVisibility: (sourceKey) => {
+    set((state) => {
+      const newHiddenSources = new Set(state.hiddenSources);
+      if (newHiddenSources.has(sourceKey)) {
+        newHiddenSources.delete(sourceKey);
+      } else {
+        newHiddenSources.add(sourceKey);
+      }
+      return {
+        hiddenSources: newHiddenSources,
       };
     });
   },

@@ -1,5 +1,31 @@
 import { TerraDraw, GeoJSONStoreFeatures } from "terra-draw";
 import { colorToRgba } from "@/lib/colorConverter";
+import { useStore } from "@/hooks/store/useStore";
+
+const TRANSPARENT = "#00000000" as const;
+const DEFAULT_SOURCE = "terradraw";
+
+/**
+ * Check if a feature should be hidden based on hiddenSources
+ */
+export const isFeatureHidden = (
+  td: TerraDraw,
+  id: string | number,
+): boolean => {
+  const ss = td.getSnapshotFeature(id);
+  if (!ss) return false;
+
+  const rawMapId = ss.properties.mapId;
+  const mapId = typeof rawMapId === "string" ? rawMapId : "";
+  const source =
+    typeof ss.properties.source === "string"
+      ? ss.properties.source
+      : DEFAULT_SOURCE;
+  const sourceKey = `${mapId}:${source}`;
+
+  const hiddenSources = useStore.getState().hiddenSources;
+  return hiddenSources.has(sourceKey);
+};
 
 // Default simplestyle values
 export const DEFAULT_FILL = "#0011FF";
@@ -29,6 +55,8 @@ export const getPolygonModeStyle = (
   return {
     fillColor: ({ id }) => {
       if (!id) return colorToRgba(DEFAULT_FILL, DEFAULT_FILL_OPACITY);
+      if (isFeatureHidden(td, id)) return TRANSPARENT;
+
       const ss = td.getSnapshotFeature(id);
       const fill = ss?.properties.fill;
       const fillOpacity = ss?.properties["fill-opacity"];
@@ -49,6 +77,8 @@ export const getPolygonModeStyle = (
 
     outlineColor: ({ id }) => {
       if (!id) return colorToRgba(DEFAULT_STROKE, DEFAULT_STROKE_OPACITY);
+      if (isFeatureHidden(td, id)) return TRANSPARENT;
+
       const ss = td.getSnapshotFeature(id);
       const stroke = ss?.properties.stroke;
       const strokeOpacity = ss?.properties["stroke-opacity"];
@@ -70,6 +100,8 @@ export const getPolygonModeStyle = (
 
     outlineWidth: ({ id }) => {
       if (!id) return DEFAULT_STROKE_WIDTH;
+      if (isFeatureHidden(td, id)) return 0;
+
       const ss = td.getSnapshotFeature(id);
       const strokeWidth = ss?.properties["stroke-width"];
 
