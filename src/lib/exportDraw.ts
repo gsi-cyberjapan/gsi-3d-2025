@@ -15,35 +15,21 @@ interface SimplestyleFeature {
   properties: Record<string, unknown>;
 }
 
+/**
+ * Convert TerraDraw feature to simplestyle-compatible feature for export
+ * Properties are already in simplestyle format, so we just need to remove internal properties
+ */
 function convertToSimplestyle(
   feature: GeoJSONStoreFeatures,
 ): SimplestyleFeature {
   const { properties, geometry, id } = feature;
-  const mode = properties.mode as string | undefined;
-  const isLine = mode && ["linestring", "freehand-linestring"].includes(mode);
 
-  const simplestyleProperties: Record<string, unknown> = {
-    ...properties,
-  };
+  // Copy properties and remove internal TerraDraw properties
+  const simplestyleProperties: Record<string, unknown> = { ...properties };
 
-  if (isLine) {
-    if (properties.lineStringColor) {
-      simplestyleProperties["stroke"] = properties.lineStringColor;
-    }
-    if (properties.lineStringWidth) {
-      simplestyleProperties["stroke-width"] = properties.lineStringWidth;
-    }
-  } else {
-    if (properties.fillColor) {
-      simplestyleProperties["fill"] = properties.fillColor;
-    }
-    if (properties.outlineColor) {
-      simplestyleProperties["stroke"] = properties.outlineColor;
-    }
-    if (properties.outlineWidth) {
-      simplestyleProperties["stroke-width"] = properties.outlineWidth;
-    }
-  }
+  // Remove internal properties that should not be exported
+  delete simplestyleProperties.selected;
+  delete simplestyleProperties.marker;
 
   return {
     type: "Feature",

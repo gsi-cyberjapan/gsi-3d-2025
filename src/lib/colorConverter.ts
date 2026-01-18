@@ -147,3 +147,53 @@ export function hslaToRgba(
   const rgb = hslToRgb(h, s, l);
   return { ...rgb, a };
 }
+
+/**
+ * Combine a hex color (#RRGGBB) with opacity (0-1) into #RRGGBBAA format
+ * Used for converting simplestyle properties to TerraDraw internal format
+ */
+export function colorToRgba(color: string, opacity: number): `#${string}` {
+  // Ensure color starts with #
+  const cleanColor = color.startsWith("#") ? color : `#${color}`;
+
+  // Handle already RGBA format
+  if (cleanColor.length === 9) {
+    return cleanColor as `#${string}`;
+  }
+
+  // Convert 6-character hex to 8-character with alpha
+  if (cleanColor.length === 7) {
+    const alpha = Math.round(Math.max(0, Math.min(1, opacity)) * 255);
+    const alphaHex = alpha.toString(16).padStart(2, "0").toUpperCase();
+    return `${cleanColor.toUpperCase()}${alphaHex}` as `#${string}`;
+  }
+
+  // Invalid format, return with full opacity
+  return `${cleanColor.toUpperCase()}FF` as `#${string}`;
+}
+
+/**
+ * Extract color (#RRGGBB) and opacity (0-1) from #RRGGBBAA format
+ * Used for converting TerraDraw internal format to simplestyle properties
+ */
+export function rgbaToColorAndOpacity(rgba: string): {
+  color: string;
+  opacity: number;
+} {
+  const cleanRgba = rgba.startsWith("#") ? rgba : `#${rgba}`;
+
+  // Handle 6-character hex (no alpha)
+  if (cleanRgba.length === 7) {
+    return { color: cleanRgba.toUpperCase(), opacity: 1 };
+  }
+
+  // Handle 8-character hex with alpha
+  if (cleanRgba.length === 9) {
+    const color = cleanRgba.slice(0, 7).toUpperCase();
+    const alpha = Number.parseInt(cleanRgba.slice(7, 9), 16) / 255;
+    return { color, opacity: Math.round(alpha * 100) / 100 };
+  }
+
+  // Invalid format, return as-is with full opacity
+  return { color: cleanRgba.toUpperCase(), opacity: 1 };
+}

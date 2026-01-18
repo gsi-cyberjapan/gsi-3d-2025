@@ -1,8 +1,12 @@
 import { TerraDraw, GeoJSONStoreFeatures } from "terra-draw";
+import { colorToRgba } from "@/lib/colorConverter";
 
-const DEFAULT_FILL_COLOR = "#0011FF10";
-const DEFAULT_OUTLINE_COLOR = "#0011FFFF";
-const DEFAULT_OUTLINE_WIDTH = 2;
+// Default simplestyle values
+export const DEFAULT_FILL = "#0011FF";
+export const DEFAULT_FILL_OPACITY = 0.0625;
+export const DEFAULT_STROKE = "#0011FF";
+export const DEFAULT_STROKE_OPACITY = 1;
+export const DEFAULT_STROKE_WIDTH = 2;
 
 export const getPolygonModeStyle = (
   td: TerraDraw,
@@ -14,51 +18,57 @@ export const getPolygonModeStyle = (
 }> => {
   return {
     fillColor: ({ id }) => {
-      if (!id) return DEFAULT_FILL_COLOR;
+      if (!id) return colorToRgba(DEFAULT_FILL, DEFAULT_FILL_OPACITY);
       const ss = td.getSnapshotFeature(id);
-      const fillColor = ss?.properties.fillColor;
+      const fill = ss?.properties.fill;
+      const fillOpacity = ss?.properties["fill-opacity"];
 
-      if (
-        fillColor &&
-        typeof fillColor === "string" &&
-        fillColor.startsWith("#")
-      ) {
-        return ss.properties.fillColor as `#${string}`;
+      if (fill && typeof fill === "string" && fill.startsWith("#")) {
+        const opacity =
+          typeof fillOpacity === "number" ? fillOpacity : DEFAULT_FILL_OPACITY;
+        return colorToRgba(fill, opacity);
       }
 
-      td.updateFeatureProperties(id, { fillColor: DEFAULT_FILL_COLOR });
-      return DEFAULT_FILL_COLOR;
+      td.updateFeatureProperties(id, {
+        fill: DEFAULT_FILL,
+        "fill-opacity": DEFAULT_FILL_OPACITY,
+      });
+      return colorToRgba(DEFAULT_FILL, DEFAULT_FILL_OPACITY);
     },
     fillOpacity: 1,
 
     outlineColor: ({ id }) => {
-      if (!id) return DEFAULT_OUTLINE_COLOR;
+      if (!id) return colorToRgba(DEFAULT_STROKE, DEFAULT_STROKE_OPACITY);
       const ss = td.getSnapshotFeature(id);
-      const outlineColor = ss?.properties.outlineColor;
+      const stroke = ss?.properties.stroke;
+      const strokeOpacity = ss?.properties["stroke-opacity"];
 
-      if (
-        outlineColor &&
-        typeof outlineColor === "string" &&
-        outlineColor.startsWith("#")
-      ) {
-        return ss.properties.outlineColor as `#${string}`;
+      if (stroke && typeof stroke === "string" && stroke.startsWith("#")) {
+        const opacity =
+          typeof strokeOpacity === "number"
+            ? strokeOpacity
+            : DEFAULT_STROKE_OPACITY;
+        return colorToRgba(stroke, opacity);
       }
 
-      td.updateFeatureProperties(id, { outlineColor: DEFAULT_OUTLINE_COLOR });
-      return DEFAULT_OUTLINE_COLOR;
+      td.updateFeatureProperties(id, {
+        stroke: DEFAULT_STROKE,
+        "stroke-opacity": DEFAULT_STROKE_OPACITY,
+      });
+      return colorToRgba(DEFAULT_STROKE, DEFAULT_STROKE_OPACITY);
     },
 
     outlineWidth: ({ id }) => {
-      if (!id) return DEFAULT_OUTLINE_WIDTH;
+      if (!id) return DEFAULT_STROKE_WIDTH;
       const ss = td.getSnapshotFeature(id);
-      const outlineWidth = ss?.properties.outlineWidth;
+      const strokeWidth = ss?.properties["stroke-width"];
 
-      if (typeof outlineWidth === "number") {
-        return outlineWidth;
+      if (typeof strokeWidth === "number") {
+        return strokeWidth;
       }
 
-      td.updateFeatureProperties(id, { outlineWidth: DEFAULT_OUTLINE_WIDTH });
-      return DEFAULT_OUTLINE_WIDTH;
+      td.updateFeatureProperties(id, { "stroke-width": DEFAULT_STROKE_WIDTH });
+      return DEFAULT_STROKE_WIDTH;
     },
   };
 };

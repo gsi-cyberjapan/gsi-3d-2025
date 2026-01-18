@@ -22,9 +22,40 @@ import {
   DEFAULT_IS_HTML,
   DEFAULT_TEXT_CONTENT,
 } from "@/lib/draw/getTextModeStyle";
+import {
+  DEFAULT_FILL,
+  DEFAULT_FILL_OPACITY,
+  DEFAULT_STROKE,
+  DEFAULT_STROKE_OPACITY,
+  DEFAULT_STROKE_WIDTH,
+} from "@/lib/draw/getPolygonModeStyle";
+import {
+  DEFAULT_STROKE as DEFAULT_LINE_STROKE,
+  DEFAULT_STROKE_OPACITY as DEFAULT_LINE_STROKE_OPACITY,
+  DEFAULT_STROKE_WIDTH as DEFAULT_LINE_STROKE_WIDTH,
+} from "@/lib/draw/getLineStringModeStyle";
+import { colorToRgba, rgbaToColorAndOpacity } from "@/lib/colorConverter";
 
 interface FeatureEditFormProps {
   feature: EditingFeature;
+}
+
+/**
+ * Get combined color (#RRGGBBAA) from simplestyle properties
+ */
+function getColorWithOpacity(
+  properties: GeoJSONStoreFeatures["properties"],
+  colorProp: string,
+  opacityProp: string,
+  defaultColor: string,
+  defaultOpacity: number,
+): string {
+  const colorValue = properties[colorProp];
+  const opacityValue = properties[opacityProp];
+  const color = typeof colorValue === "string" ? colorValue : defaultColor;
+  const opacity =
+    typeof opacityValue === "number" ? opacityValue : defaultOpacity;
+  return colorToRgba(color, opacity);
 }
 
 export const DrawFeatureEditForm = ({ feature }: FeatureEditFormProps) => {
@@ -35,19 +66,21 @@ export const DrawFeatureEditForm = ({ feature }: FeatureEditFormProps) => {
   const mode = properties?.mode as string | undefined;
   const isLine = mode && ["linestring", "freehand-linestring"].includes(mode);
   const isText = mode === "text";
-  const [widthInput, setWidthInput] = useState<string>(
-    String(
-      properties
-        ? ((isLine
-            ? properties.lineStringWidth
-            : properties.outlineWidth) as number)
-        : 2,
-    ),
-  );
+
+  const rawStrokeWidth = properties?.["stroke-width"];
+  const strokeWidth =
+    typeof rawStrokeWidth === "number"
+      ? rawStrokeWidth
+      : isLine
+        ? DEFAULT_LINE_STROKE_WIDTH
+        : DEFAULT_STROKE_WIDTH;
+
+  const [widthInput, setWidthInput] = useState<string>(String(strokeWidth));
   const [textSizeInput, setTextSizeInput] = useState<string>(() => {
     const size = properties?.textSize;
     return String(typeof size === "number" ? size : DEFAULT_TEXT_SIZE);
   });
+
   const handlePropertiesChange = (p: GeoJSONStoreFeatures["properties"]) => {
     setProperties(p);
     td?.updateFeatureProperties(
@@ -55,6 +88,23 @@ export const DrawFeatureEditForm = ({ feature }: FeatureEditFormProps) => {
       omit(p, "mode", "selected", "marker"),
     );
   };
+
+  /**
+   * Handle color change from color picker (#RRGGBBAA) to simplestyle (color + opacity)
+   */
+  const handleColorChange = (
+    colorProp: string,
+    opacityProp: string,
+    rgba: string,
+  ) => {
+    const { color, opacity } = rgbaToColorAndOpacity(rgba);
+    handlePropertiesChange({
+      ...properties,
+      [colorProp]: color,
+      [opacityProp]: opacity,
+    });
+  };
+
   const isPolygonOrCircle = mode && ["circle", "polygon"].includes(mode);
 
   if (!properties) {
@@ -200,6 +250,22 @@ export const DrawFeatureEditForm = ({ feature }: FeatureEditFormProps) => {
     );
   }
 
+  // Get current colors with opacity for display
+  const fillColorValue = getColorWithOpacity(
+    properties,
+    "fill",
+    "fill-opacity",
+    DEFAULT_FILL,
+    DEFAULT_FILL_OPACITY,
+  );
+  const strokeColorValue = getColorWithOpacity(
+    properties,
+    "stroke",
+    "stroke-opacity",
+    isLine ? DEFAULT_LINE_STROKE : DEFAULT_STROKE,
+    isLine ? DEFAULT_LINE_STROKE_OPACITY : DEFAULT_STROKE_OPACITY,
+  );
+
   return (
     <FieldGroup className="gap-4">
       {isPolygonOrCircle && (
@@ -207,12 +273,9 @@ export const DrawFeatureEditForm = ({ feature }: FeatureEditFormProps) => {
           <FieldLabel>塗りつぶしの色</FieldLabel>
           <InputColor
             alpha
-            value={properties.fillColor as string}
+            value={fillColorValue}
             onChange={(color) => {
-              handlePropertiesChange({
-                ...properties,
-                fillColor: color,
-              });
+              handleColorChange("fill", "fill-opacity", color);
             }}
           />
         </Field>
@@ -221,18 +284,9 @@ export const DrawFeatureEditForm = ({ feature }: FeatureEditFormProps) => {
         <FieldLabel>{isLine ? "線の色" : "枠線の色"}</FieldLabel>
         <InputColor
           alpha
-          value={
-            (isLine
-              ? properties.lineStringColor
-              : properties.outlineColor) as string
-          }
+          value={strokeColorValue}
           onChange={(color) => {
-            handlePropertiesChange({
-              ...properties,
-              ...(isLine
-                ? { lineStringColor: color }
-                : { outlineColor: color }),
-            });
+            handleColorChange("stroke", "stroke-opacity", color);
           }}
         />
       </Field>
@@ -248,9 +302,7 @@ export const DrawFeatureEditForm = ({ feature }: FeatureEditFormProps) => {
             if (!isNaN(numValue) && numValue >= 0) {
               handlePropertiesChange({
                 ...properties,
-                ...(isLine
-                  ? { lineStringWidth: numValue }
-                  : { outlineWidth: numValue }),
+                "stroke-width": numValue,
               });
             }
           }}
