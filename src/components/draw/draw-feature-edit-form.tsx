@@ -35,6 +35,7 @@ import {
   DEFAULT_STROKE_WIDTH as DEFAULT_LINE_STROKE_WIDTH,
 } from "@/lib/draw/getLineStringModeStyle";
 import { colorToRgba, rgbaToColorAndOpacity } from "@/lib/colorConverter";
+import { PointFeatureEditForm } from "./point-feature-edit-form";
 
 interface FeatureEditFormProps {
   feature: EditingFeature;
@@ -66,6 +67,7 @@ export const DrawFeatureEditForm = ({ feature }: FeatureEditFormProps) => {
   const mode = properties?.mode as string | undefined;
   const isLine = mode && ["linestring", "freehand-linestring"].includes(mode);
   const isText = mode === "text";
+  const isPoint = mode === "point";
 
   const rawStrokeWidth = properties?.["stroke-width"];
   const strokeWidth =
@@ -248,6 +250,10 @@ export const DrawFeatureEditForm = ({ feature }: FeatureEditFormProps) => {
         </Field>
       </FieldGroup>
     );
+  }
+
+  if (isPoint) {
+    return <PointFeatureEditForm feature={feature} />;
   }
 
   // Get current colors with opacity for display

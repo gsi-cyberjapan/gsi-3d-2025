@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/tooltip";
 
 const MODES: { value: DrawMode; icon: ReactElement; description: string }[] = [
-  { value: "point", icon: <MapPin />, description: "ピンを置く" },
+  { value: "point", icon: <MapPin />, description: "アイコンを置く" },
   { value: "circle", icon: <Circle />, description: "円を描く" },
   { value: "linestring", icon: <Slash />, description: "直線を引く" },
   {
@@ -58,7 +58,7 @@ export const DrawModeSelector = () => {
           <Tooltip key={m.value}>
             <TooltipTrigger asChild>
               <TabsTrigger
-                disabled={["point", "select"].includes(m.value)}
+                disabled={["select"].includes(m.value)}
                 className="text-xs size-5 rounded-sm aria-selected:bg-blue-600 dark:aria-selected:text-foreground"
                 value={m.value}
               >
