@@ -134,7 +134,6 @@ export const CenterInfo = ({ mapId }: Props) => {
         longitude: event.lngLat.lng,
         zoom,
       });
-      setInfoMode("click");
     },
     [map],
   );
