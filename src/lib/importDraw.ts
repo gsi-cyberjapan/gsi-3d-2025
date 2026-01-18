@@ -20,6 +20,68 @@ const DEFAULT_OUTLINE_WIDTH = 2;
 const DEFAULT_LINESTRING_COLOR = "#0011FFFF";
 const DEFAULT_LINESTRING_WIDTH = 2;
 
+// togeojson's default color - should be ignored as it means "no color specified"
+const TOGEOJSON_DEFAULT_COLOR = "#555555";
+
+/**
+ * Check if a value is a valid hex color string (#RRGGBB or #RRGGBBAA)
+ */
+function isValidColor(color: unknown): color is string {
+  return (
+    typeof color === "string" && color.startsWith("#") && color.length >= 7
+  );
+}
+
+/**
+ * Check if an existing TerraDraw color property is valid (#RRGGBBAA format)
+ * These properties are already in the correct format from previous exports
+ */
+function isValidExistingColor(color: unknown): boolean {
+  return (
+    typeof color === "string" && color.startsWith("#") && color.length === 9
+  );
+}
+
+/**
+ * Normalize color with opacity to #RRGGBBAA format
+ * togeojson outputs colors as #RRGGBB and opacity as separate properties.
+ * TerraDraw/MapLibre expects #RRGGBBAA format with alpha channel.
+ *
+ * @param color - Color string (#RRGGBB or #RRGGBBAA)
+ * @param opacity - Opacity value (0-1), undefined means use FF (fully opaque)
+ * @param defaultColor - Fallback default color if input is invalid
+ */
+function normalizeColorWithOpacity(
+  color: unknown,
+  opacity: unknown,
+  defaultColor: string,
+): string {
+  // If color is invalid, return default
+  if (!color || typeof color !== "string" || !color.startsWith("#")) {
+    return defaultColor;
+  }
+
+  // If already 8 characters (#RRGGBBAA), return as-is
+  if (color.length === 9) {
+    return color;
+  }
+
+  // If 6 characters (#RRGGBB), add alpha channel
+  if (color.length === 7) {
+    // Convert opacity to hex (default is FF = fully opaque)
+    let alphaHex = "FF";
+    if (typeof opacity === "number" && opacity >= 0 && opacity <= 1) {
+      alphaHex = Math.round(opacity * 255)
+        .toString(16)
+        .padStart(2, "0")
+        .toUpperCase();
+    }
+    return `${color}${alphaHex}`;
+  }
+
+  return defaultColor;
+}
+
 export interface ImportResult {
   added: number;
   failed: number;
@@ -65,6 +127,11 @@ function getModeFromGeometry(
 
 /**
  * Convert simplestyle properties to TerraDraw properties
+ *
+ * Priority order for colors:
+ * 1. Existing TerraDraw properties (fillColor, outlineColor, lineStringColor)
+ * 2. Simplestyle properties (fill, stroke) if valid and not togeojson default
+ * 3. Application defaults
  */
 function convertSimplestyleToTerraDraw(
   properties: SimplestyleProperties,
@@ -74,47 +141,81 @@ function convertSimplestyleToTerraDraw(
   const isLine = geometryType === "LineString";
 
   if (isLine) {
-    // LineString properties
-    if (properties.stroke) {
-      terraDrawProps.lineStringColor = properties.stroke;
-      delete terraDrawProps.stroke;
-    } else if (!terraDrawProps.lineStringColor) {
-      terraDrawProps.lineStringColor = DEFAULT_LINESTRING_COLOR;
+    // LineString: prioritize existing lineStringColor from TerraDraw export
+    if (!isValidExistingColor(properties.lineStringColor)) {
+      const strokeColor = properties.stroke;
+      if (
+        isValidColor(strokeColor) &&
+        strokeColor !== TOGEOJSON_DEFAULT_COLOR
+      ) {
+        // Use simplestyle stroke if valid and not default
+        terraDrawProps.lineStringColor = normalizeColorWithOpacity(
+          strokeColor,
+          properties["stroke-opacity"],
+          DEFAULT_LINESTRING_COLOR,
+        );
+      } else {
+        // Fall back to app default
+        terraDrawProps.lineStringColor = DEFAULT_LINESTRING_COLOR;
+      }
     }
 
     if (properties["stroke-width"] !== undefined) {
       terraDrawProps.lineStringWidth = properties["stroke-width"];
-      delete terraDrawProps["stroke-width"];
     } else if (!terraDrawProps.lineStringWidth) {
       terraDrawProps.lineStringWidth = DEFAULT_LINESTRING_WIDTH;
     }
   } else {
-    // Polygon/Point properties
-    if (properties.fill) {
-      terraDrawProps.fillColor = properties.fill;
-      delete terraDrawProps.fill;
-    } else if (!terraDrawProps.fillColor) {
-      terraDrawProps.fillColor = DEFAULT_FILL_COLOR;
+    // Polygon: prioritize existing fillColor from TerraDraw export
+    if (!isValidExistingColor(properties.fillColor)) {
+      const fillColor = properties.fill;
+      if (isValidColor(fillColor) && fillColor !== TOGEOJSON_DEFAULT_COLOR) {
+        // Use simplestyle fill if valid and not default
+        terraDrawProps.fillColor = normalizeColorWithOpacity(
+          fillColor,
+          properties["fill-opacity"],
+          DEFAULT_FILL_COLOR,
+        );
+      } else {
+        // Fall back to app default
+        terraDrawProps.fillColor = DEFAULT_FILL_COLOR;
+      }
     }
 
-    if (properties.stroke) {
-      terraDrawProps.outlineColor = properties.stroke;
-      delete terraDrawProps.stroke;
-    } else if (!terraDrawProps.outlineColor) {
-      terraDrawProps.outlineColor = DEFAULT_OUTLINE_COLOR;
+    // Polygon: prioritize existing outlineColor from TerraDraw export
+    if (!isValidExistingColor(properties.outlineColor)) {
+      const strokeColor = properties.stroke;
+      if (
+        isValidColor(strokeColor) &&
+        strokeColor !== TOGEOJSON_DEFAULT_COLOR
+      ) {
+        // Use simplestyle stroke if valid and not default
+        terraDrawProps.outlineColor = normalizeColorWithOpacity(
+          strokeColor,
+          properties["stroke-opacity"],
+          DEFAULT_OUTLINE_COLOR,
+        );
+      } else {
+        // Fall back to app default
+        terraDrawProps.outlineColor = DEFAULT_OUTLINE_COLOR;
+      }
     }
 
     if (properties["stroke-width"] !== undefined) {
       terraDrawProps.outlineWidth = properties["stroke-width"];
-      delete terraDrawProps["stroke-width"];
     } else if (!terraDrawProps.outlineWidth) {
       terraDrawProps.outlineWidth = DEFAULT_OUTLINE_WIDTH;
     }
   }
 
-  // Remove simplestyle opacity properties (we use alpha in color)
+  // Remove simplestyle properties (now merged into TerraDraw properties)
+  delete terraDrawProps.stroke;
+  delete terraDrawProps.fill;
   delete terraDrawProps["stroke-opacity"];
   delete terraDrawProps["fill-opacity"];
+  delete terraDrawProps["stroke-width"];
+  // Remove custom styleUrl (used by this app's KML export for encoding colors)
+  delete terraDrawProps.styleUrl;
 
   return terraDrawProps;
 }
