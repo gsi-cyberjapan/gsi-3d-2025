@@ -72,6 +72,7 @@ export const SelectionActionButtons = ({ mapId }: { mapId: MapId }) => {
   const setSelectedFeature = useStore((state) => state.setSelectedFeature);
   const setEditingFeature = useStore((state) => state.setEditingFeature);
   const td = useStore((state) => state.maps[mapId].td);
+  const draggingPosition = useStore((state) => state.draggingPosition);
 
   // Counter to trigger re-calculation when feature changes
   const [changeCounter, setChangeCounter] = useState(0);
@@ -100,13 +101,25 @@ export const SelectionActionButtons = ({ mapId }: { mapId: MapId }) => {
       return null;
     }
 
+    // Prioritize dragging position for real-time tracking during drag
+    if (
+      draggingPosition &&
+      draggingPosition.featureId === selectedFeature.featureId &&
+      draggingPosition.mapId === mapId
+    ) {
+      return {
+        longitude: draggingPosition.longitude,
+        latitude: draggingPosition.latitude,
+      };
+    }
+
     const feature = td.getSnapshotFeature(selectedFeature.featureId);
     if (!feature) {
       return null;
     }
 
     return getTopRightPosition(feature);
-  }, [selectedFeature, mapId, td, changeCounter]);
+  }, [selectedFeature, mapId, td, changeCounter, draggingPosition]);
 
   const handleEdit = useCallback(() => {
     if (!selectedFeature || !td) return;

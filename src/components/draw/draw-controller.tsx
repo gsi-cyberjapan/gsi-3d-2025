@@ -54,7 +54,12 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
   }, [selectedMarkerSymbol]);
 
   const handleDrawFinish = useCallback(
-    (id: string | number) => {
+    (id: string | number, context: { action: string }) => {
+      // 新規フィーチャー作成時のみ編集ダイアログを開く
+      if (context.action !== "draw") {
+        return;
+      }
+
       const feature = drawRef.current?.getSnapshotFeature(id);
       const featureMode = feature?.properties.mode;
       const isTextMode = featureMode === "text";
@@ -199,8 +204,8 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
                   },
                 },
               },
-              point: { feature: { draggable: true } },
-              text: { feature: { draggable: true } },
+              point: { feature: { draggable: false } },
+              text: { feature: { draggable: false } },
             },
           }),
         ],

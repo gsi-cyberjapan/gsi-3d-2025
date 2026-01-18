@@ -2,11 +2,20 @@
 
 import { MapId } from "@/hooks/store/mapManagerState";
 import { useStore } from "@/hooks/store/useStore";
-import { GeoJSONStoreFeatures } from "terra-draw";
+import { GeoJSONStoreFeatures, TerraDraw } from "terra-draw";
 import { useEffect, useState, useCallback } from "react";
-import { Marker } from "react-map-gl/maplibre";
+import { Marker, MarkerEvent, MarkerDragEvent } from "react-map-gl/maplibre";
 
 const DEFAULT_SOURCE = "terradraw";
+
+// TerraDraw default coordinate precision
+const COORDINATE_PRECISION = 8;
+
+const roundCoordinate = (coord: number): number => {
+  const factor = Math.pow(10, COORDINATE_PRECISION);
+  return Math.round(coord * factor) / factor;
+};
+
 import {
   DEFAULT_TEXT_COLOR,
   DEFAULT_TEXT_SIZE,
@@ -15,17 +24,77 @@ import {
   DEFAULT_TEXT_UNDERLINE,
   DEFAULT_IS_HTML,
 } from "@/lib/draw/getTextModeStyle";
+import { SELECTION_COLOR } from "@/lib/draw/getSelectModeStyle";
+import { DrawMode } from "@/hooks/store/drawState";
 
 interface TextMarkerProps {
   feature: GeoJSONStoreFeatures;
+  isSelected: boolean;
+  drawMode: DrawMode;
+  td: TerraDraw | null;
+  mapId: MapId;
+  onClick: (e: MarkerEvent<MouseEvent>) => void;
 }
 
-const TextMarker = ({ feature }: TextMarkerProps) => {
+const TextMarker = ({
+  feature,
+  isSelected,
+  drawMode,
+  td,
+  mapId,
+  onClick,
+}: TextMarkerProps) => {
+  const featureId = feature.id;
+  const setDraggingPosition = useStore((state) => state.setDraggingPosition);
+  const [localPosition, setLocalPosition] = useState<[number, number] | null>(
+    null,
+  );
+
   const geometry = feature.geometry;
+
+  const handleDragStart = useCallback(() => {
+    if (geometry.type === "Point") {
+      setLocalPosition([geometry.coordinates[0], geometry.coordinates[1]]);
+    }
+  }, [geometry]);
+
+  const handleDrag = useCallback(
+    (e: MarkerDragEvent) => {
+      setLocalPosition([e.lngLat.lng, e.lngLat.lat]);
+      // Share dragging position globally for button tracking
+      if (featureId !== undefined) {
+        setDraggingPosition({
+          featureId,
+          mapId,
+          longitude: e.lngLat.lng,
+          latitude: e.lngLat.lat,
+        });
+      }
+    },
+    [featureId, mapId, setDraggingPosition],
+  );
+
+  const handleDragEnd = useCallback(
+    (e: MarkerDragEvent) => {
+      if (td && featureId !== undefined) {
+        td.updateFeatureGeometry(featureId, {
+          type: "Point",
+          coordinates: [
+            roundCoordinate(e.lngLat.lng),
+            roundCoordinate(e.lngLat.lat),
+          ],
+        });
+      }
+      setLocalPosition(null);
+      setDraggingPosition(null);
+    },
+    [td, featureId, setDraggingPosition],
+  );
+
   if (geometry.type !== "Point") {
     return null;
   }
-  const [lng, lat] = geometry.coordinates;
+  const [lng, lat] = localPosition ?? geometry.coordinates;
 
   const textColor =
     typeof feature.properties.textColor === "string"
@@ -61,8 +130,29 @@ const TextMarker = ({ feature }: TextMarkerProps) => {
     return null;
   }
 
+  const isDraggable = isSelected && drawMode === "select";
+
+  const selectionStyle: React.CSSProperties = isSelected
+    ? {
+        boxShadow: `0 0 0 3px ${SELECTION_COLOR}`,
+        borderRadius: "4px",
+        padding: "2px 4px",
+        backgroundColor: "rgba(255, 255, 255, 0.9)",
+        cursor: isDraggable ? "move" : "pointer",
+      }
+    : {};
+
   return (
-    <Marker longitude={lng} latitude={lat} anchor="center">
+    <Marker
+      longitude={lng}
+      latitude={lat}
+      anchor="center"
+      draggable={isDraggable}
+      onDragStart={handleDragStart}
+      onDrag={handleDrag}
+      onDragEnd={handleDragEnd}
+      onClick={onClick}
+    >
       <div
         style={{
           color: textColor,
@@ -74,6 +164,7 @@ const TextMarker = ({ feature }: TextMarkerProps) => {
           pointerEvents: "none",
           textShadow:
             "-1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff",
+          ...selectionStyle,
         }}
         {...(isHtml
           ? { dangerouslySetInnerHTML: { __html: textContent } }
@@ -86,7 +177,21 @@ const TextMarker = ({ feature }: TextMarkerProps) => {
 export const TextRenderLayer = ({ mapId }: { mapId: MapId }) => {
   const td = useStore((state) => state.maps[mapId].td);
   const hiddenSources = useStore((state) => state.hiddenSources);
+  const drawMode = useStore((state) => state.drawMode);
+  const setSelectedFeature = useStore((state) => state.setSelectedFeature);
+  const selectedFeature = useStore((state) => state.selectedFeature);
   const [textFeatures, setTextFeatures] = useState<GeoJSONStoreFeatures[]>([]);
+
+  const handleMarkerClick = useCallback(
+    (e: MarkerEvent<MouseEvent>, featureId: string | number) => {
+      e.originalEvent.stopPropagation(); // TerraDraw へのイベント伝播を防止
+      if (drawMode === "select" && td) {
+        td.selectFeature(featureId);
+        setSelectedFeature({ featureId, mapId });
+      }
+    },
+    [drawMode, td, setSelectedFeature, mapId],
+  );
 
   // TerraDraw のスナップショットを取得してテキストフィーチャーをフィルター
   const getTextFeatures = useCallback(() => {
@@ -138,9 +243,26 @@ export const TextRenderLayer = ({ mapId }: { mapId: MapId }) => {
 
   return (
     <>
-      {textFeatures.map((feature) => (
-        <TextMarker key={feature.id} feature={feature} />
-      ))}
+      {textFeatures.map((feature) => {
+        const isSelected =
+          selectedFeature?.featureId === feature.id &&
+          selectedFeature?.mapId === mapId;
+        return (
+          <TextMarker
+            key={feature.id}
+            feature={feature}
+            isSelected={isSelected}
+            drawMode={drawMode}
+            td={td}
+            mapId={mapId}
+            onClick={(e) => {
+              if (feature.id !== undefined) {
+                handleMarkerClick(e, feature.id);
+              }
+            }}
+          />
+        );
+      })}
     </>
   );
 };
