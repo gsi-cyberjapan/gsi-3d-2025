@@ -29,6 +29,8 @@ export const isDrawMode = (v: string): v is DrawMode => {
 export type FeatureId = string | number;
 export type EditingFeature = { featureId: FeatureId; mapId: MapId };
 
+export type SelectedFeature = { featureId: FeatureId; mapId: MapId };
+
 export interface DrawState {
   /** 作図ウィンドウが表示中かどうか */
   isDrawWindowOpen: boolean;
@@ -45,6 +47,9 @@ export interface DrawState {
   /** 選択中のマーカーシンボル */
   selectedMarkerSymbol: string;
   setSelectedMarkerSymbol: (symbol: string) => void;
+  /** 選択中のフィーチャー */
+  selectedFeature: SelectedFeature | null;
+  setSelectedFeature: (feature: SelectedFeature | null) => void;
 }
 
 export const createDrawSlice: StateCreator<GlobalState, [], [], DrawState> = (
@@ -93,6 +98,14 @@ export const createDrawSlice: StateCreator<GlobalState, [], [], DrawState> = (
     set(() => {
       return {
         selectedMarkerSymbol: symbol,
+      };
+    });
+  },
+  selectedFeature: null,
+  setSelectedFeature: (feature) => {
+    set(() => {
+      return {
+        selectedFeature: feature,
       };
     });
   },

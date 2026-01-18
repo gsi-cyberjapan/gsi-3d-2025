@@ -1,4 +1,4 @@
-"use cliet";
+"use client";
 
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DrawMode, isDrawMode } from "@/hooks/store/drawState";
@@ -58,7 +58,6 @@ export const DrawModeSelector = () => {
           <Tooltip key={m.value}>
             <TooltipTrigger asChild>
               <TabsTrigger
-                disabled={["select"].includes(m.value)}
                 className="text-xs size-5 rounded-sm aria-selected:bg-blue-600 dark:aria-selected:text-foreground"
                 value={m.value}
               >
