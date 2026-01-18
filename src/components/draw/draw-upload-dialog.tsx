@@ -117,7 +117,13 @@ export const DrawUploadDialog = ({
       const format = detectFormat(selectedFile.name);
 
       // Import features
-      const result = importDrawData(td, content, format, selectedFile.name);
+      const result = importDrawData(
+        td,
+        content,
+        format,
+        selectedFile.name,
+        selectedMapId,
+      );
 
       // Force style re-evaluation for imported features
       // TerraDraw only evaluates styles when modes are active
@@ -137,6 +143,13 @@ export const DrawUploadDialog = ({
 
       // Update UI
       setUploadResult(result);
+
+      // Auto-close dialog on successful upload
+      if (result.added > 0 && result.failed === 0) {
+        setTimeout(() => {
+          handleClose();
+        }, 500);
+      }
     } catch (error) {
       // Handle error
       setUploadResult({

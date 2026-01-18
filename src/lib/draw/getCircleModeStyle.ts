@@ -6,7 +6,10 @@ import {
   DEFAULT_STROKE,
   DEFAULT_STROKE_OPACITY,
   DEFAULT_STROKE_WIDTH,
+  isFeatureHidden,
 } from "./getPolygonModeStyle";
+
+const TRANSPARENT = "#00000000" as const;
 
 export const getCircleModeStyle = (
   td: TerraDraw,
@@ -19,6 +22,8 @@ export const getCircleModeStyle = (
   return {
     fillColor: ({ id }) => {
       if (!id) return colorToRgba(DEFAULT_FILL, DEFAULT_FILL_OPACITY);
+      if (isFeatureHidden(td, id)) return TRANSPARENT;
+
       const ss = td.getSnapshotFeature(id);
       const fill = ss?.properties.fill;
       const fillOpacity = ss?.properties["fill-opacity"];
@@ -39,6 +44,8 @@ export const getCircleModeStyle = (
 
     outlineColor: ({ id }) => {
       if (!id) return colorToRgba(DEFAULT_STROKE, DEFAULT_STROKE_OPACITY);
+      if (isFeatureHidden(td, id)) return TRANSPARENT;
+
       const ss = td.getSnapshotFeature(id);
       const stroke = ss?.properties.stroke;
       const strokeOpacity = ss?.properties["stroke-opacity"];
@@ -60,6 +67,8 @@ export const getCircleModeStyle = (
 
     outlineWidth: ({ id }) => {
       if (!id) return DEFAULT_STROKE_WIDTH;
+      if (isFeatureHidden(td, id)) return 0;
+
       const ss = td.getSnapshotFeature(id);
       const strokeWidth = ss?.properties["stroke-width"];
 

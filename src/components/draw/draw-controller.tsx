@@ -38,6 +38,7 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
   const setTerraDraw = useStore((state) => state.setTerraDraw);
   const [isStart, setIsStart] = useState(false);
   const drawMode = useStore((state) => state.drawMode);
+  const hiddenSources = useStore((state) => state.hiddenSources);
 
   const handleDrawFinish = useCallback(
     (id: string | number) => {
@@ -77,6 +78,24 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
       drawRef.current.setMode("static");
     }
   }, [isDrawWindowOpen, drawMode, isStart]);
+
+  // hiddenSources 変更時にスタイルを再登録
+  useEffect(() => {
+    if (!drawRef.current || !isStart) return;
+
+    drawRef.current.updateModeOptions("circle", {
+      styles: getCircleModeStyle(drawRef.current),
+    });
+    drawRef.current.updateModeOptions("linestring", {
+      styles: getLineStringModeStyle(drawRef.current),
+    });
+    drawRef.current.updateModeOptions("freehand-linestring", {
+      styles: getLineStringModeStyle(drawRef.current),
+    });
+    drawRef.current.updateModeOptions("polygon", {
+      styles: getPolygonModeStyle(drawRef.current),
+    });
+  }, [hiddenSources, isStart]);
 
   useEffect(() => {
     if (!map) return;

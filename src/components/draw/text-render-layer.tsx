@@ -5,6 +5,8 @@ import { useStore } from "@/hooks/store/useStore";
 import { GeoJSONStoreFeatures } from "terra-draw";
 import { useEffect, useState, useCallback } from "react";
 import { Marker } from "react-map-gl/maplibre";
+
+const DEFAULT_SOURCE = "terradraw";
 import {
   DEFAULT_TEXT_COLOR,
   DEFAULT_TEXT_SIZE,
@@ -83,14 +85,27 @@ const TextMarker = ({ feature }: TextMarkerProps) => {
 
 export const TextRenderLayer = ({ mapId }: { mapId: MapId }) => {
   const td = useStore((state) => state.maps[mapId].td);
+  const hiddenSources = useStore((state) => state.hiddenSources);
   const [textFeatures, setTextFeatures] = useState<GeoJSONStoreFeatures[]>([]);
 
   // TerraDraw のスナップショットを取得してテキストフィーチャーをフィルター
   const getTextFeatures = useCallback(() => {
     if (!td) return [];
     const snapshot = td.getSnapshot();
-    return snapshot.filter((f) => f.properties.mode === "text");
-  }, [td]);
+    return snapshot.filter((f) => {
+      if (f.properties.mode !== "text") return false;
+
+      // Check if this feature is hidden
+      const rawMapId = f.properties.mapId;
+      const featureMapId = typeof rawMapId === "string" ? rawMapId : mapId;
+      const source =
+        typeof f.properties.source === "string"
+          ? f.properties.source
+          : DEFAULT_SOURCE;
+      const sourceKey = `${featureMapId}:${source}`;
+      return !hiddenSources.has(sourceKey);
+    });
+  }, [td, mapId, hiddenSources]);
 
   useEffect(() => {
     if (!td) return;

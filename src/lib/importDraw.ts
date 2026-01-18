@@ -305,6 +305,7 @@ export function importDrawData(
   content: string,
   format: ImportFormat,
   filename: string,
+  mapId: string,
 ): ImportResult {
   const result: ImportResult = {
     added: 0,
@@ -360,9 +361,10 @@ export function importDrawData(
         );
       }
 
-      // Set mode and source
+      // Set mode, source, and mapId
       terraDrawProps.mode = mode;
       terraDrawProps.source = filename;
+      terraDrawProps.mapId = mapId;
 
       // Create TerraDraw feature
       validFeatures.push({
