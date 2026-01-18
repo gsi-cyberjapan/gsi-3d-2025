@@ -8,6 +8,12 @@ export const DEFAULT_STROKE = "#0011FF";
 export const DEFAULT_STROKE_OPACITY = 1;
 export const DEFAULT_STROKE_WIDTH = 2;
 
+// Vertex style values (matching LineString mode)
+const DEFAULT_CLOSING_POINT_COLOR = "#FFFFFFFF";
+const DEFAULT_SNAPPING_POINT_COLOR = "#FFFFFFFF";
+const DEFAULT_CLOSING_POINT_OUTLINE_COLOR = "#0011FFFF";
+const DEFAULT_SNAPPING_POINT_OUTLINE_COLOR = "#0011FFFF";
+
 export const getPolygonModeStyle = (
   td: TerraDraw,
 ): Partial<{
@@ -15,6 +21,10 @@ export const getPolygonModeStyle = (
   fillOpacity: 1;
   outlineColor: (feature: GeoJSONStoreFeatures) => `#${string}`;
   outlineWidth: (feature: GeoJSONStoreFeatures) => number;
+  closingPointColor: `#${string}`;
+  closingPointOutlineColor: `#${string}`;
+  snappingPointColor: `#${string}`;
+  snappingPointOutlineColor: `#${string}`;
 }> => {
   return {
     fillColor: ({ id }) => {
@@ -70,5 +80,10 @@ export const getPolygonModeStyle = (
       td.updateFeatureProperties(id, { "stroke-width": DEFAULT_STROKE_WIDTH });
       return DEFAULT_STROKE_WIDTH;
     },
+
+    closingPointColor: DEFAULT_CLOSING_POINT_COLOR,
+    closingPointOutlineColor: DEFAULT_CLOSING_POINT_OUTLINE_COLOR,
+    snappingPointColor: DEFAULT_SNAPPING_POINT_COLOR,
+    snappingPointOutlineColor: DEFAULT_SNAPPING_POINT_OUTLINE_COLOR,
   };
 };
