@@ -16,6 +16,10 @@ import {
   DEFAULT_IS_HTML,
   DEFAULT_TEXT_CONTENT,
 } from "@/lib/draw/getTextModeStyle";
+import {
+  getPointModeStyle,
+  DEFAULT_MARKER_SIZE,
+} from "@/lib/draw/getPointModeStyle";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useMap } from "react-map-gl/maplibre";
 import {
@@ -39,11 +43,20 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
   const [isStart, setIsStart] = useState(false);
   const drawMode = useStore((state) => state.drawMode);
   const hiddenSources = useStore((state) => state.hiddenSources);
+  const selectedMarkerSymbol = useStore((state) => state.selectedMarkerSymbol);
+  const selectedMarkerSymbolRef = useRef(selectedMarkerSymbol);
+
+  // Keep ref in sync with state
+  useEffect(() => {
+    selectedMarkerSymbolRef.current = selectedMarkerSymbol;
+  }, [selectedMarkerSymbol]);
 
   const handleDrawFinish = useCallback(
     (id: string | number) => {
       const feature = drawRef.current?.getSnapshotFeature(id);
-      const isTextMode = feature?.properties.mode === "text";
+      const featureMode = feature?.properties.mode;
+      const isTextMode = featureMode === "text";
+      const isPointMode = featureMode === "point";
 
       setEditingFeature({ featureId: id, mapId });
 
@@ -59,6 +72,14 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
           textItalic: DEFAULT_TEXT_ITALIC,
           textUnderline: DEFAULT_TEXT_UNDERLINE,
           isHtml: DEFAULT_IS_HTML,
+        });
+      } else if (isPointMode) {
+        // ポイントモードの場合はマーカープロパティを初期化
+        drawRef.current?.updateFeatureProperties(id, {
+          mapId,
+          source: "terradraw",
+          "marker-symbol": selectedMarkerSymbolRef.current,
+          "marker-size": DEFAULT_MARKER_SIZE,
         });
       } else {
         drawRef.current?.updateFeatureProperties(id, {
@@ -132,6 +153,9 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
       });
       drawRef.current.updateModeOptions("text", {
         styles: getTextModeStyle(),
+      });
+      drawRef.current.updateModeOptions("point", {
+        styles: getPointModeStyle(),
       });
       draw.on("finish", handleDrawFinish);
 

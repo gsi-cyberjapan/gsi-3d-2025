@@ -22,6 +22,11 @@ import {
   DEFAULT_STROKE_OPACITY as DEFAULT_LINE_STROKE_OPACITY,
   DEFAULT_STROKE_WIDTH as DEFAULT_LINE_STROKE_WIDTH,
 } from "@/lib/draw/getLineStringModeStyle";
+import {
+  DEFAULT_MARKER_SYMBOL,
+  DEFAULT_MARKER_SIZE,
+} from "@/lib/draw/getPointModeStyle";
+import { MarkerSize } from "@/lib/config";
 
 export type ImportFormat = "geojson" | "kml";
 
@@ -189,6 +194,36 @@ function initializeTextProperties(
 }
 
 /**
+ * Check if a value is a valid marker size
+ */
+function isValidMarkerSize(size: unknown): size is MarkerSize {
+  return (
+    typeof size === "string" && ["small", "medium", "large"].includes(size)
+  );
+}
+
+/**
+ * Initialize point properties for point mode features
+ */
+function initializePointProperties(
+  properties: Record<string, unknown>,
+): Record<string, unknown> {
+  const pointProps: Record<string, unknown> = { ...properties };
+
+  // Initialize marker-symbol with default if missing or invalid
+  if (typeof pointProps["marker-symbol"] !== "string") {
+    pointProps["marker-symbol"] = DEFAULT_MARKER_SYMBOL;
+  }
+
+  // Initialize marker-size with default if missing or invalid
+  if (!isValidMarkerSize(pointProps["marker-size"])) {
+    pointProps["marker-size"] = DEFAULT_MARKER_SIZE;
+  }
+
+  return pointProps;
+}
+
+/**
  * Validate coordinates structure
  */
 function validateCoordinates(geometry: unknown): boolean {
@@ -353,6 +388,9 @@ export function importDrawData(
       if (mode === "text") {
         // Initialize text properties
         terraDrawProps = initializeTextProperties(properties);
+      } else if (mode === "point") {
+        // Initialize point/marker properties
+        terraDrawProps = initializePointProperties(properties);
       } else {
         // Convert simplestyle for geometric features
         terraDrawProps = convertSimplestyleToTerraDraw(

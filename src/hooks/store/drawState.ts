@@ -1,6 +1,7 @@
 import { StateCreator } from "zustand";
 import { GlobalState } from "./useStore";
 import { MapId } from "./mapManagerState";
+import { MARKER_ICON_CONFIG } from "@/lib/config";
 
 export type DrawMode =
   | "point"
@@ -41,6 +42,9 @@ export interface DrawState {
   /** 非表示のソースキー（"main:terradraw", "sub:sample.geojson"など） */
   hiddenSources: Set<string>;
   toggleSourceVisibility: (sourceKey: string) => void;
+  /** 選択中のマーカーシンボル */
+  selectedMarkerSymbol: string;
+  setSelectedMarkerSymbol: (symbol: string) => void;
 }
 
 export const createDrawSlice: StateCreator<GlobalState, [], [], DrawState> = (
@@ -81,6 +85,14 @@ export const createDrawSlice: StateCreator<GlobalState, [], [], DrawState> = (
       }
       return {
         hiddenSources: newHiddenSources,
+      };
+    });
+  },
+  selectedMarkerSymbol: MARKER_ICON_CONFIG.DEFAULT_ICON,
+  setSelectedMarkerSymbol: (symbol) => {
+    set(() => {
+      return {
+        selectedMarkerSymbol: symbol,
       };
     });
   },

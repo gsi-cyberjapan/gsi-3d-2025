@@ -1,6 +1,7 @@
 "use client";
 
 import { useStore } from "@/hooks/store/useStore";
+import { useDrawFeatures } from "@/hooks/useDrawFeatures";
 import { Window } from "../ui/window";
 import { DrawModeSelector } from "./draw-mode-selector";
 import { DrawFileButton } from "./draw-file-button";
@@ -10,6 +11,7 @@ import { Separator } from "@/components/ui/separator";
 export const DrawWindow = () => {
   const isDrawWindowOpen = useStore((state) => state.isDrawWindowOpen);
   const setIsDrawWindowOpen = useStore((state) => state.setIsDrawWindowOpen);
+  const featureGroups = useDrawFeatures();
 
   return (
     <Window
@@ -24,8 +26,12 @@ export const DrawWindow = () => {
           <DrawFileButton />
           <DrawModeSelector />
         </div>
-        <Separator />
-        <FeatureSourceList />
+        {featureGroups.length > 0 && (
+          <>
+            <Separator />
+            <FeatureSourceList />
+          </>
+        )}
       </div>
     </Window>
   );
