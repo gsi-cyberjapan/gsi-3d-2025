@@ -16,10 +16,7 @@ import {
   DEFAULT_IS_HTML,
   DEFAULT_TEXT_CONTENT,
 } from "@/lib/draw/getTextModeStyle";
-import {
-  getPointModeStyle,
-  DEFAULT_MARKER_SIZE,
-} from "@/lib/draw/getPointModeStyle";
+import { getPointModeStyle } from "@/lib/draw/getPointModeStyle";
 import { getSelectModeStyle } from "@/lib/draw/getSelectModeStyle";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useMap } from "react-map-gl/maplibre";
@@ -34,6 +31,7 @@ import {
   ValidateNotSelfIntersecting,
 } from "terra-draw";
 import { TerraDrawMapLibreGLAdapter } from "terra-draw-maplibre-gl-adapter";
+import { DRAW_CONFIG } from "@/lib/config";
 
 export const DrawController = ({ mapId }: { mapId: MapId }) => {
   const map = useMap()[mapId]?.getMap();
@@ -86,7 +84,7 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
           mapId,
           source: "terradraw",
           "marker-symbol": selectedMarkerSymbolRef.current,
-          "marker-size": DEFAULT_MARKER_SIZE,
+          "marker-size": DRAW_CONFIG.MARKER.DEFAULT_SIZE,
         });
       } else {
         drawRef.current?.updateFeatureProperties(id, {
@@ -253,7 +251,6 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
         drawRef.current.off("finish", handleDrawFinish);
         drawRef.current.off("select", handleSelect);
         drawRef.current.off("deselect", handleDeselect);
-        // drawRef.current.stop();
         drawRef.current = null;
       }
     };

@@ -6,14 +6,12 @@ import { GeoJSONStoreFeatures, TerraDraw } from "terra-draw";
 import { useEffect, useState, useCallback } from "react";
 import { Marker, MarkerEvent, MarkerDragEvent } from "react-map-gl/maplibre";
 import {
-  DEFAULT_MARKER_SYMBOL,
-  DEFAULT_MARKER_SIZE,
   getMarkerIconUrl,
   getMarkerSizePixels,
 } from "@/lib/draw/getPointModeStyle";
-import { MarkerSize } from "@/lib/config";
 import { SELECTION_COLOR } from "@/lib/draw/getSelectModeStyle";
 import { DrawMode } from "@/hooks/store/drawState";
+import { DRAW_CONFIG } from "@/lib/config";
 
 const DEFAULT_SOURCE = "terradraw";
 
@@ -33,6 +31,8 @@ interface IconMarkerProps {
   mapId: MapId;
   onClick: (e: MarkerEvent<MouseEvent>) => void;
 }
+
+type MarkerSize = keyof typeof DRAW_CONFIG.MARKER.SIZES;
 
 const IconMarker = ({
   feature,
@@ -97,13 +97,13 @@ const IconMarker = ({
   const markerSymbol =
     typeof feature.properties["marker-symbol"] === "string"
       ? feature.properties["marker-symbol"]
-      : DEFAULT_MARKER_SYMBOL;
+      : DRAW_CONFIG.MARKER.DEFAULT_ICON;
   const rawMarkerSize = feature.properties["marker-size"];
   const markerSize =
     typeof rawMarkerSize === "string" &&
     ["small", "medium", "large"].includes(rawMarkerSize)
       ? (rawMarkerSize as MarkerSize)
-      : DEFAULT_MARKER_SIZE;
+      : DRAW_CONFIG.MARKER.DEFAULT_SIZE;
 
   const iconUrl = getMarkerIconUrl(markerSymbol);
   const sizePixels = getMarkerSizePixels(markerSize);

@@ -9,6 +9,11 @@ import pluginQuery from "@tanstack/eslint-plugin-query";
 const eslintConfig = defineConfig([
   /** Next.js デフォルト */
   ...nextVitals,
+  {
+    rules: {
+      "@next/next/no-img-element": "off",
+    },
+  },
 
   /** 無視するファイル */
   globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts", "*.mjs"]),

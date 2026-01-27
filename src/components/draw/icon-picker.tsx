@@ -1,6 +1,6 @@
 "use client";
 
-import { MARKER_ICON_CONFIG } from "@/lib/config";
+import { DRAW_CONFIG } from "@/lib/config";
 import { getMarkerIconUrl } from "@/lib/draw/getPointModeStyle";
 import { useStore } from "@/hooks/store/useStore";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -24,11 +24,11 @@ export const IconPicker = ({ value, onChange }: IconPickerProps) => {
     <div className="space-y-2">
       <div className="text-sm font-medium">アイコン</div>
       <Tabs
-        defaultValue={MARKER_ICON_CONFIG.CATEGORIES[0].name}
+        defaultValue={DRAW_CONFIG.MARKER.CATEGORIES[0].name}
         className="w-full"
       >
         <TabsList className="w-full flex-wrap h-auto">
-          {MARKER_ICON_CONFIG.CATEGORIES.map((category) => (
+          {DRAW_CONFIG.MARKER.CATEGORIES.map((category) => (
             <TabsTrigger
               key={category.name}
               value={category.name}
@@ -38,9 +38,9 @@ export const IconPicker = ({ value, onChange }: IconPickerProps) => {
             </TabsTrigger>
           ))}
         </TabsList>
-        {MARKER_ICON_CONFIG.CATEGORIES.map((category) => (
+        {DRAW_CONFIG.MARKER.CATEGORIES.map((category) => (
           <TabsContent key={category.name} value={category.name}>
-            <div className="grid grid-cols-8 gap-1 max-h-40 overflow-y-auto p-1">
+            <div className="grid grid-cols-8 gap-1 max-h-40 overflow-y-auto p-1 scrollbar-transparent-thin">
               {category.icons.map((icon) => (
                 <button
                   key={icon}

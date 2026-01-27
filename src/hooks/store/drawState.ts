@@ -1,7 +1,7 @@
 import { StateCreator } from "zustand";
 import { GlobalState } from "./useStore";
 import { MapId } from "./mapManagerState";
-import { MARKER_ICON_CONFIG } from "@/lib/config";
+import { DRAW_CONFIG } from "@/lib/config";
 
 export type DrawMode =
   | "point"
@@ -103,7 +103,7 @@ export const createDrawSlice: StateCreator<GlobalState, [], [], DrawState> = (
       };
     });
   },
-  selectedMarkerSymbol: MARKER_ICON_CONFIG.DEFAULT_ICON,
+  selectedMarkerSymbol: DRAW_CONFIG.MARKER.DEFAULT_ICON,
   setSelectedMarkerSymbol: (symbol) => {
     set(() => {
       return {

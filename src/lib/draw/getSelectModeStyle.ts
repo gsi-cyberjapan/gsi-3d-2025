@@ -14,34 +14,8 @@ const TRANSPARENT = "#00000000" as const;
 // Selection highlight color
 export const SELECTION_COLOR = "#FF6600";
 
-/**
- * Check if a feature is in point or text mode
- */
-const isPointOrTextMode = (
-  td: TerraDraw,
-  id: string | number | undefined,
-): boolean => {
-  if (!id) return false;
-  const feature = td.getSnapshotFeature(id);
-  const mode = feature?.properties.mode;
-  return mode === "point" || mode === "text";
-};
-
-/**
- * Check if a selection point belongs to a point/text mode feature
- */
-const isSelectionPointForPointOrText = (
-  td: TerraDraw,
-  properties: GeoJSONStoreFeatures["properties"],
-): boolean => {
-  const featureId = properties.selectionPointFeatureId;
-  if (typeof featureId !== "string" && typeof featureId !== "number") {
-    return false;
-  }
-  return isPointOrTextMode(td, featureId);
-};
 const SELECTION_FILL_OPACITY = 0.3;
-const SELECTION_HANDLE_COLOR = "#FF6600FF"; // オレンジに統一
+const SELECTION_HANDLE_COLOR = "#FFFFFFFF";
 const SELECTION_HANDLE_OUTLINE_COLOR = "#FF6600FF";
 const MIDPOINT_COLOR = "#FFFFFFCC";
 const MIDPOINT_OUTLINE_COLOR = "#FF6600FF";
@@ -188,63 +162,16 @@ export const getSelectModeStyle = (
     selectedLineStringWidth: DEFAULT_STROKE_WIDTH + 2,
 
     // Non-selected point styles
-    // For point/text mode features, use transparent styles (React Marker handles rendering)
-    pointColor: ({ id }) => {
-      if (!id) return SELECTION_HANDLE_COLOR;
-      return isPointOrTextMode(td, id) ? TRANSPARENT : SELECTION_HANDLE_COLOR;
-    },
-    pointOutlineColor: ({ id }) => {
-      if (!id) return SELECTION_HANDLE_OUTLINE_COLOR;
-      return isPointOrTextMode(td, id)
-        ? TRANSPARENT
-        : SELECTION_HANDLE_OUTLINE_COLOR;
-    },
-    pointWidth: ({ id }) => {
-      if (!id) return 6;
-      return isPointOrTextMode(td, id) ? 0 : 6;
-    },
-    pointOutlineWidth: ({ id }) => {
-      if (!id) return 2;
-      return isPointOrTextMode(td, id) ? 0 : 2;
-    },
-
-    // Selected point styles (orange)
-    // For point/text mode features, use transparent styles (React Marker handles rendering)
-    selectedPointColor: ({ id }) => {
-      if (!id) return SELECTION_COLOR as `#${string}`;
-      return isPointOrTextMode(td, id)
-        ? TRANSPARENT
-        : (SELECTION_COLOR as `#${string}`);
-    },
-    selectedPointOutlineColor: ({ id }) => {
-      if (!id) return SELECTION_HANDLE_OUTLINE_COLOR;
-      return isPointOrTextMode(td, id)
-        ? TRANSPARENT
-        : SELECTION_HANDLE_OUTLINE_COLOR;
-    },
-    selectedPointWidth: ({ id }) => {
-      if (!id) return 8;
-      return isPointOrTextMode(td, id) ? 0 : 8;
-    },
-    selectedPointOutlineWidth: ({ id }) => {
-      if (!id) return 2;
-      return isPointOrTextMode(td, id) ? 0 : 2;
-    },
+    pointColor: () => SELECTION_HANDLE_COLOR,
+    pointOutlineColor: () => SELECTION_HANDLE_OUTLINE_COLOR,
+    pointWidth: () => 6,
+    pointOutlineWidth: () => 2,
 
     // Selection point (vertex handle) styles
-    // For point/text mode features, hide selection handles (React Marker handles rendering)
-    selectionPointColor: ({ properties }) =>
-      isSelectionPointForPointOrText(td, properties)
-        ? TRANSPARENT
-        : SELECTION_HANDLE_COLOR,
-    selectionPointOutlineColor: ({ properties }) =>
-      isSelectionPointForPointOrText(td, properties)
-        ? TRANSPARENT
-        : SELECTION_HANDLE_OUTLINE_COLOR,
-    selectionPointWidth: ({ properties }) =>
-      isSelectionPointForPointOrText(td, properties) ? 0 : 8,
-    selectionPointOutlineWidth: ({ properties }) =>
-      isSelectionPointForPointOrText(td, properties) ? 0 : 2,
+    selectionPointColor: () => SELECTION_HANDLE_COLOR,
+    selectionPointOutlineColor: () => SELECTION_HANDLE_OUTLINE_COLOR,
+    selectionPointWidth: () => 6,
+    selectionPointOutlineWidth: () => 2,
 
     // Midpoint styles
     midPointColor: MIDPOINT_COLOR,
@@ -254,8 +181,7 @@ export const getSelectModeStyle = (
 
     // Selected marker styles
     // Hide default TerraDraw markers (React Marker handles rendering for point/text features)
-    selectedMarkerUrl: () => "",
-    selectedMarkerHeight: () => 0,
-    selectedMarkerWidth: () => 0,
+    selectedMarkerHeight: () => 0.01,
+    selectedMarkerWidth: () => 0.01,
   };
 };
