@@ -41,6 +41,16 @@ export const useDrawFeatures = (): FeatureGroup[] => {
       const snapshot = td.getSnapshot();
 
       for (const feature of snapshot) {
+        // 完了したフィーチャーのみカウント（選択ハンドル、選択中、作図中のフィーチャーを除外）
+        if (
+          feature.properties.mode === "select" ||
+          feature.properties.selected ||
+          feature.properties.currentlyDrawing ||
+          feature.properties.closingPoint
+        ) {
+          continue;
+        }
+
         const source =
           typeof feature.properties.source === "string"
             ? feature.properties.source
@@ -105,7 +115,7 @@ export const useDrawFeatures = (): FeatureGroup[] => {
         }
         return prev;
       });
-    }, 100);
+    }, 300);
 
     return () => {
       for (const cleanup of listeners) {

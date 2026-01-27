@@ -25,8 +25,8 @@ import {
 import {
   DEFAULT_MARKER_SYMBOL,
   DEFAULT_MARKER_SIZE,
+  MarkerSize,
 } from "@/lib/draw/getPointModeStyle";
-import { MarkerSize } from "@/lib/config";
 
 export type ImportFormat = "geojson" | "kml";
 

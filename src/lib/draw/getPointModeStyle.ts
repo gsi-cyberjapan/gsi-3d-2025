@@ -8,7 +8,7 @@ const DEFAULT_POINT_COLOR = "#00000000";
 const DEFAULT_POINT_OUTLINE_COLOR = "#00000000";
 const DEFAULT_POINT_OUTLINE_WIDTH = 0;
 
-type MarkerSize = keyof typeof DRAW_CONFIG.MARKER.SIZES;
+export type MarkerSize = keyof typeof DRAW_CONFIG.MARKER.SIZES;
 
 export const getPointModeStyle = (): Partial<{
   pointColor: () => `#${string}`;

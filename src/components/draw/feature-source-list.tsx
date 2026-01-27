@@ -53,13 +53,13 @@ const FeatureSourceItem = ({
   onDelete,
 }: FeatureSourceItemProps) => {
   return (
-    <div className="flex items-center gap-2 py-1">
+    <div className="flex items-center gap-2">
       <div className="flex-1 min-w-0 flex items-center gap-2">
         <span className="text-sm truncate">
           {getSourceDisplayName(group.source)}
         </span>
         {showMapBadge && (
-          <Badge variant="secondary" className="text-xs shrink-0">
+          <Badge variant="outline" className="text-xs shrink-0">
             {getMapDisplayName(group.mapId)}
           </Badge>
         )}
