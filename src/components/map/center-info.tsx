@@ -172,7 +172,7 @@ export const CenterInfo = ({ mapId }: Props) => {
     );
   }
   return (
-    <div className="text-xs text-muted-foreground">
+    <div className="text-xs text-muted-foreground relative px-1">
       <div
         className={cn("font-semibold", {
           "text-foreground": isAddressReady,
@@ -208,7 +208,7 @@ export const CenterInfo = ({ mapId }: Props) => {
           </tr>
         </tbody>
       </table>
-      <div className="flex gap-2 py-1">
+      <div className="flex gap-2 py-1 absolute z-10 -top-9">
         <Tabs value={addressViewMode} onValueChange={setAddressViewMode}>
           <TabsList className="h-6 rounded-sm">
             <TabsTrigger

@@ -8,7 +8,7 @@ export const ViewFooter = () => {
   const layoutMode = useStore((state) => state.layoutMode);
 
   return (
-    <div className="flex gap-1 p-1 border-t">
+    <div className="flex gap-1 py-1 border-t">
       {(() => {
         if (layoutMode === "split") {
           return activeMapIds.map((id) => (
