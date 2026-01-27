@@ -60,7 +60,7 @@ const DraggableContent = ({
     <div
       ref={setNodeRef}
       className={cn(
-        "fixed z-20 flex flex-col rounded-lg border bg-background shadow-lg",
+        "fixed z-20 flex flex-col rounded-lg border bg-background/85 backdrop-blur-sm shadow-lg",
         isDragging && "cursor-grabbing shadow-2xl",
         className,
       )}

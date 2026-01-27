@@ -16,6 +16,7 @@ export const DrawWindow = () => {
   return (
     <Window
       title="作図"
+      className="w-70"
       isOpen={isDrawWindowOpen}
       onClose={() => {
         setIsDrawWindowOpen(false);

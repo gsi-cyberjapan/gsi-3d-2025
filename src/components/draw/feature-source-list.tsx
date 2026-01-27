@@ -173,12 +173,14 @@ export const FeatureSourceList = () => {
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent className="max-w-sm p-4">
           <DialogHeader>
-            <DialogTitle>フィーチャーの削除</DialogTitle>
+            <DialogTitle>作図の削除</DialogTitle>
             <DialogDescription>
               {groupToDelete && (
                 <>
-                  「{getSourceDisplayName(groupToDelete.source)}」の
-                  {groupToDelete.count}件のフィーチャーを削除しますか？
+                  <span className="font-semibold">
+                    {getSourceDisplayName(groupToDelete.source)}
+                  </span>{" "}
+                  の{groupToDelete.count}件の作図を削除しますか？
                   <br />
                   この操作は取り消せません。
                 </>
