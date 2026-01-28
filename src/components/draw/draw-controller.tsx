@@ -18,6 +18,8 @@ import {
 } from "@/lib/draw/getTextModeStyle";
 import { getPointModeStyle } from "@/lib/draw/getPointModeStyle";
 import { getSelectModeStyle } from "@/lib/draw/getSelectModeStyle";
+import { getMeasureLineStringModeStyle } from "@/lib/measure/getMeasureLineStringModeStyle";
+import { getMeasurePolygonModeStyle } from "@/lib/measure/getMeasurePolygonModeStyle";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useMap } from "react-map-gl/maplibre";
 import {
@@ -44,6 +46,8 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
   const drawMode = useStore((state) => state.drawMode);
   const hiddenSources = useStore((state) => state.hiddenSources);
   const selectedMarkerSymbol = useStore((state) => state.selectedMarkerSymbol);
+  const isMeasureWindowOpen = useStore((state) => state.isMeasureWindowOpen);
+  const measureMode = useStore((state) => state.measureMode);
   const selectedMarkerSymbolRef = useRef(selectedMarkerSymbol);
 
   // Keep ref in sync with state
@@ -60,6 +64,15 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
 
       const feature = drawRef.current?.getSnapshotFeature(id);
       const featureMode = feature?.properties.mode;
+
+      // 計測モードの場合は編集ダイアログを開かない
+      if (
+        featureMode === "measure-linestring" ||
+        featureMode === "measure-polygon"
+      ) {
+        return;
+      }
+
       const isTextMode = featureMode === "text";
       const isPointMode = featureMode === "point";
 
@@ -109,12 +122,16 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
 
   useEffect(() => {
     if (!drawRef.current || !isStart) return;
-    if (isDrawWindowOpen) {
+    if (isMeasureWindowOpen) {
+      const mode =
+        measureMode === "distance" ? "measure-linestring" : "measure-polygon";
+      drawRef.current.setMode(mode);
+    } else if (isDrawWindowOpen) {
       drawRef.current.setMode(drawMode);
     } else {
       drawRef.current.setMode("static");
     }
-  }, [isDrawWindowOpen, drawMode, isStart]);
+  }, [isDrawWindowOpen, drawMode, isStart, isMeasureWindowOpen, measureMode]);
 
   // モード切替時に選択を解除
   useEffect(() => {
@@ -206,6 +223,12 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
               text: { feature: { draggable: false } },
             },
           }),
+          // Measure modes
+          new TerraDrawLineStringMode({ modeName: "measure-linestring" }),
+          new TerraDrawPolygonMode({
+            modeName: "measure-polygon",
+            validation: ValidateNotSelfIntersecting,
+          }),
         ],
       });
       drawRef.current = draw;
@@ -230,6 +253,12 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
       });
       drawRef.current.updateModeOptions("select", {
         styles: getSelectModeStyle(draw),
+      });
+      drawRef.current.updateModeOptions("measure-linestring", {
+        styles: getMeasureLineStringModeStyle(),
+      });
+      drawRef.current.updateModeOptions("measure-polygon", {
+        styles: getMeasurePolygonModeStyle(),
       });
       draw.on("finish", handleDrawFinish);
       draw.on("select", handleSelect);
