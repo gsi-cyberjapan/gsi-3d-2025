@@ -9,6 +9,7 @@ import {
   MapLibreType,
 } from "@/lib/getMaplibreWhithProtocol";
 import { buildStyleFromBaseLayer } from "@/lib/buildStyleFromBaseLayer";
+import { DEFAULT_VIEW_CONFIG } from "@/lib/config";
 import { useStore } from "@/hooks/store/useStore";
 import { useEffect, useState, useMemo } from "react";
 import { ZoomLevelController } from "./zoom-level-controller";
@@ -80,9 +81,9 @@ export const Map = ({ mapId, className, opacity }: Props) => {
             mapStyle={mapStyle}
             projection={projection}
             initialViewState={{
-              longitude: 140.084556,
-              latitude: 36.104611,
-              zoom: 4,
+              longitude: DEFAULT_VIEW_CONFIG.LONGITUDE,
+              latitude: DEFAULT_VIEW_CONFIG.LATITUDE,
+              zoom: DEFAULT_VIEW_CONFIG.ZOOM,
             }}
             onLoad={() => {
               setIsMapLoaded(true);
