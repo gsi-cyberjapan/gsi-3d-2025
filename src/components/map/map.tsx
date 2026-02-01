@@ -20,7 +20,10 @@ import { DrawController } from "../draw/draw-controller";
 import { TextRenderLayer } from "../draw/text-render-layer";
 import { IconRenderLayer } from "../draw/icon-render-layer";
 import { SearchResultController } from "./search-result-controller";
+import { ClickToMoveController } from "./click-to-move-controller";
 import { SelectionActionButtons } from "../draw/selection-action-buttons";
+import { OverviewMap } from "./overview-map";
+import { MeasureController } from "../measure/measure-controller";
 
 const ReactMaplibre = dynamic(
   () => import("react-map-gl/maplibre").then((m) => m.Map),
@@ -92,20 +95,25 @@ export const Map = ({ mapId, className, opacity }: Props) => {
             <OptionalLayers mapId={mapId} />
             {/* Mapインスタンスを直接操作するコンポーネント */}
             <DrawController mapId={mapId} />
+            <MeasureController mapId={mapId} />
             <TextRenderLayer mapId={mapId} />
             <IconRenderLayer mapId={mapId} />
             <SelectionActionButtons mapId={mapId} />
             <ZoomLevelController mapId={mapId} />
             <SearchResultController />
+            <ClickToMoveController mapId={mapId} />
             <PositionSyncController />
           </ReactMaplibre>
         </div>
       )}
 
       {isMapLoaded && (
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-          <MapCenterLine />
-        </div>
+        <>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+            <MapCenterLine />
+          </div>
+          <OverviewMap mapId={mapId} />
+        </>
       )}
 
       <div

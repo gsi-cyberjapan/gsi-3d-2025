@@ -22,6 +22,12 @@ export interface MapManagerState {
   /** 中心の十字線を表示するかどうか */
   isDisplayCenterLine: boolean;
   setIsDisaplayCenterLine: (value: boolean) => void;
+  /** 広域図を表示するかどうか */
+  isDisplayOverview: boolean;
+  setIsDisplayOverview: (value: boolean) => void;
+  /** クリックで移動するかどうか */
+  isClickToMoveEnabled: boolean;
+  setIsClickToMoveEnabled: (value: boolean) => void;
 }
 
 export const createMapManagerSlice: StateCreator<
@@ -85,6 +91,22 @@ export const createMapManagerSlice: StateCreator<
     set(() => {
       return {
         isDisplayCenterLine: value,
+      };
+    });
+  },
+  isDisplayOverview: false,
+  setIsDisplayOverview: (value) => {
+    set(() => {
+      return {
+        isDisplayOverview: value,
+      };
+    });
+  },
+  isClickToMoveEnabled: false,
+  setIsClickToMoveEnabled: (value) => {
+    set(() => {
+      return {
+        isClickToMoveEnabled: value,
       };
     });
   },

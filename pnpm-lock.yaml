@@ -71,6 +71,15 @@ importers:
       '@tmcw/togeojson':
         specifier: ^7.1.2
         version: 7.1.2
+      '@turf/area':
+        specifier: ^7.3.3
+        version: 7.3.3
+      '@turf/helpers':
+        specifier: ^7.3.3
+        version: 7.3.3
+      '@turf/length':
+        specifier: ^7.3.3
+        version: 7.3.3
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -147,6 +156,9 @@ importers:
       '@types/react-dom':
         specifier: ^19
         version: 19.2.2(@types/react@19.2.2)
+      baseline-browser-mapping:
+        specifier: ^2.9.19
+        version: 2.9.19
       eslint:
         specifier: ^9
         version: 9.38.0(jiti@2.6.1)
@@ -1484,6 +1496,24 @@ packages:
   '@tmcw/togeojson@7.1.2':
     resolution: {integrity: sha512-QKnFs9DAuqqBVj4d6c69tV1Dj2TspSBTqffivoN0YoBCVdP/JY1+WaYCJbzU49RkoU5NOSOJ3jtFHCdEUVh21A==}
 
+  '@turf/area@7.3.3':
+    resolution: {integrity: sha512-FT66TCxUec+3RsCCyO1kWP57/tiEWEqYfpIs5n44dup401Cne/E+xunahEWxMfP/HSUxfcRQqrjH5vEulLrNoA==}
+
+  '@turf/distance@7.3.3':
+    resolution: {integrity: sha512-bmv0GzqlICjMWuQ05ipDDbT9ppQUMNo02+T5f/rPF9hSEXCPkSJQ1OdQ6XjUGzdJ/vxgES4DM4zhIDUKU/g8RQ==}
+
+  '@turf/helpers@7.3.3':
+    resolution: {integrity: sha512-9Ias0L1GuZPIzO6sk8jraTEuLJye6n9LYNEdw69ZGOQ6C1IigjxkPW49zmn21aTv1z27vxdVLSS3r+78DB2QnQ==}
+
+  '@turf/invariant@7.3.3':
+    resolution: {integrity: sha512-q6UDgWmtIlU+AIxt5Awnh18ZMSuNti6drCXbIBdGdgQaQ1qEiyGZDE3P9RKk6otoLXOBYecOuI0HIwf2IxurhQ==}
+
+  '@turf/length@7.3.3':
+    resolution: {integrity: sha512-Yax4dZoZJOJbgZ2kiD4EKLRdC1JGyp92YvhbvpO4Vnugbbh0VTgWdFW3TElYqAHjSFCFpHiths06sztDXCRnMQ==}
+
+  '@turf/meta@7.3.3':
+    resolution: {integrity: sha512-Tz1j4h70iFB5SebWWoVv/uL59x4aOngXU+d1xQDXzOCn/O6txnreGVGMcYU362c5F06yqZx38H9UFTQ553lK0w==}
+
   '@tybys/wasm-util@0.10.1':
     resolution: {integrity: sha512-9tTaPJLSiejZKx+Bmog4uSubteqTvFrVrURwkmHixBo0G4seD0zUxp98E1DzUBJxLQ3NPwXrGKDiVjwx/DpPsg==}
 
@@ -1810,8 +1840,8 @@ packages:
   balanced-match@1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
 
-  baseline-browser-mapping@2.8.19:
-    resolution: {integrity: sha512-zoKGUdu6vb2jd3YOq0nnhEDQVbPcHhco3UImJrv5dSkvxTc2pl2WjOPsjZXDwPDSl5eghIMuY3R6J9NDKF3KcQ==}
+  baseline-browser-mapping@2.9.19:
+    resolution: {integrity: sha512-ipDqC8FrAl/76p2SSWKSI+H9tFwm7vYqXQrItCuiVPt26Km0jS+NzSsBWAaBusvSbQcfJG+JitdMm+wZAgTYqg==}
     hasBin: true
 
   boxen@7.0.0:
@@ -4847,6 +4877,45 @@ snapshots:
 
   '@tmcw/togeojson@7.1.2': {}
 
+  '@turf/area@7.3.3':
+    dependencies:
+      '@turf/helpers': 7.3.3
+      '@turf/meta': 7.3.3
+      '@types/geojson': 7946.0.16
+      tslib: 2.8.1
+
+  '@turf/distance@7.3.3':
+    dependencies:
+      '@turf/helpers': 7.3.3
+      '@turf/invariant': 7.3.3
+      '@types/geojson': 7946.0.16
+      tslib: 2.8.1
+
+  '@turf/helpers@7.3.3':
+    dependencies:
+      '@types/geojson': 7946.0.16
+      tslib: 2.8.1
+
+  '@turf/invariant@7.3.3':
+    dependencies:
+      '@turf/helpers': 7.3.3
+      '@types/geojson': 7946.0.16
+      tslib: 2.8.1
+
+  '@turf/length@7.3.3':
+    dependencies:
+      '@turf/distance': 7.3.3
+      '@turf/helpers': 7.3.3
+      '@turf/meta': 7.3.3
+      '@types/geojson': 7946.0.16
+      tslib: 2.8.1
+
+  '@turf/meta@7.3.3':
+    dependencies:
+      '@turf/helpers': 7.3.3
+      '@types/geojson': 7946.0.16
+      tslib: 2.8.1
+
   '@tybys/wasm-util@0.10.1':
     dependencies:
       tslib: 2.8.1
@@ -5183,7 +5252,7 @@ snapshots:
 
   balanced-match@1.0.2: {}
 
-  baseline-browser-mapping@2.8.19: {}
+  baseline-browser-mapping@2.9.19: {}
 
   boxen@7.0.0:
     dependencies:
@@ -5211,7 +5280,7 @@ snapshots:
 
   browserslist@4.26.3:
     dependencies:
-      baseline-browser-mapping: 2.8.19
+      baseline-browser-mapping: 2.9.19
       caniuse-lite: 1.0.30001751
       electron-to-chromium: 1.5.238
       node-releases: 2.0.26

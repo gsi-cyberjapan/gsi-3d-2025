@@ -13,6 +13,12 @@ export const SettingDropdownContent = () => {
   const setIsDisplayCenterLine = useStore(
     (state) => state.setIsDisaplayCenterLine,
   );
+  const isDisplayOverview = useStore((state) => state.isDisplayOverview);
+  const setIsDisplayOverview = useStore((state) => state.setIsDisplayOverview);
+  const isClickToMoveEnabled = useStore((state) => state.isClickToMoveEnabled);
+  const setIsClickToMoveEnabled = useStore(
+    (state) => state.setIsClickToMoveEnabled,
+  );
 
   return (
     <DropdownMenuContent className="w-56" align="end">
@@ -24,6 +30,23 @@ export const SettingDropdownContent = () => {
           className="text-sm cursor-pointer"
         >
           中心十字線
+        </DropdownMenuCheckboxItem>
+        <DropdownMenuCheckboxItem
+          checked={isDisplayOverview}
+          onCheckedChange={setIsDisplayOverview}
+          className="text-sm cursor-pointer"
+        >
+          広域図
+        </DropdownMenuCheckboxItem>
+      </DropdownMenuGroup>
+      <DropdownMenuGroup>
+        <DropdownMenuLabel className="text-sm">操作</DropdownMenuLabel>
+        <DropdownMenuCheckboxItem
+          checked={isClickToMoveEnabled}
+          onCheckedChange={setIsClickToMoveEnabled}
+          className="text-sm cursor-pointer"
+        >
+          クリックで移動
         </DropdownMenuCheckboxItem>
       </DropdownMenuGroup>
     </DropdownMenuContent>
