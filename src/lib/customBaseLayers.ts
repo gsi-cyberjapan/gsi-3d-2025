@@ -1,0 +1,296 @@
+import { type StyleSpecification } from "maplibre-gl";
+
+// Storage format for custom layers
+export interface CustomLayerStorageItem {
+  id: string;
+  label: string;
+  sourceType: "tilejson" | "style";
+  source: "url" | "file";
+  data: string; // URL string or JSON string
+  minZoom: number;
+  maxZoom: number;
+  createdAt: number;
+}
+
+// TileJSON format (subset of spec we validate)
+interface TileJSON {
+  tiles: string[];
+  minzoom?: number;
+  maxzoom?: number;
+  name?: string;
+  attribution?: string;
+}
+
+const STORAGE_KEY = "gsi-3d-2025-custom-base-layers";
+export const MAX_CUSTOM_LAYERS = 5;
+
+/**
+ * Get custom layers from localStorage
+ */
+export const getCustomLayers = (): CustomLayerStorageItem[] => {
+  if (typeof window === "undefined") return [];
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (!stored) return [];
+    return JSON.parse(stored) as CustomLayerStorageItem[];
+  } catch {
+    return [];
+  }
+};
+
+/**
+ * Save custom layers to localStorage
+ */
+export const saveCustomLayers = (layers: CustomLayerStorageItem[]): void => {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(layers));
+};
+
+/**
+ * Add a new custom layer (with 5-layer limit check)
+ */
+export const addCustomLayer = (
+  layer: Omit<CustomLayerStorageItem, "id" | "createdAt">,
+): CustomLayerStorageItem => {
+  const layers = getCustomLayers();
+  if (layers.length >= MAX_CUSTOM_LAYERS) {
+    throw new Error(
+      `Maximum ${String(MAX_CUSTOM_LAYERS)} custom layers allowed. Please delete an existing layer first.`,
+    );
+  }
+
+  const newLayer: CustomLayerStorageItem = {
+    ...layer,
+    id: `custom-${String(Date.now())}`,
+    createdAt: Date.now(),
+  };
+
+  saveCustomLayers([...layers, newLayer]);
+  return newLayer;
+};
+
+/**
+ * Delete a custom layer by ID
+ */
+export const deleteCustomLayer = (id: string): void => {
+  const layers = getCustomLayers();
+  const filtered = layers.filter((l) => l.id !== id);
+  saveCustomLayers(filtered);
+};
+
+/**
+ * Validate TileJSON format
+ */
+export const validateTileJSON = (
+  data: unknown,
+): { valid: true; data: TileJSON } | { valid: false; error: string } => {
+  if (typeof data !== "object" || data === null) {
+    return { valid: false, error: "Invalid JSON: must be an object" };
+  }
+
+  const obj = data as Record<string, unknown>;
+
+  if (!Array.isArray(obj.tiles) || obj.tiles.length === 0) {
+    return {
+      valid: false,
+      error: "Invalid TileJSON: 'tiles' array is required",
+    };
+  }
+
+  if (!obj.tiles.every((t: unknown) => typeof t === "string")) {
+    return {
+      valid: false,
+      error: "Invalid TileJSON: 'tiles' must be an array of strings",
+    };
+  }
+
+  return {
+    valid: true,
+    data: {
+      tiles: obj.tiles,
+      minzoom: obj.minzoom as number | undefined,
+      maxzoom: obj.maxzoom as number | undefined,
+      name: obj.name as string | undefined,
+      attribution: obj.attribution as string | undefined,
+    },
+  };
+};
+
+/**
+ * Validate MapLibre Style Specification format
+ */
+export const validateStyleSpec = (
+  data: unknown,
+):
+  | { valid: true; data: StyleSpecification }
+  | { valid: false; error: string } => {
+  if (typeof data !== "object" || data === null) {
+    return { valid: false, error: "Invalid JSON: must be an object" };
+  }
+
+  const obj = data as Record<string, unknown>;
+
+  if (obj.version !== 8) {
+    return {
+      valid: false,
+      error: "Invalid Style Spec: 'version' must be 8",
+    };
+  }
+
+  if (typeof obj.sources !== "object" || obj.sources === null) {
+    return {
+      valid: false,
+      error: "Invalid Style Spec: 'sources' object is required",
+    };
+  }
+
+  if (!Array.isArray(obj.layers)) {
+    return {
+      valid: false,
+      error: "Invalid Style Spec: 'layers' array is required",
+    };
+  }
+
+  // After validation, we can safely cast to StyleSpecification
+  return {
+    valid: true,
+    data: data as StyleSpecification,
+  };
+};
+
+/**
+ * Detect format from JSON content (TileJSON or Style Spec)
+ */
+export const detectFormat = (
+  data: unknown,
+):
+  | { format: "tilejson" | "style"; data: TileJSON | StyleSpecification }
+  | { format: null; error: string } => {
+  // Try Style Spec first (more specific)
+  const styleResult = validateStyleSpec(data);
+  if (styleResult.valid) {
+    return { format: "style", data: styleResult.data };
+  }
+
+  // Try TileJSON
+  const tileJsonResult = validateTileJSON(data);
+  if (tileJsonResult.valid) {
+    return { format: "tilejson", data: tileJsonResult.data };
+  }
+
+  return {
+    format: null,
+    error:
+      "Could not detect format. Data must be either TileJSON (with 'tiles' array) or MapLibre Style Spec (with version: 8, sources, and layers).",
+  };
+};
+
+/**
+ * Fetch URL and validate content
+ */
+export const fetchAndValidate = async (
+  url: string,
+): Promise<
+  | {
+      success: true;
+      format: "tilejson" | "style";
+      data: TileJSON | StyleSpecification;
+    }
+  | { success: false; error: string }
+> => {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      return {
+        success: false,
+        error: `Failed to fetch URL: ${String(response.status)} ${response.statusText}`,
+      };
+    }
+
+    const contentType = response.headers.get("content-type") || "";
+    if (
+      !contentType.includes("application/json") &&
+      !contentType.includes("text/plain") &&
+      !contentType.includes("text/json")
+    ) {
+      // Still try to parse as JSON even if content-type is unexpected
+    }
+
+    const text = await response.text();
+    let data: unknown;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      return { success: false, error: "Invalid JSON response from URL" };
+    }
+
+    const detected = detectFormat(data);
+    if (detected.format === null) {
+      return { success: false, error: detected.error };
+    }
+
+    return { success: true, format: detected.format, data: detected.data };
+  } catch (e) {
+    const message = e instanceof Error ? e.message : "Unknown error";
+    return { success: false, error: `Failed to fetch URL: ${message}` };
+  }
+};
+
+/**
+ * Parse and validate file content
+ */
+export const parseAndValidate = (
+  content: string,
+):
+  | {
+      success: true;
+      format: "tilejson" | "style";
+      data: TileJSON | StyleSpecification;
+    }
+  | { success: false; error: string } => {
+  let data: unknown;
+  try {
+    data = JSON.parse(content);
+  } catch {
+    return { success: false, error: "Invalid JSON content" };
+  }
+
+  const detected = detectFormat(data);
+  if (detected.format === null) {
+    return { success: false, error: detected.error };
+  }
+
+  return { success: true, format: detected.format, data: detected.data };
+};
+
+/**
+ * Get zoom range from validated data
+ */
+export const getZoomRange = (
+  format: "tilejson" | "style",
+  data: TileJSON | StyleSpecification,
+): { minZoom: number; maxZoom: number } => {
+  if (format === "tilejson") {
+    const tileJson = data as TileJSON;
+    return {
+      minZoom: tileJson.minzoom ?? 0,
+      maxZoom: tileJson.maxzoom ?? 22,
+    };
+  }
+
+  // For style spec, try to infer from sources
+  const style = data as StyleSpecification;
+  let minZoom = 0;
+  let maxZoom = 22;
+
+  for (const source of Object.values(style.sources)) {
+    if ("minzoom" in source && typeof source.minzoom === "number") {
+      minZoom = Math.max(minZoom, source.minzoom);
+    }
+    if ("maxzoom" in source && typeof source.maxzoom === "number") {
+      maxZoom = Math.min(maxZoom, source.maxzoom);
+    }
+  }
+
+  return { minZoom, maxZoom };
+};
