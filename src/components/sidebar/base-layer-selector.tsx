@@ -8,6 +8,7 @@ import {
   SelectGroup,
   SelectItem,
   SelectLabel,
+  SelectSeparator,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -116,7 +117,7 @@ export const BaseLayerSelector = () => {
   const canAddMore = customLayers.length < MAX_CUSTOM_LAYERS;
 
   return (
-    <div className="flex flex-col gap-3">
+    <>
       <Select value={baseLayer.id} onValueChange={handleOnValueChange}>
         <SelectTrigger className="w-full" size="lg">
           <SelectValue>
@@ -168,60 +169,57 @@ export const BaseLayerSelector = () => {
               ))}
             </SelectGroup>
           )}
+          <SelectSeparator />
+          <div className="px-2 py-1.5">
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-muted-foreground">
+                Custom ({customLayers.length}/{String(MAX_CUSTOM_LAYERS)})
+              </span>
+              <Button
+                variant="outline"
+                size="xs"
+                onPointerDown={(e) => {
+                  e.preventDefault();
+                  setDialogOpen(true);
+                }}
+                disabled={!canAddMore}
+              >
+                <PlusIcon className="size-3" />
+                Add
+              </Button>
+            </div>
+            {customLayers.length > 0 && (
+              <ul className="mt-1.5 flex flex-col">
+                {customLayers.map((layer) => (
+                  <li
+                    key={layer.id}
+                    className="flex items-center justify-between gap-2 rounded-sm py-1.5 pr-2 pl-2 text-sm"
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      <LayersIcon className="size-4 text-muted-foreground shrink-0" />
+                      <span className="truncate">{layer.label}</span>
+                      <span className="text-xs text-muted-foreground shrink-0">
+                        {layer.sourceType === "style" ? "Style" : "TileJSON"}
+                      </span>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      className="shrink-0 size-6"
+                      onPointerDown={(e) => {
+                        e.preventDefault();
+                        handleDeleteLayer(layer.id);
+                      }}
+                    >
+                      <Trash2Icon className="size-3" />
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </SelectContent>
       </Select>
-
-      <div className="border rounded-md p-3">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium">
-            Custom ({customLayers.length}/{String(MAX_CUSTOM_LAYERS)})
-          </span>
-          <Button
-            variant="outline"
-            size="xs"
-            onClick={() => {
-              setDialogOpen(true);
-            }}
-            disabled={!canAddMore}
-          >
-            <PlusIcon className="size-3" />
-            Add
-          </Button>
-        </div>
-
-        {customLayers.length === 0 ? (
-          <p className="text-muted-foreground text-xs">
-            TileJSON / MapLibre Style Specification
-          </p>
-        ) : (
-          <ul className="flex flex-col gap-1">
-            {customLayers.map((layer) => (
-              <li
-                key={layer.id}
-                className="flex items-center justify-between gap-2 py-1"
-              >
-                <div className="flex items-center gap-2 min-w-0">
-                  <LayersIcon className="size-4 text-muted-foreground shrink-0" />
-                  <span className="text-sm truncate">{layer.label}</span>
-                  <span className="text-xs text-muted-foreground shrink-0">
-                    {layer.sourceType === "style" ? "Style" : "TileJSON"}
-                  </span>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  className="shrink-0 size-6"
-                  onClick={() => {
-                    handleDeleteLayer(layer.id);
-                  }}
-                >
-                  <Trash2Icon className="size-3" />
-                </Button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
 
       <CustomLayerDialog
         open={dialogOpen}
@@ -229,7 +227,7 @@ export const BaseLayerSelector = () => {
         currentCount={customLayers.length}
         onLayerAdded={handleLayerAdded}
       />
-    </div>
+    </>
   );
 };
 
