@@ -24,6 +24,7 @@ import { ClickToMoveController } from "./click-to-move-controller";
 import { SelectionActionButtons } from "../draw/selection-action-buttons";
 import { OverviewMap } from "./overview-map";
 import { MeasureController } from "../measure/measure-controller";
+import { Compass } from "./compass";
 
 const ReactMaplibre = dynamic(
   () => import("react-map-gl/maplibre").then((m) => m.Map),
@@ -127,7 +128,8 @@ export const Map = ({ mapId, className, opacity }: Props) => {
         </div>
       </div>
 
-      {/* OverviewMapはopacityの影響を受けない外側に配置 */}
+      {/* OverviewMapとCompassはopacityの影響を受けない外側に配置 */}
+      {isMapLoaded && <Compass mapId={mapId} />}
       {isMapLoaded && <OverviewMap mapId={mapId} />}
     </div>
   );
