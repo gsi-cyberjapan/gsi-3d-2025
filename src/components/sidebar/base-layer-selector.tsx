@@ -8,7 +8,6 @@ import {
   SelectGroup,
   SelectItem,
   SelectLabel,
-  SelectSeparator,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -153,71 +152,52 @@ export const BaseLayerSelector = () => {
                 </SelectItem>
               ))}
           </SelectGroup>
-          {customLayers.length > 0 && (
-            <SelectGroup>
-              <SelectLabel>Custom</SelectLabel>
-              {customLayers.map((layer) => (
-                <SelectItem
-                  key={layer.id}
-                  value={layer.id}
-                  className="cursor-pointer"
-                >
-                  <BaseLayerSelectItem
-                    baseLayer={storageItemToBaseLayer(layer)}
-                  />
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          )}
-          <SelectSeparator />
-          <div className="px-2 py-1.5">
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-muted-foreground">
-                Custom ({customLayers.length}/{String(MAX_CUSTOM_LAYERS)})
-              </span>
+          <div className="px-1 py-1">
+            <div className="text-xs text-muted-foreground py-1">
+              Custom ({customLayers.length}/{MAX_CUSTOM_LAYERS})
+            </div>
+          </div>
+          {customLayers.map((layer) => (
+            <div
+              key={layer.id}
+              className="flex items-center hover:bg-accent rounded-sm pr-1"
+            >
+              <SelectItem
+                value={layer.id}
+                className="cursor-pointer flex-1 pr-0"
+              >
+                <BaseLayerSelectItem
+                  baseLayer={storageItemToBaseLayer(layer)}
+                />
+              </SelectItem>
               <Button
-                variant="outline"
-                size="xs"
+                variant="ghost"
+                size="icon-sm"
+                className="shrink-0 size-6"
                 onPointerDown={(e) => {
                   e.preventDefault();
-                  setDialogOpen(true);
+                  handleDeleteLayer(layer.id);
                 }}
-                disabled={!canAddMore}
               >
-                <PlusIcon className="size-3" />
-                Add
+                <Trash2Icon className="size-3" />
               </Button>
             </div>
-            {customLayers.length > 0 && (
-              <ul className="mt-1.5 flex flex-col">
-                {customLayers.map((layer) => (
-                  <li
-                    key={layer.id}
-                    className="flex items-center justify-between gap-2 rounded-sm py-1.5 pr-2 pl-2 text-sm"
-                  >
-                    <div className="flex items-center gap-2 min-w-0">
-                      <LayersIcon className="size-4 text-muted-foreground shrink-0" />
-                      <span className="truncate">{layer.label}</span>
-                      <span className="text-xs text-muted-foreground shrink-0">
-                        {layer.sourceType === "style" ? "Style" : "TileJSON"}
-                      </span>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="icon-sm"
-                      className="shrink-0 size-6"
-                      onPointerDown={(e) => {
-                        e.preventDefault();
-                        handleDeleteLayer(layer.id);
-                      }}
-                    >
-                      <Trash2Icon className="size-3" />
-                    </Button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+          ))}
+          <button
+            className="h-10 w-full flex items-center gap-2 px-2 rounded-sm hover:bg-accent disabled:opacity-50 disabled:pointer-events-none"
+            disabled={!canAddMore}
+            onPointerDown={(e) => {
+              e.preventDefault();
+              if (canAddMore) {
+                setDialogOpen(true);
+              }
+            }}
+          >
+            <div className="size-8 bg-muted rounded-sm flex items-center justify-center">
+              <PlusIcon className="size-4 text-muted-foreground" />
+            </div>
+            <span className="text-sm">カスタムスタイルの追加</span>
+          </button>
         </SelectContent>
       </Select>
 
