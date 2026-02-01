@@ -21,6 +21,7 @@ import { IconRenderLayer } from "../draw/icon-render-layer";
 import { SearchResultController } from "./search-result-controller";
 import { ClickToMoveController } from "./click-to-move-controller";
 import { SelectionActionButtons } from "../draw/selection-action-buttons";
+import { OverviewMap } from "./overview-map";
 import { MeasureController } from "../measure/measure-controller";
 
 const ReactMaplibre = dynamic(
@@ -106,9 +107,12 @@ export const Map = ({ mapId, className, opacity }: Props) => {
       )}
 
       {isMapLoaded && (
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-          <MapCenterLine />
-        </div>
+        <>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+            <MapCenterLine />
+          </div>
+          <OverviewMap mapId={mapId} />
+        </>
       )}
 
       <div

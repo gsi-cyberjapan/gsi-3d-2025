@@ -155,6 +155,15 @@ export const GEOCODING_CONFIG = {
   },
 } as const;
 
+export const OVERVIEW_MAP_CONFIG = {
+  /** 広域図のタイルURL */
+  TILE_URL: "https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png",
+  /** 広域図のサイズ */
+  SIZE: { width: 150, height: 150 },
+  /** 広域図とメインマップのズームオフセット */
+  ZOOM_OFFSET: 5,
+} as const;
+
 export const DRAW_CONFIG = {
   MARKER: {
     /** GSI シンボルアイコンのベースURL */
