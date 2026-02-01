@@ -210,18 +210,18 @@ export const CenterInfo = ({ mapId }: Props) => {
         </tbody>
       </table>
       <div className="flex flex-col gap-1 absolute z-10 -top-16">
-        <ResetViewButton />
-        <div className="flex gap-2">
+        <ResetViewButton mapId={mapId} />
+        <div className="flex justify-between">
           <Tabs value={addressViewMode} onValueChange={setAddressViewMode}>
             <TabsList className="h-6 rounded-sm">
               <TabsTrigger
-                className="text-xs size-5 rounded-sm dark:data-[state=active]:bg-blue-600"
+                className="text-xs size-5 rounded-sm dark:data-[state=active]:bg-blue-600 dark:hover:text-foreground"
                 value="kanji"
               >
                 漢
               </TabsTrigger>
               <TabsTrigger
-                className="text-xs size-5 rounded-sm dark:data-[state=active]:bg-blue-600"
+                className="text-xs size-5 rounded-sm dark:data-[state=active]:bg-blue-600 dark:hover:text-foreground"
                 value="kana"
               >
                 あ
@@ -231,13 +231,13 @@ export const CenterInfo = ({ mapId }: Props) => {
           <Tabs value={infoMode} onValueChange={handleInfoModeChange}>
             <TabsList className="h-6 rounded-sm">
               <TabsTrigger
-                className="text-xs px-2 size-5 rounded-sm dark:data-[state=active]:bg-blue-600"
+                className="text-xs px-2 size-5 rounded-sm dark:data-[state=active]:bg-blue-600 dark:hover:text-foreground"
                 value="center"
               >
                 <Locate />
               </TabsTrigger>
               <TabsTrigger
-                className="text-xs px-2 size-5 rounded-sm dark:data-[state=active]:bg-blue-600"
+                className="text-xs px-2 size-5 rounded-sm dark:data-[state=active]:bg-blue-600 dark:hover:text-foreground"
                 value="click"
               >
                 <Pointer />

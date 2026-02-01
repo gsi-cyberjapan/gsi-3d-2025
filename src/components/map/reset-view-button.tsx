@@ -3,14 +3,20 @@
 import { useMap } from "react-map-gl/maplibre";
 import { useStore } from "@/hooks/store/useStore";
 import { Button } from "@/components/ui/button";
-import { Home } from "lucide-react";
+import { Eye } from "lucide-react";
 import { DEFAULT_VIEW_CONFIG } from "@/lib/config";
 import { useCallback } from "react";
+import { MapId } from "@/hooks/store/mapManagerState";
 
-export const ResetViewButton = () => {
+interface Props {
+  mapId: MapId;
+}
+
+export const ResetViewButton = ({ mapId }: Props) => {
   const mainMap = useMap()["main"]?.getMap();
   const subMap = useMap()["sub"]?.getMap();
   const activeMapIds = useStore((state) => state.activeMapIds);
+  const isSyncPosition = useStore((state) => state.isSyncPosition);
 
   const handleResetView = useCallback(() => {
     const center = {
@@ -21,35 +27,39 @@ export const ResetViewButton = () => {
     const bearing = DEFAULT_VIEW_CONFIG.BEARING;
     const pitch = DEFAULT_VIEW_CONFIG.PITCH;
 
-    if (mainMap && activeMapIds.includes("main")) {
-      mainMap.flyTo({
-        center,
-        zoom,
-        bearing,
-        pitch,
-        duration: 900,
-      });
-    }
+    const flyToOptions = {
+      center,
+      zoom,
+      bearing,
+      pitch,
+      duration: 500,
+    };
 
-    if (subMap && activeMapIds.includes("sub")) {
-      subMap.flyTo({
-        center,
-        zoom,
-        bearing,
-        pitch,
-        duration: 900,
-      });
+    if (isSyncPosition) {
+      // Position sync enabled: reset all active maps
+      if (mainMap && activeMapIds.includes("main")) {
+        mainMap.flyTo(flyToOptions);
+      }
+      if (subMap && activeMapIds.includes("sub")) {
+        subMap.flyTo(flyToOptions);
+      }
+    } else {
+      // Position sync disabled: reset only this map
+      const targetMap = mapId === "main" ? mainMap : subMap;
+      if (targetMap) {
+        targetMap.flyTo(flyToOptions);
+      }
     }
-  }, [mainMap, subMap, activeMapIds]);
+  }, [mainMap, subMap, activeMapIds, isSyncPosition, mapId]);
 
   return (
     <Button
       variant="outline"
       size="xs"
       onClick={handleResetView}
-      className="gap-1 bg-background hover:bg-background dark:bg-background dark:hover:bg-background"
+      className="gap-1 dark:bg-muted dark:hover:bg-muted h-6"
     >
-      <Home className="size-3" />
+      <Eye className="size-3" />
       <span className="text-xs">視点リセット</span>
     </Button>
   );
