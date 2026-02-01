@@ -19,6 +19,9 @@ import { SearchInput } from "./search-input";
 
 export const Header = () => {
   const setIsDrawWindowOpen = useStore((state) => state.setIsDrawWindowOpen);
+  const setIsMeasureWindowOpen = useStore(
+    (state) => state.setIsMeasureWindowOpen,
+  );
 
   return (
     <div className="flex border-b py-1 px-2 gap-2 justify-between">
@@ -28,7 +31,13 @@ export const Header = () => {
       </div>
       <div className="md:flex items-center gap-2 hidden">
         <ButtonGroup>
-          <Button size="xs" variant="outline" disabled>
+          <Button
+            size="xs"
+            variant="outline"
+            onClick={() => {
+              setIsMeasureWindowOpen(true);
+            }}
+          >
             <Ruler /> 計測
           </Button>
           <Button
@@ -63,7 +72,11 @@ export const Header = () => {
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           <DropdownMenuGroup>
-            <DropdownMenuItem disabled>
+            <DropdownMenuItem
+              onClick={() => {
+                setIsMeasureWindowOpen(true);
+              }}
+            >
               <div className="flex gap-2 items-center">
                 <Ruler /> 計測
               </div>
