@@ -2,7 +2,7 @@
 
 import { useStore } from "@/hooks/store/useStore";
 import { useMap } from "react-map-gl/maplibre";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { MapId } from "@/hooks/store/mapManagerState";
 import {
   getMaplibreWithProtocol,
@@ -17,18 +17,34 @@ interface Props {
 
 export const OverviewMap = ({ mapId }: Props) => {
   const isDisplayOverview = useStore((state) => state.isDisplayOverview);
-  const focusMapId = useStore((state) => state.focusMapId);
+  const layoutMode = useStore((state) => state.layoutMode);
+  const isSyncPosition = useStore((state) => state.isSyncPosition);
   const containerRef = useRef<HTMLDivElement>(null);
   const overviewMapRef = useRef<maplibregl.Map | null>(null);
   const [mapLib, setMapLib] = useState<MapLibreType | null>(null);
-  const { [mapId]: map } = useMap();
+  const { [mapId]: map, main: mainMapRef, sub: subMapRef } = useMap();
+
+  // Get the other map instance for position sync
+  const otherMap =
+    mapId === "main" ? subMapRef?.getMap() : mainMapRef?.getMap();
 
   // Flags to prevent infinite loops between main map and overview map
   const mainMapMovingRef = useRef(false);
   const overviewMapMovingRef = useRef(false);
 
-  // Only show overview for the focused map
-  const shouldShow = isDisplayOverview && focusMapId === mapId;
+  // Determine if overview map should be shown based on layout mode
+  const shouldShow = useMemo(() => {
+    if (!isDisplayOverview) return false;
+
+    if (layoutMode === "single") {
+      return mapId === "main";
+    } else if (layoutMode === "split") {
+      return true; // Show on both maps
+    } else {
+      // overlay: Show only on top map (sub)
+      return mapId === "sub";
+    }
+  }, [isDisplayOverview, layoutMode, mapId]);
 
   // Load MapLibre library
   useEffect(() => {
@@ -274,6 +290,10 @@ export const OverviewMap = ({ mapId }: Props) => {
       const newZoom = getMainMapZoom(overviewMap.getZoom());
       // Use jumpTo to set center and zoom atomically (triggers only one moveend event)
       mainMap.jumpTo({ center: newCenter, zoom: newZoom });
+      // If position sync is enabled, also move the other map
+      if (isSyncPosition && otherMap) {
+        otherMap.jumpTo({ center: newCenter, zoom: newZoom });
+      }
       // Hide shadow rect
       overviewMap.setPaintProperty("shadow-bounds-fill", "fill-opacity", 0);
       overviewMap.setPaintProperty("shadow-bounds-line", "line-opacity", 0);
@@ -289,6 +309,10 @@ export const OverviewMap = ({ mapId }: Props) => {
       overviewMapMovingRef.current = true;
       mainMap.setCenter(e.lngLat);
       overviewMap.setCenter(e.lngLat);
+      // If position sync is enabled, also move the other map
+      if (isSyncPosition && otherMap) {
+        otherMap.setCenter(e.lngLat);
+      }
       requestAnimationFrame(() => {
         overviewMapMovingRef.current = false;
       });
@@ -319,6 +343,8 @@ export const OverviewMap = ({ mapId }: Props) => {
     getMainMapZoom,
     updateViewportRect,
     syncOverviewToMain,
+    isSyncPosition,
+    otherMap,
   ]);
 
   if (!shouldShow) return null;
@@ -326,7 +352,7 @@ export const OverviewMap = ({ mapId }: Props) => {
   return (
     <div
       className={cn(
-        "absolute bottom-4 right-4 z-10 rounded-md overflow-hidden shadow-lg border border-border bg-background",
+        "absolute bottom-2 right-2 z-10 rounded-md overflow-hidden shadow-lg border border-border bg-background",
       )}
       style={{
         width: OVERVIEW_MAP_CONFIG.SIZE.width,

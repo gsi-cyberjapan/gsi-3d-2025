@@ -67,68 +67,68 @@ export const Map = ({ mapId, className, opacity }: Props) => {
   }, []);
 
   return (
-    <div
-      className={cn("relative w-full h-full", className)}
-      style={{ opacity }}
-    >
-      {mapLib && (
-        <div
-          className={cn(
-            "w-full h-full transition-opacity duration-200",
-            isMapLoaded ? "opacity-100" : "opacity-0",
-          )}
-        >
-          <ReactMaplibre
-            id={mapId}
-            mapLib={mapLib}
-            mapStyle={mapStyle}
-            projection={projection}
-            initialViewState={{
-              longitude: DEFAULT_VIEW_CONFIG.LONGITUDE,
-              latitude: DEFAULT_VIEW_CONFIG.LATITUDE,
-              zoom: DEFAULT_VIEW_CONFIG.ZOOM,
-            }}
-            onLoad={() => {
-              setIsMapLoaded(true);
-            }}
+    <div className={cn("relative w-full h-full", className)}>
+      {/* opacityはこの内側のdivにのみ適用される */}
+      <div className="w-full h-full" style={{ opacity }}>
+        {mapLib && (
+          <div
+            className={cn(
+              "w-full h-full transition-opacity duration-200",
+              isMapLoaded ? "opacity-100" : "opacity-0",
+            )}
           >
-            <OptionalLayers mapId={mapId} />
-            {/* Mapインスタンスを直接操作するコンポーネント */}
-            <DrawController mapId={mapId} />
-            <MeasureController mapId={mapId} />
-            <TextRenderLayer mapId={mapId} />
-            <IconRenderLayer mapId={mapId} />
-            <SelectionActionButtons mapId={mapId} />
-            <ZoomLevelController mapId={mapId} />
-            <SearchResultController />
-            <ClickToMoveController mapId={mapId} />
-            <PositionSyncController />
-          </ReactMaplibre>
-        </div>
-      )}
+            <ReactMaplibre
+              id={mapId}
+              mapLib={mapLib}
+              mapStyle={mapStyle}
+              projection={projection}
+              initialViewState={{
+                longitude: DEFAULT_VIEW_CONFIG.LONGITUDE,
+                latitude: DEFAULT_VIEW_CONFIG.LATITUDE,
+                zoom: DEFAULT_VIEW_CONFIG.ZOOM,
+              }}
+              onLoad={() => {
+                setIsMapLoaded(true);
+              }}
+            >
+              <OptionalLayers mapId={mapId} />
+              {/* Mapインスタンスを直接操作するコンポーネント */}
+              <DrawController mapId={mapId} />
+              <MeasureController mapId={mapId} />
+              <TextRenderLayer mapId={mapId} />
+              <IconRenderLayer mapId={mapId} />
+              <SelectionActionButtons mapId={mapId} />
+              <ZoomLevelController mapId={mapId} />
+              <SearchResultController />
+              <ClickToMoveController mapId={mapId} />
+              <PositionSyncController />
+            </ReactMaplibre>
+          </div>
+        )}
 
-      {isMapLoaded && (
-        <>
+        {isMapLoaded && (
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
             <MapCenterLine />
           </div>
-          <OverviewMap mapId={mapId} />
-        </>
-      )}
-
-      <div
-        className={cn(
-          "absolute inset-0 flex items-center justify-center bg-background transition-opacity duration-200",
-          showLoading ? "opacity-100" : "opacity-0 pointer-events-none",
         )}
-      >
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none ">
-          <div className="flex gap-2 text-muted-foreground items-center">
-            <Spinner />
-            <div>地図を読み込み中</div>
+
+        <div
+          className={cn(
+            "absolute inset-0 flex items-center justify-center bg-background transition-opacity duration-200",
+            showLoading ? "opacity-100" : "opacity-0 pointer-events-none",
+          )}
+        >
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none ">
+            <div className="flex gap-2 text-muted-foreground items-center">
+              <Spinner />
+              <div>地図を読み込み中</div>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* OverviewMapはopacityの影響を受けない外側に配置 */}
+      {isMapLoaded && <OverviewMap mapId={mapId} />}
     </div>
   );
 };
