@@ -9,6 +9,9 @@ interface Props {
   mapId: MapId;
 }
 
+// relief_free is handled by ReliefLayer component with custom color-relief rendering
+const RELIEF_FREE_LAYER_ID = "relief_free";
+
 const buildSourceId = (mapId: MapId, layerId: string) =>
   `${mapId}-optional-${layerId}-source`;
 const buildLayerId = (mapId: MapId, layerId: string) =>
@@ -17,13 +20,18 @@ const buildLayerId = (mapId: MapId, layerId: string) =>
 export const OptionalLayers = ({ mapId }: Props) => {
   const optionalLayers = useStore((state) => state.maps[mapId].optionalLayers);
 
-  if (optionalLayers.length === 0) {
+  // Exclude relief_free - it's handled by ReliefLayer component
+  const layersToRender = optionalLayers.filter(
+    (layer) => layer.layerId !== RELIEF_FREE_LAYER_ID,
+  );
+
+  if (layersToRender.length === 0) {
     return null;
   }
 
   return (
     <>
-      {optionalLayers.map((layer, index) => {
+      {layersToRender.map((layer, index) => {
         const sourceId = buildSourceId(mapId, layer.layerId);
         const rasterLayerId = buildLayerId(mapId, layer.layerId);
         const minzoom = layer.minZoom ?? undefined;
@@ -31,7 +39,7 @@ export const OptionalLayers = ({ mapId }: Props) => {
         const beforeId =
           index === 0
             ? undefined
-            : buildLayerId(mapId, optionalLayers[index - 1].layerId);
+            : buildLayerId(mapId, layersToRender[index - 1].layerId);
 
         // TODO: GeoJson対応　https://qiita.com/mg_kudo/items/832ee30ed39b6c25df60
 

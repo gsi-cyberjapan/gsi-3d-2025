@@ -26,6 +26,7 @@ import { OverviewMap } from "./overview-map";
 import { MeasureController } from "../measure/measure-controller";
 import { Compass } from "./compass";
 import { ZoomGuide } from "./zoom-guide";
+import { ReliefLayer } from "./relief-layer";
 
 const ReactMaplibre = dynamic(
   () => import("react-map-gl/maplibre").then((m) => m.Map),
@@ -94,6 +95,7 @@ export const Map = ({ mapId, className, opacity }: Props) => {
               }}
             >
               <OptionalLayers mapId={mapId} />
+              <ReliefLayer mapId={mapId} />
               {/* Mapインスタンスを直接操作するコンポーネント */}
               <DrawController mapId={mapId} />
               <MeasureController mapId={mapId} />
