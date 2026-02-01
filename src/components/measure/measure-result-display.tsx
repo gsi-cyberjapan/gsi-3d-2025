@@ -9,7 +9,7 @@ export const MeasureResultDisplay = () => {
 
   if (currentMeasurement === null) {
     return (
-      <div className="text-center text-muted-foreground text-sm py-2">
+      <div className="text-muted-foreground text-xs py-2">
         {measureMode === "distance"
           ? "地図上をクリックして線を引いてください"
           : "地図上をクリックして多角形を描いてください"}
@@ -23,8 +23,8 @@ export const MeasureResultDisplay = () => {
       : formatArea(currentMeasurement);
 
   return (
-    <div className="text-center py-2">
-      <div className="text-xs text-muted-foreground mb-1">
+    <div className="flex items-center gap-3 py-0.5">
+      <div className="text-xs text-muted-foreground">
         {measureMode === "distance" ? "距離" : "面積"}
       </div>
       <div className="text-lg font-semibold">{formattedValue}</div>

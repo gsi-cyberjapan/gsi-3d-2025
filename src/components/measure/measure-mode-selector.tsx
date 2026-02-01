@@ -42,7 +42,7 @@ export const MeasureModeSelector = () => {
           <Tooltip key={m.value}>
             <TooltipTrigger asChild>
               <TabsTrigger
-                className="text-xs size-5 rounded-sm aria-selected:bg-orange-600 dark:aria-selected:text-foreground"
+                className="text-xs size-5 rounded-sm aria-selected:bg-blue-600 dark:aria-selected:text-foreground"
                 value={m.value}
               >
                 {m.icon}

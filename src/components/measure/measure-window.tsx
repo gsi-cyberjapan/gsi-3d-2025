@@ -15,14 +15,14 @@ export const MeasureWindow = () => {
   return (
     <Window
       title="計測"
-      className="w-50"
+      className="w-70"
       isOpen={isMeasureWindowOpen}
       onClose={() => {
         setIsMeasureWindowOpen(false);
       }}
     >
       <div className="grid gap-2">
-        <div className="flex justify-center">
+        <div className="flex justify-start">
           <MeasureModeSelector />
         </div>
         <Separator />
