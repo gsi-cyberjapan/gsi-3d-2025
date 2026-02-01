@@ -1,3 +1,16 @@
+export const DEFAULT_VIEW_CONFIG = {
+  /** デフォルトの経度 */
+  LONGITUDE: 140.084556,
+  /** デフォルトの緯度 */
+  LATITUDE: 36.104611,
+  /** デフォルトのズームレベル */
+  ZOOM: 4,
+  /** デフォルトの方位（北が上） */
+  BEARING: 0,
+  /** デフォルトの傾き（真上から見下ろす） */
+  PITCH: 0,
+} as const;
+
 export const GENERAL_CONFIG = {
   /** アプリケーションのタイトル */
   TITLE: "3次元地図可視化サイト",

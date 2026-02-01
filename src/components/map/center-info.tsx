@@ -11,6 +11,7 @@ import { getElevationFromLatLng } from "@/lib/map-utils/getElevationFromLatLng";
 import { Skeleton } from "../ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Locate, Pointer } from "lucide-react";
+import { ResetViewButton } from "./reset-view-button";
 
 interface ViewState {
   latitude: number;
@@ -208,39 +209,42 @@ export const CenterInfo = ({ mapId }: Props) => {
           </tr>
         </tbody>
       </table>
-      <div className="flex gap-2 py-1 absolute z-10 -top-9">
-        <Tabs value={addressViewMode} onValueChange={setAddressViewMode}>
-          <TabsList className="h-6 rounded-sm">
-            <TabsTrigger
-              className="text-xs size-5 rounded-sm dark:data-[state=active]:bg-blue-600"
-              value="kanji"
-            >
-              漢
-            </TabsTrigger>
-            <TabsTrigger
-              className="text-xs size-5 rounded-sm dark:data-[state=active]:bg-blue-600"
-              value="kana"
-            >
-              あ
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
-        <Tabs value={infoMode} onValueChange={handleInfoModeChange}>
-          <TabsList className="h-6 rounded-sm">
-            <TabsTrigger
-              className="text-xs px-2 size-5 rounded-sm dark:data-[state=active]:bg-blue-600"
-              value="center"
-            >
-              <Locate />
-            </TabsTrigger>
-            <TabsTrigger
-              className="text-xs px-2 size-5 rounded-sm dark:data-[state=active]:bg-blue-600"
-              value="click"
-            >
-              <Pointer />
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
+      <div className="flex flex-col gap-1 absolute z-10 -top-16">
+        <ResetViewButton mapId={mapId} />
+        <div className="flex justify-between">
+          <Tabs value={addressViewMode} onValueChange={setAddressViewMode}>
+            <TabsList className="h-6 rounded-sm">
+              <TabsTrigger
+                className="text-xs size-5 rounded-sm dark:data-[state=active]:bg-blue-600 dark:hover:text-foreground"
+                value="kanji"
+              >
+                漢
+              </TabsTrigger>
+              <TabsTrigger
+                className="text-xs size-5 rounded-sm dark:data-[state=active]:bg-blue-600 dark:hover:text-foreground"
+                value="kana"
+              >
+                あ
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+          <Tabs value={infoMode} onValueChange={handleInfoModeChange}>
+            <TabsList className="h-6 rounded-sm">
+              <TabsTrigger
+                className="text-xs px-2 size-5 rounded-sm dark:data-[state=active]:bg-blue-600 dark:hover:text-foreground"
+                value="center"
+              >
+                <Locate />
+              </TabsTrigger>
+              <TabsTrigger
+                className="text-xs px-2 size-5 rounded-sm dark:data-[state=active]:bg-blue-600 dark:hover:text-foreground"
+                value="click"
+              >
+                <Pointer />
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
       </div>
     </div>
   );
