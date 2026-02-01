@@ -68,8 +68,14 @@ export const createDrawSlice: StateCreator<GlobalState, [], [], DrawState> = (
   isDrawWindowOpen: false,
   setIsDrawWindowOpen: (value) => {
     set(() => {
+      if (value) {
+        return {
+          isDrawWindowOpen: true,
+          isMeasureWindowOpen: false,
+        };
+      }
       return {
-        isDrawWindowOpen: value,
+        isDrawWindowOpen: false,
       };
     });
   },
