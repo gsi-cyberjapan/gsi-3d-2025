@@ -8,7 +8,6 @@ import {
   getMaplibreWithProtocol,
   MapLibreType,
 } from "@/lib/getMaplibreWhithProtocol";
-import { cn } from "@/lib/utils";
 import { OVERVIEW_MAP_CONFIG } from "@/lib/config";
 
 interface Props {
@@ -351,9 +350,7 @@ export const OverviewMap = ({ mapId }: Props) => {
 
   return (
     <div
-      className={cn(
-        "absolute bottom-2 right-2 z-10 rounded-md overflow-hidden shadow-lg border border-border bg-background",
-      )}
+      className="rounded-md overflow-hidden shadow-lg border border-border bg-background"
       style={{
         width: OVERVIEW_MAP_CONFIG.SIZE.width,
         height: OVERVIEW_MAP_CONFIG.SIZE.height,
