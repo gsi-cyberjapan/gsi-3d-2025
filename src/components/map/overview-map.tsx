@@ -9,16 +9,7 @@ import {
   MapLibreType,
 } from "@/lib/getMaplibreWhithProtocol";
 import { cn } from "@/lib/utils";
-
-const OVERVIEW_TILE_URL =
-  "https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png";
-
-const OVERVIEW_SIZE = {
-  width: 150,
-  height: 150,
-};
-
-const OVERVIEW_ZOOM_OFFSET = 5;
+import { OVERVIEW_MAP_CONFIG } from "@/lib/config";
 
 interface Props {
   mapId: MapId;
@@ -58,12 +49,12 @@ export const OverviewMap = ({ mapId }: Props) => {
 
   // Calculate overview map zoom from main map zoom
   const getOverviewZoom = useCallback((mainZoom: number) => {
-    return Math.max(0, mainZoom - OVERVIEW_ZOOM_OFFSET);
+    return Math.max(0, mainZoom - OVERVIEW_MAP_CONFIG.ZOOM_OFFSET);
   }, []);
 
   // Calculate main map zoom from overview map zoom
   const getMainMapZoom = useCallback((overviewZoom: number) => {
-    return overviewZoom + OVERVIEW_ZOOM_OFFSET;
+    return overviewZoom + OVERVIEW_MAP_CONFIG.ZOOM_OFFSET;
   }, []);
 
   // Update viewport rectangle on the overview map
@@ -121,7 +112,7 @@ export const OverviewMap = ({ mapId }: Props) => {
         sources: {
           "overview-tiles": {
             type: "raster",
-            tiles: [OVERVIEW_TILE_URL],
+            tiles: [OVERVIEW_MAP_CONFIG.TILE_URL],
             tileSize: 256,
             attribution: "",
           },
@@ -338,8 +329,8 @@ export const OverviewMap = ({ mapId }: Props) => {
         "absolute bottom-4 right-4 z-10 rounded-md overflow-hidden shadow-lg border border-border bg-background",
       )}
       style={{
-        width: OVERVIEW_SIZE.width,
-        height: OVERVIEW_SIZE.height,
+        width: OVERVIEW_MAP_CONFIG.SIZE.width,
+        height: OVERVIEW_MAP_CONFIG.SIZE.height,
       }}
     >
       <div ref={containerRef} className="w-full h-full" />
