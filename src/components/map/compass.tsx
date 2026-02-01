@@ -52,7 +52,7 @@ export const Compass = ({ mapId }: Props) => {
 
   return (
     <div
-      className="absolute top-2 right-2 z-10 pointer-events-none"
+      className="absolute top-2 right-2 z-10 pointer-events-none overflow-hidden"
       style={{ perspective: "100px" }}
     >
       <Image
