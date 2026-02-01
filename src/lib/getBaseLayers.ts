@@ -21,7 +21,19 @@ interface VectorBaseLayer {
   minZoom: number;
 }
 
-export type BaseLayer = RasterBaseLayer | VectorBaseLayer;
+export interface CustomBaseLayer {
+  id: string;
+  type: "custom";
+  label: string;
+  legendImageUrl: string;
+  sourceType: "tilejson" | "style";
+  source: "url" | "file";
+  data: string; // URL string or JSON string
+  minZoom: number;
+  maxZoom: number;
+}
+
+export type BaseLayer = RasterBaseLayer | VectorBaseLayer | CustomBaseLayer;
 
 export const getBaseLayers = (): BaseLayer[] => {
   const baseLayers: BaseLayer[] = [];
