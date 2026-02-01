@@ -1,10 +1,10 @@
 import type { GeoJSONStoreFeatures } from "terra-draw";
 
-const MEASURE_FILL_COLOR = "#FF6B0020" as const;
-const MEASURE_OUTLINE_COLOR = "#FF6B00FF" as const;
+const MEASURE_FILL_COLOR = "#0011FF20" as const;
+const MEASURE_OUTLINE_COLOR = "#0011FFFF" as const;
 const MEASURE_OUTLINE_WIDTH = 3;
 const MEASURE_POINT_COLOR = "#FFFFFFFF" as const;
-const MEASURE_POINT_OUTLINE_COLOR = "#FF6B00FF" as const;
+const MEASURE_POINT_OUTLINE_COLOR = "#0011FFFF" as const;
 
 export const getMeasurePolygonModeStyle = (): Partial<{
   fillColor: (feature: GeoJSONStoreFeatures) => `#${string}`;

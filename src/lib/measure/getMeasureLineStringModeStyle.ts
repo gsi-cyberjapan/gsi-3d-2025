@@ -1,9 +1,9 @@
 import type { GeoJSONStoreFeatures } from "terra-draw";
 
-const MEASURE_LINE_COLOR = "#FF6B00" as const;
+const MEASURE_LINE_COLOR = "#0011FF" as const;
 const MEASURE_LINE_WIDTH = 3;
 const MEASURE_POINT_COLOR = "#FFFFFFFF" as const;
-const MEASURE_POINT_OUTLINE_COLOR = "#FF6B00FF" as const;
+const MEASURE_POINT_OUTLINE_COLOR = "#0011FFFF" as const;
 
 export const getMeasureLineStringModeStyle = (): Partial<{
   lineStringColor: (feature: GeoJSONStoreFeatures) => `#${string}`;
