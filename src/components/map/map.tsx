@@ -131,8 +131,12 @@ export const Map = ({ mapId, className, opacity }: Props) => {
 
       {/* OverviewMap、ZoomGuide、Compassはopacityの影響を受けない外側に配置 */}
       {isMapLoaded && <Compass mapId={mapId} />}
-      {isMapLoaded && <ZoomGuide mapId={mapId} />}
-      {isMapLoaded && <OverviewMap mapId={mapId} />}
+      {isMapLoaded && (
+        <div className="absolute bottom-2 right-2 z-10 flex flex-col gap-2 items-end">
+          <OverviewMap mapId={mapId} />
+          <ZoomGuide mapId={mapId} />
+        </div>
+      )}
     </div>
   );
 };

@@ -6,7 +6,6 @@ import { MapId } from "@/hooks/store/mapManagerState";
 import { useStore } from "@/hooks/store/useStore";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { OVERVIEW_MAP_CONFIG } from "@/lib/config";
 
 interface Props {
   mapId: MapId;
@@ -14,7 +13,6 @@ interface Props {
 
 export const ZoomGuide = ({ mapId }: Props) => {
   const layoutMode = useStore((state) => state.layoutMode);
-  const isDisplayOverview = useStore((state) => state.isDisplayOverview);
   const isZoomGuideDismissed = useStore((state) => state.isZoomGuideDismissed);
   const setZoomGuideDismissed = useStore(
     (state) => state.setZoomGuideDismissed,
@@ -111,31 +109,13 @@ export const ZoomGuide = ({ mapId }: Props) => {
     return "";
   };
 
-  // Calculate bottom position based on overview map visibility
-  const getBottomPosition = () => {
-    const shouldShowOverview =
-      isDisplayOverview &&
-      (layoutMode === "single"
-        ? mapId === "main"
-        : layoutMode === "split"
-          ? true
-          : mapId === "sub");
-
-    if (shouldShowOverview) {
-      // Position above the overview map: height (150px) + gap (8px) + additional margin (8px)
-      return OVERVIEW_MAP_CONFIG.SIZE.height + 16;
-    }
-    return 8;
-  };
-
   return (
-    <div
-      className="absolute right-2 z-10 p-2 rounded-md text-xs bg-background/85 backdrop-blur-sm border border-border shadow-sm max-w-[200px]"
-      style={{ bottom: getBottomPosition() }}
-    >
-      <p className="mb-2">
+    <div className="p-2 rounded-md text-xs bg-background/85 backdrop-blur-sm border border-border shadow-sm max-w-[320px]">
+      <p className="mb-2 whitespace-pre-line">
         この情報は{formatZoomRange()}
-        で表示されます。なお、整備範囲が全国であるとは限りません。
+        で表示されます。
+        {"\n"}
+        なお、整備範囲が全国であるとは限りません。
       </p>
       <div className="flex items-center gap-2">
         <Checkbox
