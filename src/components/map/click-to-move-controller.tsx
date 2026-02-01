@@ -13,8 +13,12 @@ interface Props {
 }
 
 export const ClickToMoveController = ({ mapId }: Props) => {
-  const map = useMap()[mapId]?.getMap();
+  const { main: mainMapRef, sub: subMapRef } = useMap();
+  const map = mapId === "main" ? mainMapRef?.getMap() : subMapRef?.getMap();
+  const mainMap = mainMapRef?.getMap();
+  const subMap = subMapRef?.getMap();
   const isClickToMoveEnabled = useStore((state) => state.isClickToMoveEnabled);
+  const isSyncPosition = useStore((state) => state.isSyncPosition);
   const clickTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const clearClickTimer = useCallback(() => {
@@ -33,9 +37,17 @@ export const ClickToMoveController = ({ mapId }: Props) => {
       clickTimerRef.current = setTimeout(() => {
         clickTimerRef.current = null;
         map.panTo(ev.lngLat);
+
+        // 位置連動が有効な場合、もう一方のマップも移動
+        if (isSyncPosition) {
+          const otherMap = mapId === "main" ? subMap : mainMap;
+          if (otherMap) {
+            otherMap.panTo(ev.lngLat);
+          }
+        }
       }, DOUBLE_CLICK_INTERVAL);
     },
-    [map, clearClickTimer],
+    [map, clearClickTimer, isSyncPosition, mapId, subMap, mainMap],
   );
 
   const handleDblClick = useCallback(() => {
