@@ -23,7 +23,9 @@ export const SettingDropdownContent = () => {
   return (
     <DropdownMenuContent className="w-56" align="end">
       <DropdownMenuGroup>
-        <DropdownMenuLabel className="text-sm">表示</DropdownMenuLabel>
+        <DropdownMenuLabel className="text-sm text-muted-foreground">
+          表示
+        </DropdownMenuLabel>
         <DropdownMenuCheckboxItem
           checked={isDisplayCenterLine}
           onCheckedChange={setIsDisplayCenterLine}
@@ -40,7 +42,9 @@ export const SettingDropdownContent = () => {
         </DropdownMenuCheckboxItem>
       </DropdownMenuGroup>
       <DropdownMenuGroup>
-        <DropdownMenuLabel className="text-sm">操作</DropdownMenuLabel>
+        <DropdownMenuLabel className="text-sm text-muted-foreground">
+          操作
+        </DropdownMenuLabel>
         <DropdownMenuCheckboxItem
           checked={isClickToMoveEnabled}
           onCheckedChange={setIsClickToMoveEnabled}
