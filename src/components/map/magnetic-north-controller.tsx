@@ -24,7 +24,8 @@ const buildMagneticNorthLines = (map: maplibregl.Map) => {
   }
 
   const declination = getMagneticDeclination(center.lat, center.lng);
-  const angleRad = (declination * Math.PI) / 180;
+  const bearing = map.getBearing();
+  const angleRad = ((declination - bearing) * Math.PI) / 180;
 
   const direction = declination < 0 ? "西偏" : "東偏";
   const label = `${direction} ${String(Math.abs(Math.round(declination * 10) / 10))}°`;
