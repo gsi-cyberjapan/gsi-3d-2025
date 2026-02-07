@@ -15,6 +15,12 @@ export const SettingDropdownContent = () => {
   );
   const isDisplayOverview = useStore((state) => state.isDisplayOverview);
   const setIsDisplayOverview = useStore((state) => state.setIsDisplayOverview);
+  const isDisplayMagneticNorth = useStore(
+    (state) => state.isDisplayMagneticNorth,
+  );
+  const setIsDisplayMagneticNorth = useStore(
+    (state) => state.setIsDisplayMagneticNorth,
+  );
   const isClickToMoveEnabled = useStore((state) => state.isClickToMoveEnabled);
   const setIsClickToMoveEnabled = useStore(
     (state) => state.setIsClickToMoveEnabled,
@@ -39,6 +45,13 @@ export const SettingDropdownContent = () => {
           className="text-sm cursor-pointer"
         >
           広域図
+        </DropdownMenuCheckboxItem>
+        <DropdownMenuCheckboxItem
+          checked={isDisplayMagneticNorth}
+          onCheckedChange={setIsDisplayMagneticNorth}
+          className="text-sm cursor-pointer"
+        >
+          磁北線
         </DropdownMenuCheckboxItem>
       </DropdownMenuGroup>
       <DropdownMenuGroup>

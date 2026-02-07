@@ -27,6 +27,7 @@ import { OverviewMap } from "./overview-map";
 import { MeasureController } from "../measure/measure-controller";
 import { Compass } from "./compass";
 import { ZoomGuide } from "./zoom-guide";
+import { MagneticNorthController } from "./magnetic-north-controller";
 import { ReliefLayer } from "./relief-layer";
 
 const ReactMaplibre = dynamic(
@@ -106,6 +107,7 @@ export const Map = ({ mapId, className, opacity }: Props) => {
               <ZoomLevelController mapId={mapId} />
               <SearchResultController />
               <ClickToMoveController mapId={mapId} />
+              <MagneticNorthController mapId={mapId} />
               <ViewStateController mapId={mapId} />
               <PositionSyncController />
             </ReactMaplibre>

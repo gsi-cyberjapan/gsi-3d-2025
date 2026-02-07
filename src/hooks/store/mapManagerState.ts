@@ -37,6 +37,9 @@ export interface MapManagerState {
   /** 各マップのビューステート */
   viewStates: Record<MapId, ViewState | null>;
   setViewState: (mapId: MapId, viewState: ViewState) => void;
+  /** 磁北線を表示するかどうか */
+  isDisplayMagneticNorth: boolean;
+  setIsDisplayMagneticNorth: (value: boolean) => void;
 }
 
 export const createMapManagerSlice: StateCreator<
@@ -123,6 +126,12 @@ export const createMapManagerSlice: StateCreator<
   setViewState: (mapId, viewState) => {
     set((state) => ({
       viewStates: { ...state.viewStates, [mapId]: viewState },
+    }));
+  },
+  isDisplayMagneticNorth: false,
+  setIsDisplayMagneticNorth: (value) => {
+    set(() => ({
+      isDisplayMagneticNorth: value,
     }));
   },
 });
