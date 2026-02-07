@@ -14,6 +14,7 @@ interface Props {
 }
 
 const LINE_SPACING_PX = 40;
+const LABEL_SPACING_PX = 200;
 
 const buildMagneticNorthLines = (map: maplibregl.Map) => {
   const center = map.getCenter();
@@ -23,6 +24,10 @@ const buildMagneticNorthLines = (map: maplibregl.Map) => {
 
   const declination = getMagneticDeclination(center.lat, center.lng);
   const angleRad = (declination * Math.PI) / 180;
+
+  const direction = declination < 0 ? "西偏" : "東偏";
+  const label = `${direction} ${String(Math.abs(Math.round(declination * 10) / 10))}°`;
+  const rotation = declination;
 
   const canvas = map.getCanvas();
   const width = canvas.width;
@@ -61,6 +66,23 @@ const buildMagneticNorthLines = (map: maplibregl.Map) => {
         ],
       },
     });
+
+    const lineLength = 2 * diagonal;
+    const labelCount = Math.floor(lineLength / LABEL_SPACING_PX);
+    for (let j = 1; j <= labelCount; j++) {
+      const t = j / (labelCount + 1);
+      const px = x1 + (x2 - x1) * t;
+      const py = y1 + (y2 - y1) * t;
+      const point = map.unproject([px, py]);
+      features.push({
+        type: "Feature" as const,
+        properties: { label, rotation },
+        geometry: {
+          type: "Point" as const,
+          coordinates: [point.lng, point.lat] as [number, number],
+        },
+      });
+    }
   }
 
   return {
@@ -88,10 +110,29 @@ export const MagneticNorthController = ({ mapId }: Props) => {
       <Layer
         id={`${mapId}-magnetic-north-lines`}
         type="line"
+        filter={["==", "$type", "LineString"]}
         paint={{
           "line-color": "#ff0000",
           "line-width": 1,
           "line-opacity": 0.8,
+        }}
+      />
+      <Layer
+        id={`${mapId}-magnetic-north-labels`}
+        type="symbol"
+        filter={["==", "$type", "Point"]}
+        layout={{
+          "text-field": ["get", "label"],
+          "text-size": 10,
+          "text-rotate": ["get", "rotation"],
+          "text-allow-overlap": true,
+          "text-rotation-alignment": "map",
+          "text-padding": 0,
+        }}
+        paint={{
+          "text-color": "#ff0000",
+          "text-halo-color": "#ffffff",
+          "text-halo-width": 1,
         }}
       />
     </Source>
