@@ -78,9 +78,9 @@ interface Props {
 }
 
 export const StateHydrator = ({ children }: Props) => {
-  // Hydrate synchronously during first render.
+  // Hydrate synchronously during first render (client only).
   // Module-level guard ensures it runs exactly once, even in Strict Mode.
-  if (!hydrationDone) {
+  if (!hydrationDone && typeof window !== "undefined") {
     hydrationDone = true;
     hydrateStore();
   }
