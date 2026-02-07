@@ -3,7 +3,14 @@
 import { Logo } from "./logo";
 import { Button } from "../ui/button";
 import Link from "next/link";
-import { CircleQuestionMark, Menu, Pen, Ruler, Settings } from "lucide-react";
+import {
+  CircleQuestionMark,
+  Ellipsis,
+  Menu,
+  Pen,
+  Ruler,
+  Settings,
+} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,6 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { GENERAL_CONFIG } from "@/lib/config";
+import { OthersDropdownContent } from "./others-dropdown-content";
 import { SettingDropdownContent } from "./setting-dropdown-content";
 import { ButtonGroup } from "../ui/button-group";
 import { useStore } from "@/hooks/store/useStore";
@@ -57,6 +65,14 @@ export const Header = () => {
             </DropdownMenuTrigger>
             <SettingDropdownContent />
           </DropdownMenu>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button size="xs" variant="outline">
+                <Ellipsis /> その他
+              </Button>
+            </DropdownMenuTrigger>
+            <OthersDropdownContent />
+          </DropdownMenu>
           <Button asChild size="xs" variant="outline">
             <Link href={GENERAL_CONFIG.HELP_PAGE_URL} target="_blank">
               <CircleQuestionMark /> ヘルプ
@@ -89,6 +105,16 @@ export const Header = () => {
               <div className="flex gap-2 items-center">
                 <Pen /> 作図
               </div>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <DropdownMenu>
+                <DropdownMenuTrigger>
+                  <div className="flex gap-2 items-center">
+                    <Ellipsis /> その他
+                  </div>
+                </DropdownMenuTrigger>
+                <OthersDropdownContent />
+              </DropdownMenu>
             </DropdownMenuItem>
             <DropdownMenuItem>
               <Link href={GENERAL_CONFIG.HELP_PAGE_URL} target="_blank">

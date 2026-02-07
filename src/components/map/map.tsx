@@ -21,6 +21,7 @@ import { TextRenderLayer } from "../draw/text-render-layer";
 import { IconRenderLayer } from "../draw/icon-render-layer";
 import { SearchResultController } from "./search-result-controller";
 import { ClickToMoveController } from "./click-to-move-controller";
+import { ViewStateController } from "./view-state-controller";
 import { SelectionActionButtons } from "../draw/selection-action-buttons";
 import { OverviewMap } from "./overview-map";
 import { MeasureController } from "../measure/measure-controller";
@@ -105,6 +106,7 @@ export const Map = ({ mapId, className, opacity }: Props) => {
               <ZoomLevelController mapId={mapId} />
               <SearchResultController />
               <ClickToMoveController mapId={mapId} />
+              <ViewStateController mapId={mapId} />
               <PositionSyncController />
             </ReactMaplibre>
           </div>
