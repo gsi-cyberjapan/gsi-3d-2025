@@ -4,6 +4,12 @@ import { GlobalState } from "./useStore";
 export type MapId = "main" | "sub";
 export type LayoutMode = "single" | "split" | "overlay";
 
+export interface ViewState {
+  latitude: number;
+  longitude: number;
+  zoom: number;
+}
+
 export interface MapManagerState {
   /** 表示中のMapID */
   activeMapIds: MapId[];
@@ -28,6 +34,9 @@ export interface MapManagerState {
   /** クリックで移動するかどうか */
   isClickToMoveEnabled: boolean;
   setIsClickToMoveEnabled: (value: boolean) => void;
+  /** 各マップのビューステート */
+  viewStates: Record<MapId, ViewState | null>;
+  setViewState: (mapId: MapId, viewState: ViewState) => void;
 }
 
 export const createMapManagerSlice: StateCreator<
@@ -109,5 +118,11 @@ export const createMapManagerSlice: StateCreator<
         isClickToMoveEnabled: value,
       };
     });
+  },
+  viewStates: { main: null, sub: null },
+  setViewState: (mapId, viewState) => {
+    set((state) => ({
+      viewStates: { ...state.viewStates, [mapId]: viewState },
+    }));
   },
 });
