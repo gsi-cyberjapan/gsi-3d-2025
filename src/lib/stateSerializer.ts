@@ -11,6 +11,7 @@ import {
 /** Serializable optional layer entry (reconstructed during deserialization) */
 export interface SerializedOptionalLayer {
   layerId: string;
+  title: string;
   opacity: number;
   tileUrl: string;
 }
@@ -91,10 +92,17 @@ const shortToProj = (s: string): "mercator" | "globe" | undefined => {
 };
 
 const serializeOptionalLayers = (
-  layers: { layerId: string; opacity: number; tileUrl: string }[],
+  layers: {
+    layerId: string;
+    title: string;
+    opacity: number;
+    tileUrl: string;
+  }[],
 ): string =>
   layers
-    .map((l) => `${l.layerId}|${fmtFloat(l.opacity, 2)}|${l.tileUrl}`)
+    .map(
+      (l) => `${l.layerId}|${l.title}|${fmtFloat(l.opacity, 2)}|${l.tileUrl}`,
+    )
     .join(",");
 
 const deserializeOptionalLayers = (s: string): SerializedOptionalLayer[] => {
@@ -103,13 +111,14 @@ const deserializeOptionalLayers = (s: string): SerializedOptionalLayer[] => {
     .split(",")
     .map((entry) => {
       const parts = entry.split("|");
-      if (parts.length < 3) return null;
-      const opacity = parseFloat(parts[1]);
+      if (parts.length < 4) return null;
+      const opacity = parseFloat(parts[2]);
       if (isNaN(opacity)) return null;
       return {
         layerId: parts[0],
+        title: parts[1],
         opacity,
-        tileUrl: parts.slice(2).join("|"), // tileUrl may contain |
+        tileUrl: parts.slice(3).join("|"), // tileUrl may contain |
       };
     })
     .filter((x): x is SerializedOptionalLayer => x !== null);
@@ -155,6 +164,7 @@ export interface SerializableStoreState {
       baseLayer: { id: string };
       optionalLayers: {
         layerId: string;
+        title: string;
         opacity: number;
         tileUrl: string;
       }[];

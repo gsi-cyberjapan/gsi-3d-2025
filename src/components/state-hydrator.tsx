@@ -33,12 +33,17 @@ const hydrateStore = () => {
     : undefined;
 
   const toOptionalLayers = (
-    serialized?: { layerId: string; opacity: number; tileUrl: string }[],
+    serialized?: {
+      layerId: string;
+      title: string;
+      opacity: number;
+      tileUrl: string;
+    }[],
   ): OptionalLayerEntry[] | undefined => {
     if (!serialized || serialized.length === 0) return undefined;
     return serialized.map((l) => ({
       layerId: l.layerId,
-      title: l.layerId,
+      title: l.title,
       opacity: l.opacity,
       tileUrl: l.tileUrl,
     }));
