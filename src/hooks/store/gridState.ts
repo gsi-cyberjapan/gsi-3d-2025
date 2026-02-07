@@ -17,6 +17,14 @@ export interface GridState {
   /** 図郭番号 */
   isDisplayMapSheetNumbers: boolean;
   setIsDisplayMapSheetNumbers: (value: boolean) => void;
+  /** ハイドレーション */
+  hydrateGridState: (partial: {
+    isDisplayLatLngGrid?: boolean;
+    isDisplayUtmGrid?: boolean;
+    isDisplayTileGrid?: boolean;
+    isDisplayRegionalMesh?: boolean;
+    isDisplayMapSheetNumbers?: boolean;
+  }) => void;
 }
 
 export const createGridSlice: StateCreator<GlobalState, [], [], GridState> = (
@@ -41,5 +49,21 @@ export const createGridSlice: StateCreator<GlobalState, [], [], GridState> = (
   isDisplayMapSheetNumbers: false,
   setIsDisplayMapSheetNumbers: (value) => {
     set(() => ({ isDisplayMapSheetNumbers: value }));
+  },
+  hydrateGridState: (partial) => {
+    set(() => {
+      const updates: Partial<GridState> = {};
+      if (partial.isDisplayLatLngGrid !== undefined)
+        updates.isDisplayLatLngGrid = partial.isDisplayLatLngGrid;
+      if (partial.isDisplayUtmGrid !== undefined)
+        updates.isDisplayUtmGrid = partial.isDisplayUtmGrid;
+      if (partial.isDisplayTileGrid !== undefined)
+        updates.isDisplayTileGrid = partial.isDisplayTileGrid;
+      if (partial.isDisplayRegionalMesh !== undefined)
+        updates.isDisplayRegionalMesh = partial.isDisplayRegionalMesh;
+      if (partial.isDisplayMapSheetNumbers !== undefined)
+        updates.isDisplayMapSheetNumbers = partial.isDisplayMapSheetNumbers;
+      return updates;
+    });
   },
 });

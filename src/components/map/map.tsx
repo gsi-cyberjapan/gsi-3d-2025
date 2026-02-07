@@ -58,6 +58,27 @@ export const Map = ({ mapId, className, opacity }: Props) => {
     [baseLayer],
   );
 
+  // Capture initial view state once on mount from the store snapshot.
+  // Uses getState() to read once without subscribing to changes.
+  const initialViewState = useMemo(() => {
+    const vs = useStore.getState().viewStates[mapId];
+    return vs
+      ? {
+          longitude: vs.longitude,
+          latitude: vs.latitude,
+          zoom: vs.zoom,
+          bearing: vs.bearing,
+          pitch: vs.pitch,
+        }
+      : {
+          longitude: DEFAULT_VIEW_CONFIG.LONGITUDE,
+          latitude: DEFAULT_VIEW_CONFIG.LATITUDE,
+          zoom: DEFAULT_VIEW_CONFIG.ZOOM,
+          bearing: DEFAULT_VIEW_CONFIG.BEARING,
+          pitch: DEFAULT_VIEW_CONFIG.PITCH,
+        };
+  }, [mapId]);
+
   useEffect(() => {
     let cancelled = false;
 
@@ -92,11 +113,7 @@ export const Map = ({ mapId, className, opacity }: Props) => {
               mapLib={mapLib}
               mapStyle={mapStyle}
               projection={projection}
-              initialViewState={{
-                longitude: DEFAULT_VIEW_CONFIG.LONGITUDE,
-                latitude: DEFAULT_VIEW_CONFIG.LATITUDE,
-                zoom: DEFAULT_VIEW_CONFIG.ZOOM,
-              }}
+              initialViewState={initialViewState}
               onLoad={() => {
                 setIsMapLoaded(true);
               }}

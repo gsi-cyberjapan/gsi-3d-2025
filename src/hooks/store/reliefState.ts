@@ -36,6 +36,13 @@ export interface ReliefState {
   applyColorPattern: (patternId: string) => void;
   /** デフォルトにリセット */
   resetToDefaults: () => void;
+  /** ハイドレーション */
+  hydrateReliefState: (partial: {
+    isReliefWindowOpen?: boolean;
+    isHillshadeEnabled?: boolean;
+    selectedPatternId?: string;
+    elevationRanges?: ElevationRange[];
+  }) => void;
 }
 
 export const createReliefSlice: StateCreator<
@@ -144,5 +151,19 @@ export const createReliefSlice: StateCreator<
       selectedPatternId: DEFAULT_PATTERN_ID,
       isHillshadeEnabled: false,
     }));
+  },
+  hydrateReliefState: (partial) => {
+    set(() => {
+      const updates: Partial<ReliefState> = {};
+      if (partial.isReliefWindowOpen !== undefined)
+        updates.isReliefWindowOpen = partial.isReliefWindowOpen;
+      if (partial.isHillshadeEnabled !== undefined)
+        updates.isHillshadeEnabled = partial.isHillshadeEnabled;
+      if (partial.selectedPatternId !== undefined)
+        updates.selectedPatternId = partial.selectedPatternId;
+      if (partial.elevationRanges !== undefined)
+        updates.elevationRanges = partial.elevationRanges;
+      return updates;
+    });
   },
 });

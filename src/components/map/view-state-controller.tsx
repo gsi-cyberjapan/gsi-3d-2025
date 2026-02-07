@@ -22,6 +22,8 @@ export const ViewStateController = ({ mapId }: Props) => {
         latitude: center.lat,
         longitude: center.lng,
         zoom: map.getZoom(),
+        bearing: map.getBearing(),
+        pitch: map.getPitch(),
       });
     };
 
