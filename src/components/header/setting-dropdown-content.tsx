@@ -5,6 +5,9 @@ import {
   DropdownMenuGroup,
   DropdownMenuCheckboxItem,
   DropdownMenuLabel,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
 import { useStore } from "@/hooks/store/useStore";
 
@@ -24,6 +27,27 @@ export const SettingDropdownContent = () => {
   const isClickToMoveEnabled = useStore((state) => state.isClickToMoveEnabled);
   const setIsClickToMoveEnabled = useStore(
     (state) => state.setIsClickToMoveEnabled,
+  );
+
+  const isDisplayLatLngGrid = useStore((state) => state.isDisplayLatLngGrid);
+  const setIsDisplayLatLngGrid = useStore(
+    (state) => state.setIsDisplayLatLngGrid,
+  );
+  const isDisplayUtmGrid = useStore((state) => state.isDisplayUtmGrid);
+  const setIsDisplayUtmGrid = useStore((state) => state.setIsDisplayUtmGrid);
+  const isDisplayTileGrid = useStore((state) => state.isDisplayTileGrid);
+  const setIsDisplayTileGrid = useStore((state) => state.setIsDisplayTileGrid);
+  const isDisplayRegionalMesh = useStore(
+    (state) => state.isDisplayRegionalMesh,
+  );
+  const setIsDisplayRegionalMesh = useStore(
+    (state) => state.setIsDisplayRegionalMesh,
+  );
+  const isDisplayMapSheetNumbers = useStore(
+    (state) => state.isDisplayMapSheetNumbers,
+  );
+  const setIsDisplayMapSheetNumbers = useStore(
+    (state) => state.setIsDisplayMapSheetNumbers,
   );
 
   return (
@@ -53,6 +77,48 @@ export const SettingDropdownContent = () => {
         >
           磁北線
         </DropdownMenuCheckboxItem>
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger className="text-sm cursor-pointer">
+            グリッド表示
+          </DropdownMenuSubTrigger>
+          <DropdownMenuSubContent>
+            <DropdownMenuCheckboxItem
+              checked={isDisplayLatLngGrid}
+              onCheckedChange={setIsDisplayLatLngGrid}
+              className="text-sm cursor-pointer"
+            >
+              緯度・経度グリッド
+            </DropdownMenuCheckboxItem>
+            <DropdownMenuCheckboxItem
+              checked={isDisplayUtmGrid}
+              onCheckedChange={setIsDisplayUtmGrid}
+              className="text-sm cursor-pointer"
+            >
+              UTMグリッド
+            </DropdownMenuCheckboxItem>
+            <DropdownMenuCheckboxItem
+              checked={isDisplayTileGrid}
+              onCheckedChange={setIsDisplayTileGrid}
+              className="text-sm cursor-pointer"
+            >
+              タイル座標
+            </DropdownMenuCheckboxItem>
+            <DropdownMenuCheckboxItem
+              checked={isDisplayRegionalMesh}
+              onCheckedChange={setIsDisplayRegionalMesh}
+              className="text-sm cursor-pointer"
+            >
+              地域メッシュ
+            </DropdownMenuCheckboxItem>
+            <DropdownMenuCheckboxItem
+              checked={isDisplayMapSheetNumbers}
+              onCheckedChange={setIsDisplayMapSheetNumbers}
+              className="text-sm cursor-pointer"
+            >
+              図郭番号
+            </DropdownMenuCheckboxItem>
+          </DropdownMenuSubContent>
+        </DropdownMenuSub>
       </DropdownMenuGroup>
       <DropdownMenuGroup>
         <DropdownMenuLabel className="text-sm text-muted-foreground">

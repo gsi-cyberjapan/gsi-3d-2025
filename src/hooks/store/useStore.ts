@@ -6,6 +6,7 @@ import { createGeocodingSlice, GeocodingState } from "./geocodingState";
 import { createMeasureSlice, MeasureState } from "./measureState";
 import { createZoomGuideSlice, ZoomGuideState } from "./zoomGuideState";
 import { createReliefSlice, ReliefState } from "./reliefState";
+import { createGridSlice, GridState } from "./gridState";
 
 export type GlobalState = MapManagerState &
   MapStateWrapper &
@@ -13,7 +14,8 @@ export type GlobalState = MapManagerState &
   GeocodingState &
   MeasureState &
   ZoomGuideState &
-  ReliefState;
+  ReliefState &
+  GridState;
 export const useStore = create<GlobalState>((...args) => ({
   ...createMapManagerSlice(...args),
   ...createMapSlice(...args),
@@ -22,4 +24,5 @@ export const useStore = create<GlobalState>((...args) => ({
   ...createMeasureSlice(...args),
   ...createZoomGuideSlice(...args),
   ...createReliefSlice(...args),
+  ...createGridSlice(...args),
 }));
