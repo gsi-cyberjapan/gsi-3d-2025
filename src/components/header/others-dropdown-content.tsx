@@ -5,6 +5,7 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { useStore } from "@/hooks/store/useStore";
 import { DEFAULT_VIEW_CONFIG } from "@/lib/config";
@@ -50,6 +51,21 @@ export const OthersDropdownContent = () => {
           >
             <ExternalLink />
             Mapion
+          </Link>
+        </DropdownMenuItem>
+      </DropdownMenuGroup>
+      <DropdownMenuSeparator />
+      <DropdownMenuGroup>
+        <DropdownMenuLabel className="text-sm text-muted-foreground">
+          ツール
+        </DropdownMenuLabel>
+        <DropdownMenuItem asChild className="text-sm cursor-pointer">
+          <Link
+            href="https://www.gsi.go.jp/sokuchikijun/uPlace.html"
+            target="_blank"
+          >
+            <ExternalLink />
+            場所情報コード
           </Link>
         </DropdownMenuItem>
       </DropdownMenuGroup>
