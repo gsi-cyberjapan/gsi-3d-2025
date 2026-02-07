@@ -27,6 +27,11 @@ import { OverviewMap } from "./overview-map";
 import { MeasureController } from "../measure/measure-controller";
 import { Compass } from "./compass";
 import { ZoomGuide } from "./zoom-guide";
+import { LatLngGridController } from "./grids/lat-lng-grid-controller";
+import { MapSheetNumbersController } from "./grids/map-sheet-numbers-controller";
+import { RegionalMeshController } from "./grids/regional-mesh-controller";
+import { TileGridController } from "./grids/tile-grid-controller";
+import { UtmGridController } from "./grids/utm-grid-controller";
 import { MagneticNorthController } from "./magnetic-north-controller";
 import { ReliefLayer } from "./relief-layer";
 
@@ -108,6 +113,11 @@ export const Map = ({ mapId, className, opacity }: Props) => {
               <SearchResultController />
               <ClickToMoveController mapId={mapId} />
               <MagneticNorthController mapId={mapId} />
+              <LatLngGridController mapId={mapId} />
+              <UtmGridController mapId={mapId} />
+              <TileGridController mapId={mapId} />
+              <RegionalMeshController mapId={mapId} />
+              <MapSheetNumbersController mapId={mapId} />
               <ViewStateController mapId={mapId} />
               <PositionSyncController />
             </ReactMaplibre>
