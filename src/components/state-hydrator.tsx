@@ -1,12 +1,13 @@
 "use client";
 
-import { useMemo } from "react";
 import { useStore } from "@/hooks/store/useStore";
 import { readPersistedState } from "@/lib/statePersistence";
 import { resolveBaseLayer } from "@/lib/stateSerializer";
 import { OptionalLayerEntry } from "@/hooks/store/mapState";
 
-const hydrateStore = (): boolean => {
+let hydrationDone = false;
+
+const hydrateStore = () => {
   const state = readPersistedState();
   const store = useStore.getState();
 
@@ -70,7 +71,6 @@ const hydrateStore = (): boolean => {
   });
 
   store.setIsHydrated(true);
-  return true;
 };
 
 interface Props {
@@ -78,10 +78,12 @@ interface Props {
 }
 
 export const StateHydrator = ({ children }: Props) => {
-  // Hydrate synchronously on first render
-  const ready = useMemo(() => hydrateStore(), []);
-
-  if (!ready) return null;
+  // Hydrate synchronously during first render.
+  // Module-level guard ensures it runs exactly once, even in Strict Mode.
+  if (!hydrationDone) {
+    hydrationDone = true;
+    hydrateStore();
+  }
 
   return children;
 };

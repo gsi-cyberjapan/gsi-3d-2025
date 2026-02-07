@@ -52,32 +52,34 @@ export const Map = ({ mapId, className, opacity }: Props) => {
   const [mapLib, setMapLib] = useState<MapLibreType | null>(null);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   const projection = useStore((state) => state.maps[mapId].projection);
+  const viewState = useStore((state) => state.viewStates[mapId]);
   const showLoading = !mapLib || !isMapLoaded;
   const mapStyle = useMemo(
     () => buildStyleFromBaseLayer(baseLayer),
     [baseLayer],
   );
 
-  // Capture initial view state once on mount from the store snapshot.
-  // Uses getState() to read once without subscribing to changes.
-  const initialViewState = useMemo(() => {
-    const vs = useStore.getState().viewStates[mapId];
-    return vs
-      ? {
-          longitude: vs.longitude,
-          latitude: vs.latitude,
-          zoom: vs.zoom,
-          bearing: vs.bearing,
-          pitch: vs.pitch,
-        }
-      : {
-          longitude: DEFAULT_VIEW_CONFIG.LONGITUDE,
-          latitude: DEFAULT_VIEW_CONFIG.LATITUDE,
-          zoom: DEFAULT_VIEW_CONFIG.ZOOM,
-          bearing: DEFAULT_VIEW_CONFIG.BEARING,
-          pitch: DEFAULT_VIEW_CONFIG.PITCH,
-        };
-  }, [mapId]);
+  // react-map-gl only uses initialViewState on its first mount, so
+  // recomputing on viewState changes is harmless — the prop is ignored after mount.
+  const initialViewState = useMemo(
+    () =>
+      viewState
+        ? {
+            longitude: viewState.longitude,
+            latitude: viewState.latitude,
+            zoom: viewState.zoom,
+            bearing: viewState.bearing,
+            pitch: viewState.pitch,
+          }
+        : {
+            longitude: DEFAULT_VIEW_CONFIG.LONGITUDE,
+            latitude: DEFAULT_VIEW_CONFIG.LATITUDE,
+            zoom: DEFAULT_VIEW_CONFIG.ZOOM,
+            bearing: DEFAULT_VIEW_CONFIG.BEARING,
+            pitch: DEFAULT_VIEW_CONFIG.PITCH,
+          },
+    [viewState],
+  );
 
   useEffect(() => {
     let cancelled = false;
