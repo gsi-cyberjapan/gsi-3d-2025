@@ -15,6 +15,7 @@ interface Props {
 
 const LINE_SPACING_PX = 40;
 const LABEL_SPACING_PX = 200;
+const LABEL_LINE_INTERVAL = 5;
 
 const buildMagneticNorthLines = (map: maplibregl.Map) => {
   const center = map.getCenter();
@@ -67,21 +68,23 @@ const buildMagneticNorthLines = (map: maplibregl.Map) => {
       },
     });
 
-    const lineLength = 2 * diagonal;
-    const labelCount = Math.floor(lineLength / LABEL_SPACING_PX);
-    for (let j = 1; j <= labelCount; j++) {
-      const t = j / (labelCount + 1);
-      const px = x1 + (x2 - x1) * t;
-      const py = y1 + (y2 - y1) * t;
-      const point = map.unproject([px, py]);
-      features.push({
-        type: "Feature" as const,
-        properties: { label, rotation },
-        geometry: {
-          type: "Point" as const,
-          coordinates: [point.lng, point.lat] as [number, number],
-        },
-      });
+    if (i % LABEL_LINE_INTERVAL === 0) {
+      const lineLength = 2 * diagonal;
+      const labelCount = Math.floor(lineLength / LABEL_SPACING_PX);
+      for (let j = 1; j <= labelCount; j++) {
+        const t = j / (labelCount + 1);
+        const px = x1 + (x2 - x1) * t;
+        const py = y1 + (y2 - y1) * t;
+        const point = map.unproject([px, py]);
+        features.push({
+          type: "Feature" as const,
+          properties: { label, rotation },
+          geometry: {
+            type: "Point" as const,
+            coordinates: [point.lng, point.lat] as [number, number],
+          },
+        });
+      }
     }
   }
 
