@@ -9,7 +9,7 @@ jobs:
     if: ${{ github.ref != 'refs/heads/main' }}
     name: Preview Deployment
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -33,7 +33,7 @@ jobs:
     if: ${{ github.ref == 'refs/heads/main' }}
     name: Production Deployment
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@v4
