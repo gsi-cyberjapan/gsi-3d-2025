@@ -8,6 +8,8 @@ export interface ViewState {
   latitude: number;
   longitude: number;
   zoom: number;
+  bearing: number;
+  pitch: number;
 }
 
 export interface MapManagerState {
@@ -40,6 +42,22 @@ export interface MapManagerState {
   /** 磁北線を表示するかどうか */
   isDisplayMagneticNorth: boolean;
   setIsDisplayMagneticNorth: (value: boolean) => void;
+  /** ハイドレーション完了フラグ */
+  isHydrated: boolean;
+  /** ハイドレーション */
+  hydrateMapManagerState: (partial: {
+    layoutMode?: LayoutMode;
+    isSyncPosition?: boolean;
+    subMapOpacityOnOverlay?: number;
+    isDisplayCenterLine?: boolean;
+    isDisplayOverview?: boolean;
+    isClickToMoveEnabled?: boolean;
+    isDisplayMagneticNorth?: boolean;
+    mainViewState?: ViewState;
+    subViewState?: ViewState;
+  }) => void;
+  /** ハイドレーション完了をセット */
+  setIsHydrated: (value: boolean) => void;
 }
 
 export const createMapManagerSlice: StateCreator<
@@ -133,5 +151,54 @@ export const createMapManagerSlice: StateCreator<
     set(() => ({
       isDisplayMagneticNorth: value,
     }));
+  },
+  isHydrated: false,
+  hydrateMapManagerState: (partial) => {
+    set((state) => {
+      const updates: Partial<MapManagerState> = {};
+
+      if (partial.layoutMode !== undefined) {
+        updates.layoutMode = partial.layoutMode;
+        if (partial.layoutMode === "single") {
+          updates.activeMapIds = ["main"];
+          updates.focusMapId = "main";
+        } else {
+          updates.activeMapIds = ["main", "sub"];
+          updates.focusMapId = "sub";
+        }
+      }
+      if (partial.isSyncPosition !== undefined) {
+        updates.isSyncPosition = partial.isSyncPosition;
+      }
+      if (partial.subMapOpacityOnOverlay !== undefined) {
+        updates.subMapOpacityOnOverlay = partial.subMapOpacityOnOverlay;
+      }
+      if (partial.isDisplayCenterLine !== undefined) {
+        updates.isDisplayCenterLine = partial.isDisplayCenterLine;
+      }
+      if (partial.isDisplayOverview !== undefined) {
+        updates.isDisplayOverview = partial.isDisplayOverview;
+      }
+      if (partial.isClickToMoveEnabled !== undefined) {
+        updates.isClickToMoveEnabled = partial.isClickToMoveEnabled;
+      }
+      if (partial.isDisplayMagneticNorth !== undefined) {
+        updates.isDisplayMagneticNorth = partial.isDisplayMagneticNorth;
+      }
+
+      const viewStates = { ...state.viewStates };
+      if (partial.mainViewState !== undefined) {
+        viewStates.main = partial.mainViewState;
+      }
+      if (partial.subViewState !== undefined) {
+        viewStates.sub = partial.subViewState;
+      }
+      updates.viewStates = viewStates;
+
+      return updates;
+    });
+  },
+  setIsHydrated: (value) => {
+    set(() => ({ isHydrated: value }));
   },
 });

@@ -8,15 +8,17 @@ import {
   getMaplibreWithProtocol,
   MapLibreType,
 } from "@/lib/getMaplibreWhithProtocol";
+import { MapRef } from "react-map-gl/maplibre";
 import { buildStyleFromBaseLayer } from "@/lib/buildStyleFromBaseLayer";
 import { DEFAULT_VIEW_CONFIG } from "@/lib/config";
 import { useStore } from "@/hooks/store/useStore";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { ZoomLevelController } from "./zoom-level-controller";
 import { PositionSyncController } from "./position-sync-controller";
 import { OptionalLayers } from "./optional-layers";
 import { MapCenterLine } from "./map-center-line";
 import { DrawController } from "../draw/draw-controller";
+
 import { TextRenderLayer } from "../draw/text-render-layer";
 import { IconRenderLayer } from "../draw/icon-render-layer";
 import { SearchResultController } from "./search-result-controller";
@@ -52,10 +54,34 @@ export const Map = ({ mapId, className, opacity }: Props) => {
   const [mapLib, setMapLib] = useState<MapLibreType | null>(null);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   const projection = useStore((state) => state.maps[mapId].projection);
+  const viewState = useStore((state) => state.viewStates[mapId]);
   const showLoading = !mapLib || !isMapLoaded;
+  const mapRef = useRef<MapRef>(null);
   const mapStyle = useMemo(
     () => buildStyleFromBaseLayer(baseLayer),
     [baseLayer],
+  );
+
+  // react-map-gl only uses initialViewState on its first mount, so
+  // recomputing on viewState changes is harmless — the prop is ignored after mount.
+  const initialViewState = useMemo(
+    () =>
+      viewState
+        ? {
+            longitude: viewState.longitude,
+            latitude: viewState.latitude,
+            zoom: viewState.zoom,
+            bearing: viewState.bearing,
+            pitch: viewState.pitch,
+          }
+        : {
+            longitude: DEFAULT_VIEW_CONFIG.LONGITUDE,
+            latitude: DEFAULT_VIEW_CONFIG.LATITUDE,
+            zoom: DEFAULT_VIEW_CONFIG.ZOOM,
+            bearing: DEFAULT_VIEW_CONFIG.BEARING,
+            pitch: DEFAULT_VIEW_CONFIG.PITCH,
+          },
+    [viewState],
   );
 
   useEffect(() => {
@@ -76,6 +102,18 @@ export const Map = ({ mapId, className, opacity }: Props) => {
     };
   }, []);
 
+  useEffect(() => {
+    if (!mapRef.current) return;
+    const map = mapRef.current.getMap();
+    const observer = new ResizeObserver(() => {
+      map.resize();
+    });
+    observer.observe(map.getContainer());
+    return () => {
+      observer.disconnect();
+    };
+  }, [mapLib, isMapLoaded]);
+
   return (
     <div className={cn("relative w-full h-full", className)}>
       {/* opacityはこの内側のdivにのみ適用される */}
@@ -88,15 +126,12 @@ export const Map = ({ mapId, className, opacity }: Props) => {
             )}
           >
             <ReactMaplibre
+              ref={mapRef}
               id={mapId}
               mapLib={mapLib}
               mapStyle={mapStyle}
               projection={projection}
-              initialViewState={{
-                longitude: DEFAULT_VIEW_CONFIG.LONGITUDE,
-                latitude: DEFAULT_VIEW_CONFIG.LATITUDE,
-                zoom: DEFAULT_VIEW_CONFIG.ZOOM,
-              }}
+              initialViewState={initialViewState}
               onLoad={() => {
                 setIsMapLoaded(true);
               }}

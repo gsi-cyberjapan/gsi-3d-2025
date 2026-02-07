@@ -4,7 +4,7 @@ import { MapId } from "./mapManagerState";
 import { BaseLayer, getBaseLayers } from "@/lib/getBaseLayers";
 import { TerraDraw } from "terra-draw";
 
-interface OptionalLayerEntry {
+export interface OptionalLayerEntry {
   layerId: string;
   title: string;
   opacity: number;
@@ -56,6 +56,15 @@ export interface MapStateWrapper {
   setProjection: ({ mapId, mode }: { mapId: MapId; mode: Projection }) => void;
   /** TerraDrawインスタンスのセット */
   setTerraDraw: ({ mapId, td }: { mapId: MapId; td: TerraDraw }) => void;
+  /** ハイドレーション */
+  hydrateMapState: (partial: {
+    mainBaseLayer?: BaseLayer;
+    subBaseLayer?: BaseLayer;
+    mainProjection?: Projection;
+    subProjection?: Projection;
+    mainOptionalLayers?: OptionalLayerEntry[];
+    subOptionalLayers?: OptionalLayerEntry[];
+  }) => void;
 }
 
 export const createMapSlice: StateCreator<
@@ -122,6 +131,40 @@ export const createMapSlice: StateCreator<
           },
         },
       };
+    });
+  },
+  hydrateMapState: (partial) => {
+    set((state) => {
+      const maps = { ...state.maps };
+      if (
+        partial.mainBaseLayer ||
+        partial.mainProjection ||
+        partial.mainOptionalLayers
+      ) {
+        maps.main = {
+          ...maps.main,
+          ...(partial.mainBaseLayer && { baseLayer: partial.mainBaseLayer }),
+          ...(partial.mainProjection && { projection: partial.mainProjection }),
+          ...(partial.mainOptionalLayers && {
+            optionalLayers: partial.mainOptionalLayers,
+          }),
+        };
+      }
+      if (
+        partial.subBaseLayer ||
+        partial.subProjection ||
+        partial.subOptionalLayers
+      ) {
+        maps.sub = {
+          ...maps.sub,
+          ...(partial.subBaseLayer && { baseLayer: partial.subBaseLayer }),
+          ...(partial.subProjection && { projection: partial.subProjection }),
+          ...(partial.subOptionalLayers && {
+            optionalLayers: partial.subOptionalLayers,
+          }),
+        };
+      }
+      return { maps };
     });
   },
 });

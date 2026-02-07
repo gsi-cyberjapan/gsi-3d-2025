@@ -12,7 +12,7 @@ const MapLayout = ({
       <Header />
       <SidebarProvider>
         <Sidebar />
-        <main className="relative w-full">
+        <main className="relative w-full h-full">
           <SidebarTrigger
             className="absolute top-1 left-1 z-20"
             variant="secondary"
