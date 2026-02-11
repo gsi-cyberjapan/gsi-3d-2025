@@ -125,7 +125,12 @@ const OptionalLayerRow = ({
             <EyeOff className="size-4" />
           )}
         </button>
-        <span className="truncate">{title}</span>
+        <span
+          className="truncate cursor-pointer hover:opacity-80"
+          onClick={handleVisibilityToggle}
+        >
+          {title}
+        </span>
       </div>
       <div className="flex gap-1 items-center">
         <Popover>
