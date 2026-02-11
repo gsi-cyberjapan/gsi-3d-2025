@@ -5,7 +5,6 @@ import { useStore } from "@/hooks/store/useStore";
 import { Map } from "./map";
 import { cn } from "@/lib/utils";
 import { ViewFooter } from "./view-footer";
-import { ResetViewController } from "./reset-view-controller";
 
 export const MapsView = () => {
   const activeMapIds = useStore((state) => state.activeMapIds);
@@ -35,7 +34,6 @@ export const MapsView = () => {
         </div>
         <ViewFooter />
       </div>
-      <ResetViewController />
     </MapProvider>
   );
 };
