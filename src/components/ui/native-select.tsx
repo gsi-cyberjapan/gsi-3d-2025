@@ -36,8 +36,17 @@ const NativeSelect = ({
   );
 };
 
-const NativeSelectOption = ({ ...props }: React.ComponentProps<"option">) => {
-  return <option data-slot="native-select-option" {...props} />;
+const NativeSelectOption = ({
+  className,
+  ...props
+}: React.ComponentProps<"option">) => {
+  return (
+    <option
+      data-slot="native-select-option"
+      className={cn("bg-background text-foreground", className)}
+      {...props}
+    />
+  );
 };
 
 const NativeSelectOptGroup = ({
