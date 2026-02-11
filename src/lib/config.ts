@@ -92,7 +92,7 @@ export const BASE_LAYER_CONFIG = {
       ERROR_TILE_URL:
         "https://raw.githubusercontent.com/gsi-cyberjapan/gsimaps/refs/heads/gh-pages/image/map/no-data-std.png",
       MIN_ZOOM: 4,
-      MAX_ZOOM: 17,
+      MAX_ZOOM: 18,
     },
     {
       ID: "pale-raster",
@@ -103,7 +103,7 @@ export const BASE_LAYER_CONFIG = {
       ERROR_TILE_URL:
         "https://raw.githubusercontent.com/gsi-cyberjapan/gsimaps/refs/heads/gh-pages/image/map/no-data-pale.png",
       MIN_ZOOM: 4,
-      MAX_ZOOM: 17,
+      MAX_ZOOM: 18,
     },
     {
       ID: "blank-raster",
@@ -135,7 +135,7 @@ export const BASE_LAYER_CONFIG = {
       ERROR_TILE_URL:
         "https://raw.githubusercontent.com/gsi-cyberjapan/gsimaps/refs/heads/gh-pages/image/map/no-data-ort.png",
       MIN_ZOOM: 4,
-      MAX_ZOOM: 17,
+      MAX_ZOOM: 18,
     },
   ],
 } as const;
