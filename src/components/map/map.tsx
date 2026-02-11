@@ -132,6 +132,7 @@ export const Map = ({ mapId, className, opacity }: Props) => {
               mapStyle={mapStyle}
               projection={projection}
               maxPitch={85}
+              cursor="default"
               initialViewState={initialViewState}
               onLoad={() => {
                 setIsMapLoaded(true);
