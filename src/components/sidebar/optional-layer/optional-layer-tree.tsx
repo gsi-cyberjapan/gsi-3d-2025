@@ -148,7 +148,7 @@ export const OptionalLayerLayerRow = ({
             tileUrl,
             maxZoom,
             minZoom,
-            opacity: 0.5,
+            opacity: 1,
             visible: true,
           },
           ...optionalLayers,
