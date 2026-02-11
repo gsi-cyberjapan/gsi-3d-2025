@@ -255,7 +255,7 @@ export const CenterInfo = ({ mapId }: Props) => {
             </td>
             <td>
               {elevation != null
-                ? `${elevation.elevation.toString()}m (${elevation.hsrc})`
+                ? `${elevation.elevation.toFixed(elevation.fixed)}m（データソース：${elevation.hsrc}）`
                 : "-"}
             </td>
           </tr>
