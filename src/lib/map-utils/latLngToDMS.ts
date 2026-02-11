@@ -28,9 +28,11 @@ export function latLngToDMS(
 ): { lat: string; lng: string } {
   const latDMS = toDMS(lat);
   const lngDMS = toDMS(lng);
+  const latSign = lat < 0 ? "-" : "";
+  const lngSign = lng < 0 ? "-" : "";
 
   return {
-    lat: `${latDMS.degrees}度${latDMS.minutes}分${latDMS.seconds.toFixed(2)}秒`,
-    lng: `${lngDMS.degrees}度${lngDMS.minutes}分${lngDMS.seconds.toFixed(2)}秒`,
+    lat: `${latSign}${String(latDMS.degrees)}度${String(latDMS.minutes)}分${latDMS.seconds.toFixed(2)}秒`,
+    lng: `${lngSign}${String(lngDMS.degrees)}度${String(lngDMS.minutes)}分${lngDMS.seconds.toFixed(2)}秒`,
   };
 }

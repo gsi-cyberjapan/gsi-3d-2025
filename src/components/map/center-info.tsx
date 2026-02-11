@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 import { getUTMFromLatLng } from "@/lib/map-utils/geUTMFromLatLng";
 import { getElevationFromLatLng } from "@/lib/map-utils/getElevationFromLatLng";
 import { latLngToDMS } from "@/lib/map-utils/latLngToDMS";
-import { Skeleton } from "../ui/skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Tooltip,
@@ -17,7 +17,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Info, Locate, Pointer } from "lucide-react";
-import { ResetViewButton } from "./reset-view-button";
+import { ResetViewButton } from "@/components/map/reset-view-button";
 
 interface ViewState {
   latitude: number;
@@ -196,7 +196,7 @@ export const CenterInfo = ({ mapId }: Props) => {
         })()}
         <Tooltip>
           <TooltipTrigger asChild>
-            <button type="button" className="cursor-help">
+            <button type="button" className="cursor-help" aria-label="住所の注意事項">
               <Info className="size-3 shrink-0 text-muted-foreground" />
             </button>
           </TooltipTrigger>
@@ -235,7 +235,7 @@ export const CenterInfo = ({ mapId }: Props) => {
               標高
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <button type="button" className="cursor-help">
+                  <button type="button" className="cursor-help" aria-label="標高データの注意事項">
                     <Info className="size-3 inline-block ml-0.5 text-muted-foreground" />
                   </button>
                 </TooltipTrigger>
