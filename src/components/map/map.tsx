@@ -131,6 +131,7 @@ export const Map = ({ mapId, className, opacity }: Props) => {
               mapLib={mapLib}
               mapStyle={mapStyle}
               projection={projection}
+              cursor="default"
               initialViewState={initialViewState}
               onLoad={() => {
                 setIsMapLoaded(true);
