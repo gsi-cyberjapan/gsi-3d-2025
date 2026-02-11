@@ -1,7 +1,12 @@
+export interface ElevationResult {
+  elevation: number;
+  hsrc: string;
+}
+
 export async function getElevationFromLatLng(
   lat: number,
   lon: number,
-): Promise<number | null> {
+): Promise<ElevationResult | null> {
   const url = new URL(
     "https://cyberjapandata2.gsi.go.jp/general/dem/scripts/getelevation.php",
   );
@@ -22,7 +27,9 @@ export async function getElevationFromLatLng(
   ) {
     const d = json as { elevation: unknown; hsrc: unknown };
 
-    return typeof d.elevation === "number" ? d.elevation : null;
+    if (typeof d.elevation === "number" && typeof d.hsrc === "string") {
+      return { elevation: d.elevation, hsrc: d.hsrc };
+    }
   }
 
   return null;

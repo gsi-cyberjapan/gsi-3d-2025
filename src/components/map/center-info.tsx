@@ -8,9 +8,15 @@ import { getAddressFromLatLng } from "@/lib/map-utils/getAddressFromLatLng";
 import { cn } from "@/lib/utils";
 import { getUTMFromLatLng } from "@/lib/map-utils/geUTMFromLatLng";
 import { getElevationFromLatLng } from "@/lib/map-utils/getElevationFromLatLng";
+import { latLngToDMS } from "@/lib/map-utils/latLngToDMS";
 import { Skeleton } from "../ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Locate, Pointer } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Info, Locate, Pointer } from "lucide-react";
 import { ResetViewButton } from "./reset-view-button";
 
 interface ViewState {
@@ -74,6 +80,10 @@ export const CenterInfo = ({ mapId }: Props) => {
       displayViewState.latitude,
       displayViewState.longitude,
     );
+  }, [displayViewState]);
+  const dms = useMemo(() => {
+    if (displayViewState === null) return null;
+    return latLngToDMS(displayViewState.latitude, displayViewState.longitude);
   }, [displayViewState]);
   const isAddressReady = !isAddressPending && (isCenterMode ? !isMoving : true);
   const handleInfoModeChange = useCallback((value: string) => {
@@ -175,7 +185,7 @@ export const CenterInfo = ({ mapId }: Props) => {
   return (
     <div className="text-xs text-muted-foreground relative px-1">
       <div
-        className={cn("font-semibold", {
+        className={cn("font-semibold flex items-center gap-1", {
           "text-foreground": isAddressReady,
         })}
       >
@@ -184,16 +194,33 @@ export const CenterInfo = ({ mapId }: Props) => {
           if (addressViewMode === "kanji") return address.kanji;
           return address.kana;
         })()}
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button type="button" className="cursor-help">
+              <Info className="size-3 shrink-0 text-muted-foreground" />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent>
+            付近の住所。正確な所属を示すとは限らない。
+          </TooltipContent>
+        </Tooltip>
       </div>
       <table>
         <tbody>
           <tr>
-            <td className="pr-2">緯度</td>
-            <td>{displayViewState?.latitude ?? "-"}</td>
-          </tr>
-          <tr>
-            <td className="pr-2">経度</td>
-            <td>{displayViewState?.longitude ?? "-"}</td>
+            <td className="pr-2 align-top">経緯度</td>
+            <td>
+              {displayViewState && dms ? (
+                <>
+                  <div>{dms.lat} {dms.lng}</div>
+                  <div className="text-muted-foreground">
+                    {displayViewState.latitude.toFixed(6)},{displayViewState.longitude.toFixed(6)}
+                  </div>
+                </>
+              ) : (
+                "-"
+              )}
+            </td>
           </tr>
           <tr>
             <td className="pr-2">ズーム</td>
@@ -204,8 +231,24 @@ export const CenterInfo = ({ mapId }: Props) => {
             <td>{utm ?? "-"}</td>
           </tr>
           <tr>
-            <td className="pr-2">標高</td>
-            <td>{elevation != undefined ? `${elevation.toString()}m` : "-"}</td>
+            <td className="pr-2 align-top whitespace-nowrap">
+              標高
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button type="button" className="cursor-help">
+                    <Info className="size-3 inline-block ml-0.5 text-muted-foreground" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  全国標高改定以前の値
+                </TooltipContent>
+              </Tooltip>
+            </td>
+            <td>
+              {elevation != null
+                ? `${elevation.elevation.toString()}m (${elevation.hsrc})`
+                : "-"}
+            </td>
           </tr>
         </tbody>
       </table>
