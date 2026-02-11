@@ -40,11 +40,12 @@ interface LayerInfoPopoverProps {
 
 export const LayerInfoPopover = ({ layerId }: LayerInfoPopoverProps) => {
   const metadata = getLayerMetadata(layerId);
+  const html = metadata?.html;
   const parsedHtml = useMemo(() => {
-    if (!metadata?.html) return null;
-    const sanitized = DOMPurify.sanitize(metadata.html);
+    if (!html) return null;
+    const sanitized = DOMPurify.sanitize(html);
     return parse(sanitized, parserOptions);
-  }, [metadata?.html]);
+  }, [html]);
 
   if (!metadata) {
     return null;

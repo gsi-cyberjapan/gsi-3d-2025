@@ -59,7 +59,7 @@ export const OptionalLayers = ({ mapId }: Props) => {
               source={sourceId}
               beforeId={beforeId}
               paint={{ "raster-opacity": layer.opacity }}
-              layout={{ visibility: layer.visible === false ? "none" : "visible" }}
+              layout={{ visibility: layer.visible ? "visible" : "none" }}
               {...(minzoom !== undefined ? { minzoom } : {})}
               {...(maxzoom !== undefined ? { maxzoom } : {})}
             />
