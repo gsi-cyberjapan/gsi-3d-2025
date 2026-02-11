@@ -20,14 +20,21 @@ import {
   restrictToParentElement,
   restrictToVerticalAxis,
 } from "@dnd-kit/modifiers";
-import { GripVertical, Eye, Trash } from "lucide-react";
+import {
+  GripVertical,
+  Eye,
+  EyeOff,
+  SlidersHorizontal,
+  Trash,
+} from "lucide-react";
 import { useMemo, type CSSProperties } from "react";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Slider } from "../../ui/slider";
+import { Slider } from "@/components/ui/slider";
+import { LayerInfoPopover } from "@/components/sidebar/optional-layer/layer-info-popover";
 
 const OptionalLayerRow = ({
   layerId,
@@ -78,6 +85,19 @@ const OptionalLayerRow = ({
     });
   };
 
+  const handleVisibilityToggle = () => {
+    setOptionalLayer({
+      mapId: focusMapId,
+      layers: optionalLayers.map((l) => {
+        if (l.layerId !== layerId) return l;
+        return {
+          ...l,
+          visible: !l.visible,
+        };
+      }),
+    });
+  };
+
   if (!targetLayer) {
     return null;
   }
@@ -88,7 +108,7 @@ const OptionalLayerRow = ({
       style={style}
       className={`flex items-center gap-1 justify-between rounded border bg-background/70 w-full  p-1 text-xs  ${
         isDragging ? "opacity-70" : ""
-      }`}
+      } ${!targetLayer.visible ? "opacity-50" : ""}`}
     >
       <div className="flex gap-1 items-center min-w-0">
         <button
@@ -100,17 +120,35 @@ const OptionalLayerRow = ({
         >
           <GripVertical className="size-4" />
         </button>
-        <span className="truncate">{title}</span>
+        <button
+          type="button"
+          className="cursor-pointer text-muted-foreground"
+          aria-label={targetLayer.visible ? "非表示にする" : "表示する"}
+          onClick={handleVisibilityToggle}
+        >
+          {targetLayer.visible ? (
+            <Eye className="size-4" />
+          ) : (
+            <EyeOff className="size-4" />
+          )}
+        </button>
+        <span
+          className="truncate cursor-pointer hover:opacity-80"
+          onClick={handleVisibilityToggle}
+        >
+          {title}
+        </span>
       </div>
       <div className="flex gap-1 items-center">
+        <LayerInfoPopover layerId={layerId} />
         <Popover>
           <PopoverTrigger asChild>
             <button
               type="button"
               className="cursor-pointer text-muted-foreground border rounded-sm p-0.5"
-              aria-label="透明度を変更"
+              aria-label="透過率を変更"
             >
-              <Eye className="size-4" />
+              <SlidersHorizontal className="size-4" />
             </button>
           </PopoverTrigger>
           <PopoverContent className="p-2 w-58">

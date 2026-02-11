@@ -37,6 +37,7 @@ const hydrateStore = () => {
       layerId: string;
       title: string;
       opacity: number;
+      visible: boolean;
       tileUrl: string;
     }[],
   ): OptionalLayerEntry[] | undefined => {
@@ -45,6 +46,7 @@ const hydrateStore = () => {
       layerId: l.layerId,
       title: l.title,
       opacity: l.opacity,
+      visible: l.visible,
       tileUrl: l.tileUrl,
     }));
   };

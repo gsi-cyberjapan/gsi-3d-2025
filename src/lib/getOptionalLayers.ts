@@ -18,6 +18,8 @@ interface Layer {
   tileUrl: string;
   minZoom?: number;
   maxZoom?: number;
+  html?: string;
+  legendUrl?: string;
 }
 
 interface RawLayer {
@@ -27,6 +29,8 @@ interface RawLayer {
   url: string;
   minZoom?: number;
   maxZoom?: number;
+  html?: string;
+  legendUrl?: string;
 }
 
 interface RawLayerGroup {
@@ -117,6 +121,8 @@ const toLayer = (raw: RawLayer): Layer => ({
   tileUrl: raw.url,
   minZoom: raw.minZoom,
   maxZoom: raw.maxZoom,
+  html: raw.html,
+  legendUrl: raw.legendUrl,
 });
 
 const toLayerGroup = (
@@ -219,4 +225,47 @@ export const getOptionalLayers = async (): Promise<OptionalLayerEntry[]> => {
     definitions.map((def) => getOptionalLayerEntry(def)),
   );
   return entries;
+};
+
+/* ----------------------------------------------------------------------------
+ * Layer metadata cache
+ * ------------------------------------------------------------------------- */
+
+export interface LayerMetadata {
+  html?: string;
+  legendUrl?: string;
+}
+
+const layerMetadataCache = new Map<string, LayerMetadata>();
+
+const collectMetadata = (entries: OptionalLayerEntry[]): void => {
+  for (const entry of entries) {
+    if (entry.type === "layer") {
+      const hasHtml =
+        typeof entry.html === "string" && entry.html.trim().length > 0;
+      const hasLegend =
+        typeof entry.legendUrl === "string" && entry.legendUrl.length > 0;
+      if (hasHtml || hasLegend) {
+        layerMetadataCache.set(entry.id, {
+          html: entry.html,
+          legendUrl: entry.legendUrl,
+        });
+      }
+    } else {
+      collectMetadata(entry.entries);
+    }
+  }
+};
+
+export const buildLayerMetadataCache = (
+  entries: OptionalLayerEntry[],
+): void => {
+  layerMetadataCache.clear();
+  collectMetadata(entries);
+};
+
+export const getLayerMetadata = (
+  layerId: string,
+): LayerMetadata | undefined => {
+  return layerMetadataCache.get(layerId);
 };

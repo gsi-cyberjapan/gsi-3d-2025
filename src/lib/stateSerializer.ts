@@ -13,6 +13,7 @@ export interface SerializedOptionalLayer {
   layerId: string;
   title: string;
   opacity: number;
+  visible: boolean;
   tileUrl: string;
 }
 
@@ -96,12 +97,14 @@ const serializeOptionalLayers = (
     layerId: string;
     title: string;
     opacity: number;
+    visible: boolean;
     tileUrl: string;
   }[],
 ): string =>
   layers
     .map(
-      (l) => `${l.layerId}|${l.title}|${fmtFloat(l.opacity, 2)}|${l.tileUrl}`,
+      (l) =>
+        `${l.layerId}|${l.title}|${fmtFloat(l.opacity, 2)}|${fmtBool(l.visible)}|${l.tileUrl}`,
     )
     .join(",");
 
@@ -114,11 +117,17 @@ const deserializeOptionalLayers = (s: string): SerializedOptionalLayer[] => {
       if (parts.length < 4) return null;
       const opacity = parseFloat(parts[2]);
       if (isNaN(opacity)) return null;
+      // 後方互換性: 旧形式(4パート)は visible=true、新形式(5パート以上)は visible フラグあり
+      const hasVisibleField =
+        parts.length >= 5 && (parts[3] === "0" || parts[3] === "1");
+      const visible = hasVisibleField ? parts[3] === "1" : true;
+      const tileUrlStartIndex = hasVisibleField ? 4 : 3;
       return {
         layerId: parts[0],
         title: parts[1],
         opacity,
-        tileUrl: parts.slice(3).join("|"), // tileUrl may contain |
+        visible,
+        tileUrl: parts.slice(tileUrlStartIndex).join("|"), // tileUrl may contain |
       };
     })
     .filter((x): x is SerializedOptionalLayer => x !== null);
@@ -166,6 +175,7 @@ export interface SerializableStoreState {
         layerId: string;
         title: string;
         opacity: number;
+        visible: boolean;
         tileUrl: string;
       }[];
       projection: "mercator" | "globe";

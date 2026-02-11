@@ -1,7 +1,10 @@
 "use client";
 
-import { Suspense, lazy } from "react";
-import type { OptionalLayerEntry } from "@/lib/getOptionalLayers";
+import { Suspense, lazy, useEffect } from "react";
+import {
+  type OptionalLayerEntry,
+  buildLayerMetadataCache,
+} from "@/lib/getOptionalLayers";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const OptionalLayerTree = lazy(() =>
@@ -17,6 +20,10 @@ interface OptionalLayerSelectorClientProps {
 export const OptionalLayerSelectorClient = ({
   entries,
 }: OptionalLayerSelectorClientProps) => {
+  useEffect(() => {
+    buildLayerMetadataCache(entries);
+  }, [entries]);
+
   return (
     <Suspense fallback={<OptionalLayerTreeSkeleton count={entries.length} />}>
       <OptionalLayerTree entries={entries} />
