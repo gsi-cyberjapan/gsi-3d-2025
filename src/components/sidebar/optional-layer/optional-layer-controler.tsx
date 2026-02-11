@@ -28,6 +28,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Slider } from "../../ui/slider";
+import { LayerInfoPopover } from "./layer-info-popover";
 
 const OptionalLayerRow = ({
   layerId,
@@ -133,6 +134,7 @@ const OptionalLayerRow = ({
         </span>
       </div>
       <div className="flex gap-1 items-center">
+        <LayerInfoPopover layerId={layerId} />
         <Popover>
           <PopoverTrigger asChild>
             <button
