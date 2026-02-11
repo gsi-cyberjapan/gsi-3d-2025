@@ -115,7 +115,7 @@ export const SettingDropdownContent = () => {
               onCheckedChange={setIsDisplayMapSheetNumbers}
               className="text-sm cursor-pointer"
             >
-              図郭番号
+              図郭
             </DropdownMenuCheckboxItem>
           </DropdownMenuSubContent>
         </DropdownMenuSub>
