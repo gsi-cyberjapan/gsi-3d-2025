@@ -8,7 +8,8 @@ function toDMS(decimal: number): DMS {
   const absolute = Math.abs(decimal);
   let degrees = Math.floor(absolute);
   let minutes = Math.floor((absolute - degrees) * 60);
-  let seconds = Math.round(((absolute - degrees) * 60 - minutes) * 60 * 100) / 100;
+  let seconds =
+    Math.round(((absolute - degrees) * 60 - minutes) * 60 * 100) / 100;
 
   if (seconds >= 60) {
     seconds -= 60;

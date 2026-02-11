@@ -196,7 +196,11 @@ export const CenterInfo = ({ mapId }: Props) => {
         })()}
         <Tooltip>
           <TooltipTrigger asChild>
-            <button type="button" className="cursor-help" aria-label="住所の注意事項">
+            <button
+              type="button"
+              className="cursor-help"
+              aria-label="住所の注意事項"
+            >
               <Info className="size-3 shrink-0 text-muted-foreground" />
             </button>
           </TooltipTrigger>
@@ -212,9 +216,12 @@ export const CenterInfo = ({ mapId }: Props) => {
             <td>
               {displayViewState && dms ? (
                 <>
-                  <div>{dms.lat} {dms.lng}</div>
+                  <div>
+                    {dms.lat} {dms.lng}
+                  </div>
                   <div className="text-muted-foreground">
-                    {displayViewState.latitude.toFixed(6)},{displayViewState.longitude.toFixed(6)}
+                    {displayViewState.latitude.toFixed(6)},
+                    {displayViewState.longitude.toFixed(6)}
                   </div>
                 </>
               ) : (
@@ -235,13 +242,15 @@ export const CenterInfo = ({ mapId }: Props) => {
               標高
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <button type="button" className="cursor-help" aria-label="標高データの注意事項">
+                  <button
+                    type="button"
+                    className="cursor-help"
+                    aria-label="標高データの注意事項"
+                  >
                     <Info className="size-3 inline-block ml-0.5 text-muted-foreground" />
                   </button>
                 </TooltipTrigger>
-                <TooltipContent>
-                  全国標高改定以前の値
-                </TooltipContent>
+                <TooltipContent>全国標高改定以前の値</TooltipContent>
               </Tooltip>
             </td>
             <td>
