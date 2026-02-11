@@ -20,7 +20,13 @@ import {
   restrictToParentElement,
   restrictToVerticalAxis,
 } from "@dnd-kit/modifiers";
-import { GripVertical, Eye, EyeOff, SlidersHorizontal, Trash } from "lucide-react";
+import {
+  GripVertical,
+  Eye,
+  EyeOff,
+  SlidersHorizontal,
+  Trash,
+} from "lucide-react";
 import { useMemo, type CSSProperties } from "react";
 import {
   Popover,

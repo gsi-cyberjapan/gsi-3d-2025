@@ -118,7 +118,8 @@ const deserializeOptionalLayers = (s: string): SerializedOptionalLayer[] => {
       const opacity = parseFloat(parts[2]);
       if (isNaN(opacity)) return null;
       // 後方互換性: 旧形式(4パート)は visible=true、新形式(5パート以上)は visible フラグあり
-      const hasVisibleField = parts.length >= 5 && (parts[3] === "0" || parts[3] === "1");
+      const hasVisibleField =
+        parts.length >= 5 && (parts[3] === "0" || parts[3] === "1");
       const visible = hasVisibleField ? parts[3] === "1" : true;
       const tileUrlStartIndex = hasVisibleField ? 4 : 3;
       return {
