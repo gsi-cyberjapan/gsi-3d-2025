@@ -121,8 +121,8 @@ const getElevationFromTile = async (
   const tileX = Math.floor(realX);
   const tileY = Math.floor(realY);
 
-  const px = Math.floor((realX - tileX) * 256);
-  const py = Math.floor((realY - tileY) * 256);
+  const px = Math.min(255, Math.max(0, Math.floor((realX - tileX) * 256)));
+  const py = Math.min(255, Math.max(0, Math.floor((realY - tileY) * 256)));
 
   const url = `${source.url}${String(source.zoom)}/${String(tileX)}/${String(tileY)}.png`;
 
