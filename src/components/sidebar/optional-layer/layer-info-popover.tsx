@@ -1,5 +1,13 @@
 "use client";
 
+import { useMemo } from "react";
+import DOMPurify from "dompurify";
+import parse, {
+  domToReact,
+  type HTMLReactParserOptions,
+  Element,
+  type DOMNode,
+} from "html-react-parser";
 import { Info } from "lucide-react";
 import {
   Popover,
@@ -8,12 +16,35 @@ import {
 } from "@/components/ui/popover";
 import { getLayerMetadata } from "@/lib/getOptionalLayers";
 
+const parserOptions: HTMLReactParserOptions = {
+  replace: (domNode) => {
+    if (domNode instanceof Element && domNode.name === "a") {
+      const { attribs, children } = domNode;
+      return (
+        <a
+          href={attribs.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={attribs.class}
+        >
+          {domToReact(children as DOMNode[], parserOptions)}
+        </a>
+      );
+    }
+  },
+};
+
 interface LayerInfoPopoverProps {
   layerId: string;
 }
 
 export const LayerInfoPopover = ({ layerId }: LayerInfoPopoverProps) => {
   const metadata = getLayerMetadata(layerId);
+  const parsedHtml = useMemo(() => {
+    if (!metadata?.html) return null;
+    const sanitized = DOMPurify.sanitize(metadata.html);
+    return parse(sanitized, parserOptions);
+  }, [metadata?.html]);
 
   if (!metadata) {
     return null;
@@ -32,11 +63,10 @@ export const LayerInfoPopover = ({ layerId }: LayerInfoPopoverProps) => {
       </PopoverTrigger>
       <PopoverContent className="p-3 w-72 max-h-80 overflow-y-auto">
         <div className="flex flex-col gap-2 text-xs">
-          {metadata.html && (
-            <div
-              className="layer-info-html prose prose-xs max-w-none [&_a]:text-blue-600 [&_a]:underline"
-              dangerouslySetInnerHTML={{ __html: metadata.html }}
-            />
+          {parsedHtml && (
+            <div className="layer-info-html prose prose-xs max-w-none [&_a]:text-blue-600 [&_a]:underline">
+              {parsedHtml}
+            </div>
           )}
           {metadata.legendUrl && (
             <a

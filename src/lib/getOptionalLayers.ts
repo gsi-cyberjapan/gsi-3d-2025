@@ -241,7 +241,11 @@ const layerMetadataCache = new Map<string, LayerMetadata>();
 const collectMetadata = (entries: OptionalLayerEntry[]): void => {
   for (const entry of entries) {
     if (entry.type === "layer") {
-      if (entry.html ?? entry.legendUrl) {
+      const hasHtml =
+        typeof entry.html === "string" && entry.html.trim().length > 0;
+      const hasLegend =
+        typeof entry.legendUrl === "string" && entry.legendUrl.length > 0;
+      if (hasHtml || hasLegend) {
         layerMetadataCache.set(entry.id, {
           html: entry.html,
           legendUrl: entry.legendUrl,

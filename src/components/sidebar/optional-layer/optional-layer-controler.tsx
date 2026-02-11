@@ -20,15 +20,21 @@ import {
   restrictToParentElement,
   restrictToVerticalAxis,
 } from "@dnd-kit/modifiers";
-import { GripVertical, Eye, EyeOff, SlidersHorizontal, Trash } from "lucide-react";
+import {
+  GripVertical,
+  Eye,
+  EyeOff,
+  SlidersHorizontal,
+  Trash,
+} from "lucide-react";
 import { useMemo, type CSSProperties } from "react";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Slider } from "../../ui/slider";
-import { LayerInfoPopover } from "./layer-info-popover";
+import { Slider } from "@/components/ui/slider";
+import { LayerInfoPopover } from "@/components/sidebar/optional-layer/layer-info-popover";
 
 const OptionalLayerRow = ({
   layerId,
