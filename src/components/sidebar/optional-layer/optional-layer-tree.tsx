@@ -149,6 +149,7 @@ export const OptionalLayerLayerRow = ({
             maxZoom,
             minZoom,
             opacity: 0.5,
+            visible: true,
           },
           ...optionalLayers,
         ],

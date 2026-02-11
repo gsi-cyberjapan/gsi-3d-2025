@@ -8,6 +8,7 @@ export interface OptionalLayerEntry {
   layerId: string;
   title: string;
   opacity: number;
+  visible: boolean;
   tileUrl: string;
   minZoom?: number;
   maxZoom?: number;
