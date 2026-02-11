@@ -45,3 +45,6 @@ next-env.d.ts
 
 # vscode
 .vscode
+
+# ai
+.tasks/
