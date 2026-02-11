@@ -231,7 +231,7 @@ export const CenterInfo = ({ mapId }: Props) => {
           </tr>
           <tr>
             <td className="pr-2">ズーム</td>
-            <td>{displayViewState?.zoom ?? "-"}</td>
+            <td>{displayViewState ? displayViewState.zoom.toFixed(2) : "-"}</td>
           </tr>
           <tr>
             <td className="pr-2">UTM</td>
