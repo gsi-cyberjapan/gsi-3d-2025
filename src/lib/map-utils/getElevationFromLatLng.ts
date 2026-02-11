@@ -89,8 +89,12 @@ const getPixelColor = async (
     const image = new Image();
     image.src = url;
     await new Promise<void>((resolve, reject) => {
-      image.onload = () => resolve();
-      image.onerror = () => reject(new Error("Image loading error"));
+      image.onload = () => {
+        resolve();
+      };
+      image.onerror = () => {
+        reject(new Error("Image loading error"));
+      };
     });
 
     const canvas = document.createElement("canvas");
@@ -120,7 +124,7 @@ const getElevationFromTile = async (
   const px = Math.floor((realX - tileX) * 256);
   const py = Math.floor((realY - tileY) * 256);
 
-  const url = `${source.url}${source.zoom}/${tileX}/${tileY}.png`;
+  const url = `${source.url}${String(source.zoom)}/${String(tileX)}/${String(tileY)}.png`;
 
   const res = await fetch(url);
   if (!res.ok) return null;
