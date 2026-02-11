@@ -205,7 +205,11 @@ export const CenterInfo = ({ mapId }: Props) => {
           </tr>
           <tr>
             <td className="pr-2">標高</td>
-            <td>{elevation != undefined ? `${elevation.toString()}m` : "-"}</td>
+            <td>
+              {elevation != null
+                ? `${elevation.elevation.toFixed(elevation.fixed)}m（データソース：${elevation.hsrc}）`
+                : "-"}
+            </td>
           </tr>
         </tbody>
       </table>
