@@ -7,10 +7,10 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import type { OptionalLayerEntry } from "@/lib/getOptionalLayers";
-import { Folder, Layers } from "lucide-react";
+import { Folder, Layers, TriangleAlert } from "lucide-react";
 import { useStore } from "@/hooks/store/useStore";
 import { cn } from "@/lib/utils";
-import { TriangleAlert } from "lucide-react";
+import { LayerInfoPopover } from "@/components/sidebar/optional-layer/layer-info-popover";
 
 type LayerGroupEntry = Extract<OptionalLayerEntry, { type: "layer-group" }>;
 type LayerEntry = Extract<OptionalLayerEntry, { type: "layer" }>;
@@ -160,21 +160,26 @@ export const OptionalLayerLayerRow = ({
   return (
     <div
       className={cn(
-        "flex gap-1 text-xs items-start cursor-pointer",
+        "flex gap-1 text-xs items-center",
         isSelected && "text-blue-500",
-        isGeojsonTileLayer
-          ? "opacity-60 cursor-not-allowed"
-          : "hover:opacity-80",
+        isGeojsonTileLayer ? "opacity-60 cursor-not-allowed" : "",
       )}
-      onClick={handleClick}
     >
-      {isGeojsonTileLayer ? (
-        <TriangleAlert className="text-muted-foreground size-3 shrink-0 mt-0.5" />
-      ) : (
-        <Layers className="text-muted-foreground size-3 shrink-0 mt-0.5" />
-      )}
-
-      <span>{title}</span>
+      <div
+        className={cn(
+          "flex gap-1 items-start cursor-pointer min-w-0 flex-1",
+          !isGeojsonTileLayer && "hover:opacity-80",
+        )}
+        onClick={handleClick}
+      >
+        {isGeojsonTileLayer ? (
+          <TriangleAlert className="text-muted-foreground size-3 shrink-0 mt-0.5" />
+        ) : (
+          <Layers className="text-muted-foreground size-3 shrink-0 mt-0.5" />
+        )}
+        <span>{title}</span>
+      </div>
+      <LayerInfoPopover layerId={layerId} />
     </div>
   );
 };
