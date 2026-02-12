@@ -134,6 +134,7 @@ export const Map = ({ mapId, className, opacity }: Props) => {
               maxPitch={85}
               cursor="default"
               initialViewState={initialViewState}
+              canvasContextAttributes={{ preserveDrawingBuffer: true }}
               onLoad={() => {
                 setIsMapLoaded(true);
               }}

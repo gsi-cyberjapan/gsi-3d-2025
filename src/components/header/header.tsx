@@ -6,9 +6,11 @@ import Link from "next/link";
 import {
   CircleQuestionMark,
   Ellipsis,
+  Image as ImageIcon,
   Menu,
   Pen,
   Ruler,
+  Save,
   Settings,
 } from "lucide-react";
 import {
@@ -29,6 +31,9 @@ export const Header = () => {
   const setIsDrawWindowOpen = useStore((state) => state.setIsDrawWindowOpen);
   const setIsMeasureWindowOpen = useStore(
     (state) => state.setIsMeasureWindowOpen,
+  );
+  const setIsSaveImageDialogOpen = useStore(
+    (state) => state.setIsSaveImageDialogOpen,
   );
 
   return (
@@ -57,6 +62,24 @@ export const Header = () => {
           >
             <Pen /> 作図
           </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button size="xs" variant="outline">
+                <Save /> 保存
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuGroup>
+                <DropdownMenuItem
+                  onClick={() => {
+                    setIsSaveImageDialogOpen(true);
+                  }}
+                >
+                  <ImageIcon /> 画像
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button size="xs" variant="outline">
@@ -104,6 +127,15 @@ export const Header = () => {
             >
               <div className="flex gap-2 items-center">
                 <Pen /> 作図
+              </div>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                setIsSaveImageDialogOpen(true);
+              }}
+            >
+              <div className="flex gap-2 items-center">
+                <ImageIcon /> 画像として保存
               </div>
             </DropdownMenuItem>
             <DropdownMenuItem>
