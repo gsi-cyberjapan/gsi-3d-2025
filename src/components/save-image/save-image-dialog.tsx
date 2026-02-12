@@ -22,10 +22,8 @@ import {
   cropCanvasToBBox,
   drawScaleBar,
   drawCredit,
-  generateWorldFile,
   canvasToBlob,
   downloadBlob,
-  downloadText,
   type SaveImageBBox,
 } from "@/lib/saveImage";
 import { SaveImageBBoxInputs } from "./save-image-bbox-inputs";
@@ -55,7 +53,6 @@ export const SaveImageDialog = () => {
   const [filename, setFilename] = useState("map-image");
   const [includeScaleBar, setIncludeScaleBar] = useState(true);
   const [includeCredit, setIncludeCredit] = useState(true);
-  const [includeWorldFile, setIncludeWorldFile] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedCanvas, setGeneratedCanvas] =
@@ -135,23 +132,6 @@ export const SaveImageDialog = () => {
     downloadBlob(blob, `${filename}.png`);
   }, [generatedCanvas, filename]);
 
-  const handleSavePgw = useCallback(() => {
-    const map = getMap();
-    if (!map || !generatedCanvas) return;
-
-    const dpr = window.devicePixelRatio;
-    const imageWidth = generatedCanvas.width / dpr;
-    const imageHeight = generatedCanvas.height / dpr;
-
-    const content = generateWorldFile(
-      map,
-      imageWidth,
-      imageHeight,
-      rangeMode === "bbox" ? bbox : undefined,
-    );
-    downloadText(content, `${filename}.pgw`, "text/plain");
-  }, [getMap, generatedCanvas, rangeMode, bbox, filename]);
-
   const handleOpenChange = useCallback(
     (open: boolean) => {
       if (!open) {
@@ -177,7 +157,7 @@ export const SaveImageDialog = () => {
           <DialogTitle>画像として保存</DialogTitle>
         </DialogHeader>
 
-        <div className="flex flex-col gap-4 max-h-[70vh] overflow-y-auto">
+        <div className="flex flex-col gap-4 max-h-[70vh]">
           {isSplitMode && (
             <div className="flex flex-col gap-2">
               <Label className="text-sm font-medium">地図を選択</Label>
@@ -272,22 +252,6 @@ export const SaveImageDialog = () => {
                 出典を含める
               </Label>
             </div>
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="include-world-file"
-                checked={includeWorldFile}
-                disabled={isGenerating}
-                onCheckedChange={(checked) => {
-                  setIncludeWorldFile(checked === true);
-                }}
-              />
-              <Label
-                htmlFor="include-world-file"
-                className="cursor-pointer text-sm"
-              >
-                ワールドファイル(.pgw)も保存
-              </Label>
-            </div>
           </div>
 
           <div className="flex flex-col gap-2">
@@ -355,27 +319,15 @@ export const SaveImageDialog = () => {
             {isGenerating ? <Spinner /> : "画像を生成"}
           </Button>
           {previewUrl && (
-            <>
-              <Button
-                size="sm"
-                disabled={isGenerating || !filename}
-                onClick={() => {
-                  void handleSavePng();
-                }}
-              >
-                PNGを保存
-              </Button>
-              {includeWorldFile && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  disabled={isGenerating || !filename}
-                  onClick={handleSavePgw}
-                >
-                  PGWを保存
-                </Button>
-              )}
-            </>
+            <Button
+              size="sm"
+              disabled={isGenerating || !filename}
+              onClick={() => {
+                void handleSavePng();
+              }}
+            >
+              PNGを保存
+            </Button>
           )}
         </DialogFooter>
       </DialogContent>

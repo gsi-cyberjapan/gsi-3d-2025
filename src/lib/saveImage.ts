@@ -170,50 +170,6 @@ export function drawCredit(canvas: HTMLCanvasElement): void {
 }
 
 /**
- * Convert lat/lng to Web Mercator coordinates (EPSG:3857)
- */
-function lngLatToMercator(lng: number, lat: number): { x: number; y: number } {
-  const x = (lng * 20037508.34) / 180;
-  const latRad = (lat * Math.PI) / 180;
-  const y =
-    (Math.log(Math.tan(Math.PI / 4 + latRad / 2)) / (Math.PI / 180)) *
-    (20037508.34 / 180);
-  return { x, y };
-}
-
-/**
- * Generate a world file (.pgw) content string
- */
-export function generateWorldFile(
-  map: maplibregl.Map,
-  imageWidth: number,
-  imageHeight: number,
-  bbox?: SaveImageBBox,
-): string {
-  const bounds = map.getBounds();
-  const nwLng = bbox ? bbox.west : bounds.getWest();
-  const nwLat = bbox ? bbox.north : bounds.getNorth();
-  const seLng = bbox ? bbox.east : bounds.getEast();
-  const seLat = bbox ? bbox.south : bounds.getSouth();
-
-  const nw = lngLatToMercator(nwLng, nwLat);
-  const se = lngLatToMercator(seLng, seLat);
-
-  const xScale = (se.x - nw.x) / imageWidth;
-  const yScale = (nw.y - se.y) / imageHeight;
-
-  const lines = [
-    xScale.toFixed(10),
-    "0.0000000000",
-    "0.0000000000",
-    (-yScale).toFixed(10),
-    (nw.x + xScale / 2).toFixed(10),
-    (nw.y - yScale / 2).toFixed(10),
-  ];
-  return lines.join("\n");
-}
-
-/**
  * Convert a canvas to a Blob
  */
 export function canvasToBlob(canvas: HTMLCanvasElement): Promise<Blob> {
@@ -240,16 +196,4 @@ export function downloadBlob(blob: Blob, filename: string): void {
   link.click();
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
-}
-
-/**
- * Download a text string as a file
- */
-export function downloadText(
-  content: string,
-  filename: string,
-  mimeType: string,
-): void {
-  const blob = new Blob([content], { type: mimeType });
-  downloadBlob(blob, filename);
 }
