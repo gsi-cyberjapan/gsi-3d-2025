@@ -6,6 +6,7 @@ import { Map } from "./map";
 import { cn } from "@/lib/utils";
 import { ViewFooter } from "./view-footer";
 import { SaveImageDialog } from "../save-image/save-image-dialog";
+import { PrintDialog } from "../print/print-dialog";
 
 export const MapsView = () => {
   const activeMapIds = useStore((state) => state.activeMapIds);
@@ -36,6 +37,7 @@ export const MapsView = () => {
         <ViewFooter />
       </div>
       <SaveImageDialog />
+      <PrintDialog />
     </MapProvider>
   );
 };

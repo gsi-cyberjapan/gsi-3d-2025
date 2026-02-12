@@ -9,6 +9,7 @@ import {
   Image as ImageIcon,
   Menu,
   Pen,
+  Printer,
   Ruler,
   Save,
   Settings,
@@ -35,6 +36,7 @@ export const Header = () => {
   const setIsSaveImageDialogOpen = useStore(
     (state) => state.setIsSaveImageDialogOpen,
   );
+  const setIsPrintDialogOpen = useStore((state) => state.setIsPrintDialogOpen);
 
   return (
     <div className="flex border-b py-1 px-2 gap-2 justify-between">
@@ -76,6 +78,13 @@ export const Header = () => {
                   }}
                 >
                   <ImageIcon /> 画像
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    setIsPrintDialogOpen(true);
+                  }}
+                >
+                  <Printer /> 印刷
                 </DropdownMenuItem>
               </DropdownMenuGroup>
             </DropdownMenuContent>
@@ -136,6 +145,15 @@ export const Header = () => {
             >
               <div className="flex gap-2 items-center">
                 <ImageIcon /> 画像として保存
+              </div>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                setIsPrintDialogOpen(true);
+              }}
+            >
+              <div className="flex gap-2 items-center">
+                <Printer /> 印刷
               </div>
             </DropdownMenuItem>
             <DropdownMenuItem>
