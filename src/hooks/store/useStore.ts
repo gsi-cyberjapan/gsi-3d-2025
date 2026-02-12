@@ -7,6 +7,7 @@ import { createMeasureSlice, MeasureState } from "./measureState";
 import { createZoomGuideSlice, ZoomGuideState } from "./zoomGuideState";
 import { createReliefSlice, ReliefState } from "./reliefState";
 import { createGridSlice, GridState } from "./gridState";
+import { createSaveImageSlice, SaveImageState } from "./saveImageState";
 
 export type GlobalState = MapManagerState &
   MapStateWrapper &
@@ -15,7 +16,8 @@ export type GlobalState = MapManagerState &
   MeasureState &
   ZoomGuideState &
   ReliefState &
-  GridState;
+  GridState &
+  SaveImageState;
 export const useStore = create<GlobalState>((...args) => ({
   ...createMapManagerSlice(...args),
   ...createMapSlice(...args),
@@ -25,4 +27,5 @@ export const useStore = create<GlobalState>((...args) => ({
   ...createZoomGuideSlice(...args),
   ...createReliefSlice(...args),
   ...createGridSlice(...args),
+  ...createSaveImageSlice(...args),
 }));

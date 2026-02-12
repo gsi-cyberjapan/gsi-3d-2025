@@ -5,6 +5,7 @@ import { useStore } from "@/hooks/store/useStore";
 import { Map } from "./map";
 import { cn } from "@/lib/utils";
 import { ViewFooter } from "./view-footer";
+import { SaveImageDialog } from "../save-image/save-image-dialog";
 
 export const MapsView = () => {
   const activeMapIds = useStore((state) => state.activeMapIds);
@@ -34,6 +35,7 @@ export const MapsView = () => {
         </div>
         <ViewFooter />
       </div>
+      <SaveImageDialog />
     </MapProvider>
   );
 };
