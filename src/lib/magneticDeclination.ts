@@ -1,6 +1,6 @@
 /**
- * GSI多項式近似による磁気偏角の計算
- * 基準点: 東経138度, 北緯37度
+ * GSI磁気図2020.0年値の多項式近似による磁気偏角の計算
+ * 基準点: 北緯37度, 東経138度
  * 参考: https://vldb.gsi.go.jp/sokuchi/geomag/menu_04/index.html
  */
 
@@ -13,16 +13,17 @@ export const getMagneticDeclination = (lat: number, lng: number): number => {
   const dLat = lat - 37;
   const dLng = lng - 138;
 
-  // GSI近似多項式（2020年頃の係数）
-  const declination =
-    -7.6 +
-    0.233 * dLat +
-    0.631 * dLng -
-    0.027 * dLat * dLat -
-    0.004 * dLat * dLng -
-    0.014 * dLng * dLng;
+  // GSI磁気図2020.0年値の近似多項式（結果は「分」単位、西偏が正）
+  const declinationMinutes =
+    495.822 +
+    18.462 * dLat -
+    7.726 * dLng +
+    0.007 * dLat * dLat -
+    0.007 * dLat * dLng -
+    0.655 * dLng * dLng;
 
-  return declination;
+  // 分→度に変換、西偏を負値にする（既存コードの符号規約に合わせる）
+  return -(declinationMinutes / 60);
 };
 
 /**

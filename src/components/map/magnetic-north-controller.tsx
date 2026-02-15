@@ -17,6 +17,14 @@ const LINE_SPACING_PX = 40;
 const LABEL_SPACING_PX = 200;
 const LABEL_LINE_INTERVAL = 5;
 
+const formatDeclination = (declinationDeg: number): string => {
+  const direction = declinationDeg < 0 ? "西偏" : "東偏";
+  const absDeg = Math.abs(declinationDeg);
+  const degrees = Math.floor(absDeg);
+  const minutes = Math.round((absDeg - degrees) * 60);
+  return `${direction} ${String(degrees)}°${String(minutes)}'`;
+};
+
 const buildMagneticNorthLines = (map: maplibregl.Map) => {
   const center = map.getCenter();
   if (!isValidForMagneticDeclination(center.lat, center.lng)) {
@@ -27,13 +35,9 @@ const buildMagneticNorthLines = (map: maplibregl.Map) => {
   const bearing = map.getBearing();
   const angleRad = ((declination - bearing) * Math.PI) / 180;
 
-  const direction = declination < 0 ? "西偏" : "東偏";
-  const label = `${direction} ${String(Math.abs(Math.round(declination * 10) / 10))}°`;
-  const rotation = declination;
-
   const canvas = map.getCanvas();
-  const width = canvas.width;
-  const height = canvas.height;
+  const width = canvas.clientWidth;
+  const height = canvas.clientHeight;
   const diagonal = Math.sqrt(width * width + height * height);
   const centerX = width / 2;
   const centerY = height / 2;
@@ -77,9 +81,13 @@ const buildMagneticNorthLines = (map: maplibregl.Map) => {
         const px = x1 + (x2 - x1) * t;
         const py = y1 + (y2 - y1) * t;
         const point = map.unproject([px, py]);
+        const localDeclination = getMagneticDeclination(point.lat, point.lng);
         features.push({
           type: "Feature" as const,
-          properties: { label, rotation },
+          properties: {
+            label: formatDeclination(localDeclination),
+            rotation: declination,
+          },
           geometry: {
             type: "Point" as const,
             coordinates: [point.lng, point.lat] as [number, number],
