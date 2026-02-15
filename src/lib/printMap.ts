@@ -135,6 +135,25 @@ interface RenderOptions {
   pitch: number;
   width: number;
   height: number;
+  setupOverlay?: (map: maplibregl.Map) => Promise<void>;
+}
+
+/**
+ * Wait for a given number of animation frames
+ */
+function waitFrames(count: number): Promise<void> {
+  return new Promise((resolve) => {
+    let remaining = count;
+    const tick = () => {
+      remaining--;
+      if (remaining <= 0) {
+        resolve();
+      } else {
+        requestAnimationFrame(tick);
+      }
+    };
+    requestAnimationFrame(tick);
+  });
 }
 
 /**
@@ -177,23 +196,52 @@ export async function renderHighResMap(
       renderMap.on("error", onError);
 
       void renderMap.once("idle", () => {
-        try {
-          const mapCanvas = renderMap.getCanvas();
-          const resultCanvas = document.createElement("canvas");
-          resultCanvas.width = mapCanvas.width;
-          resultCanvas.height = mapCanvas.height;
-          const ctx = resultCanvas.getContext("2d");
-          if (!ctx) throw new Error("Failed to get canvas context");
-          ctx.drawImage(mapCanvas, 0, 0);
-          resolve(resultCanvas);
-        } catch (err) {
-          reject(
-            err instanceof Error ? err : new Error("Failed to render map"),
-          );
-        } finally {
-          renderMap.off("error", onError);
-          renderMap.remove();
-          document.body.removeChild(container);
+        const captureAndResolve = () => {
+          try {
+            const mapCanvas = renderMap.getCanvas();
+            const resultCanvas = document.createElement("canvas");
+            resultCanvas.width = mapCanvas.width;
+            resultCanvas.height = mapCanvas.height;
+            const ctx = resultCanvas.getContext("2d");
+            if (!ctx) throw new Error("Failed to get canvas context");
+            ctx.drawImage(mapCanvas, 0, 0);
+
+            // Composite overlay canvases (e.g., deck.gl point cloud)
+            for (const c of container.querySelectorAll("canvas")) {
+              if (c !== mapCanvas && c.width > 0 && c.height > 0) {
+                ctx.drawImage(c, 0, 0, resultCanvas.width, resultCanvas.height);
+              }
+            }
+
+            resolve(resultCanvas);
+          } catch (err) {
+            reject(
+              err instanceof Error ? err : new Error("Failed to render map"),
+            );
+          } finally {
+            renderMap.off("error", onError);
+            renderMap.remove();
+            document.body.removeChild(container);
+          }
+        };
+
+        if (options.setupOverlay) {
+          options
+            .setupOverlay(renderMap)
+            .then(() => waitFrames(5))
+            .then(captureAndResolve)
+            .catch((err: unknown) => {
+              reject(
+                err instanceof Error
+                  ? err
+                  : new Error("Failed to setup overlay"),
+              );
+              renderMap.off("error", onError);
+              renderMap.remove();
+              document.body.removeChild(container);
+            });
+        } else {
+          captureAndResolve();
         }
       });
     } catch (err) {

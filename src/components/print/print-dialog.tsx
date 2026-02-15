@@ -32,6 +32,8 @@ import {
   composePrintCanvas,
   triggerBrowserPrint,
 } from "@/lib/printMap";
+import { POINT_CLOUD_CONFIG } from "@/lib/config";
+import { getVisibleTileEntries } from "@/lib/pointcloud/tilesIndex";
 
 const PREVIEW_MAX_WIDTH = 600;
 const PREVIEW_MAX_HEIGHT = 400;
@@ -39,6 +41,9 @@ const PREVIEW_MAX_HEIGHT = 400;
 export const PrintDialog = () => {
   const isPrintDialogOpen = useStore((state) => state.isPrintDialogOpen);
   const setIsPrintDialogOpen = useStore((state) => state.setIsPrintDialogOpen);
+  const isPointCloudEnabled = useStore(
+    (state) => state.maps.main.isPointCloudEnabled,
+  );
 
   const maps = useMap();
 
@@ -150,6 +155,31 @@ export const PrintDialog = () => {
       const previewWidth = previewContainer.clientWidth;
       const adjustedZoom = zoom + Math.log2(paperSize.width / previewWidth);
 
+      const setupOverlay = isPointCloudEnabled
+        ? async (offscreenMap: maplibregl.Map) => {
+            const [{ MapboxOverlay }, { Tile3DLayer }] = await Promise.all([
+              import("@deck.gl/mapbox"),
+              import("@deck.gl/geo-layers"),
+            ]);
+
+            const visibleTiles = await getVisibleTileEntries(offscreenMap);
+            const layers = visibleTiles.map(
+              (t) =>
+                new Tile3DLayer({
+                  id: `print-pointcloud-${t.name}`,
+                  data: `${POINT_CLOUD_CONFIG.TILESET_BASE_URL}/${t.name}/tileset.json`,
+                  pointSize: 1,
+                }),
+            );
+
+            const overlay = new MapboxOverlay({
+              interleaved: true,
+              layers,
+            });
+            offscreenMap.addControl(overlay as unknown as maplibregl.IControl);
+          }
+        : undefined;
+
       const mapCanvas = await renderHighResMap({
         style,
         center: [center.lng, center.lat],
@@ -158,6 +188,7 @@ export const PrintDialog = () => {
         pitch,
         width: paperSize.width,
         height: mapHeight,
+        setupOverlay,
       });
 
       const printCanvas = await composePrintCanvas({
@@ -177,7 +208,7 @@ export const PrintDialog = () => {
         "\u5370\u5237\u306B\u5931\u6557\u3057\u307E\u3057\u305F\u3002\u7528\u7D19\u30B5\u30A4\u30BA\u3092\u5C0F\u3055\u304F\u3059\u308B\u304B\u3001\u6A19\u6E96\u753B\u8CEA\u3092\u304A\u8A66\u3057\u304F\u3060\u3055\u3044\u3002",
       );
     }
-  }, [paperSize, title, showCompass, previewContainer]);
+  }, [paperSize, title, showCompass, previewContainer, isPointCloudEnabled]);
 
   const handleOpenChange = useCallback(
     (open: boolean) => {

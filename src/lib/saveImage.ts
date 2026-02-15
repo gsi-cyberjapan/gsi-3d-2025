@@ -42,7 +42,8 @@ function getGroundResolution(latitude: number, zoom: number): number {
 }
 
 /**
- * Capture the map canvas and return a copy
+ * Capture the map canvas and return a copy.
+ * Also composites any overlay canvases (e.g., deck.gl point cloud) on top.
  */
 export function captureMapCanvas(map: maplibregl.Map): HTMLCanvasElement {
   const mapCanvas = map.getCanvas();
@@ -52,6 +53,15 @@ export function captureMapCanvas(map: maplibregl.Map): HTMLCanvasElement {
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("Failed to get canvas context");
   ctx.drawImage(mapCanvas, 0, 0);
+
+  // Composite overlay canvases (e.g., deck.gl point cloud)
+  const container = map.getContainer();
+  for (const c of container.querySelectorAll("canvas")) {
+    if (c !== mapCanvas && c.width > 0 && c.height > 0) {
+      ctx.drawImage(c, 0, 0, canvas.width, canvas.height);
+    }
+  }
+
   return canvas;
 }
 

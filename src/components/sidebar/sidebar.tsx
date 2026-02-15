@@ -9,6 +9,7 @@ import { LayoutSelector } from "./layout-control/layout-selector";
 import { OptionalLayerSelector } from "./optional-layer/optional-layer-selector";
 import { OptionalLayerControler } from "./optional-layer/optional-layer-controler";
 import { GlobeModeCheckbox } from "./globe-mode-checkbox";
+import { MapDisplayToggles } from "./map-display-toggles";
 
 export const Sidebar = () => {
   return (
@@ -38,6 +39,7 @@ export const Sidebar = () => {
           <span className="text-xs text-muted-foreground">表示モード</span>
           <LayoutSelector />
           <GlobeModeCheckbox />
+          <MapDisplayToggles />
         </div>
       </SidebarFooter>
     </UISidebar>

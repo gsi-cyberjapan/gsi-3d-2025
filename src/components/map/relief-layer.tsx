@@ -6,6 +6,7 @@ import type { RasterDEMSourceSpecification } from "maplibre-gl";
 import { MapId } from "@/hooks/store/mapManagerState";
 import { useStore } from "@/hooks/store/useStore";
 import { buildColorInterpolation } from "@/lib/relief/buildColorInterpolation";
+import { TERRAIN_CONFIG } from "@/lib/config";
 
 interface Props {
   mapId: MapId;
@@ -15,15 +16,11 @@ const RELIEF_FREE_LAYER_ID = "relief_free";
 
 // GSI DEM tile source configuration
 const GSI_DEM_SOURCE: Omit<RasterDEMSourceSpecification, "type"> = {
-  tiles: ["https://cyberjapandata.gsi.go.jp/xyz/dem_png/{z}/{x}/{y}.png"],
+  tiles: [TERRAIN_CONFIG.DEM_TILE_URL],
   tileSize: 256,
-  encoding: "custom",
-  redFactor: 655.36,
-  greenFactor: 2.56,
-  blueFactor: 0.01,
-  baseShift: 0,
-  minzoom: 0,
-  maxzoom: 14,
+  encoding: TERRAIN_CONFIG.DEM_ENCODING,
+  minzoom: TERRAIN_CONFIG.DEM_MIN_ZOOM,
+  maxzoom: TERRAIN_CONFIG.DEM_MAX_ZOOM,
 };
 
 export const ReliefLayer = ({ mapId }: Props) => {

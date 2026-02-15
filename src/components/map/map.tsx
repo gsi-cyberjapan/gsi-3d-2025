@@ -36,6 +36,9 @@ import { TileGridController } from "./grids/tile-grid-controller";
 import { UtmGridController } from "./grids/utm-grid-controller";
 import { MagneticNorthController } from "./magnetic-north-controller";
 import { ReliefLayer } from "./relief-layer";
+import { HillshadeLayer } from "./hillshade-layer";
+import { TerrainController } from "./terrain-controller";
+import { PointCloudController } from "./point-cloud-controller";
 
 const ReactMaplibre = dynamic(
   () => import("react-map-gl/maplibre").then((m) => m.Map),
@@ -141,6 +144,9 @@ export const Map = ({ mapId, className, opacity }: Props) => {
             >
               <OptionalLayers mapId={mapId} />
               <ReliefLayer mapId={mapId} />
+              <HillshadeLayer mapId={mapId} />
+              <TerrainController mapId={mapId} />
+              <PointCloudController mapId={mapId} />
               {/* Mapインスタンスを直接操作するコンポーネント */}
               <DrawController mapId={mapId} />
               <MeasureController mapId={mapId} />

@@ -38,6 +38,13 @@ export interface DeserializedState {
   subProjection?: "mercator" | "globe";
   mainOptionalLayers?: SerializedOptionalLayer[];
   subOptionalLayers?: SerializedOptionalLayer[];
+  // Per-map display toggles
+  mainHillshade?: boolean;
+  subHillshade?: boolean;
+  mainTerrain?: boolean;
+  subTerrain?: boolean;
+  mainPointCloud?: boolean;
+  subPointCloud?: boolean;
   // Grid
   isDisplayLatLngGrid?: boolean;
   isDisplayUtmGrid?: boolean;
@@ -179,6 +186,9 @@ export interface SerializableStoreState {
         tileUrl: string;
       }[];
       projection: "mercator" | "globe";
+      isHillshadeEnabled: boolean;
+      isTerrainEnabled: boolean;
+      isPointCloudEnabled: boolean;
     }
   >;
   isDisplayLatLngGrid: boolean;
@@ -293,6 +303,14 @@ export const serializeState = (state: SerializableStoreState): string => {
       serializeOptionalLayers(state.maps.sub.optionalLayers),
     ]);
   }
+
+  // Per-map display toggles
+  push("hil", fmtBool(state.maps.main.isHillshadeEnabled), fmtBool(false));
+  push("shil", fmtBool(state.maps.sub.isHillshadeEnabled), fmtBool(false));
+  push("ter", fmtBool(state.maps.main.isTerrainEnabled), fmtBool(false));
+  push("ster", fmtBool(state.maps.sub.isTerrainEnabled), fmtBool(false));
+  push("pc", fmtBool(state.maps.main.isPointCloudEnabled), fmtBool(false));
+  push("spc", fmtBool(state.maps.sub.isPointCloudEnabled), fmtBool(false));
 
   // Grid
   push("llg", fmtBool(state.isDisplayLatLngGrid), fmtBool(false));
@@ -423,6 +441,25 @@ export const deserializeState = (paramString: string): DeserializedState => {
   const sol = getString("sol");
   if (sol !== undefined)
     result.subOptionalLayers = deserializeOptionalLayers(sol);
+
+  // Per-map display toggles
+  const hil = getBool("hil");
+  if (hil !== undefined) result.mainHillshade = hil;
+
+  const shil = getBool("shil");
+  if (shil !== undefined) result.subHillshade = shil;
+
+  const ter = getBool("ter");
+  if (ter !== undefined) result.mainTerrain = ter;
+
+  const ster = getBool("ster");
+  if (ster !== undefined) result.subTerrain = ster;
+
+  const pc = getBool("pc");
+  if (pc !== undefined) result.mainPointCloud = pc;
+
+  const spc = getBool("spc");
+  if (spc !== undefined) result.subPointCloud = spc;
 
   // Grid
   const llg = getBool("llg");

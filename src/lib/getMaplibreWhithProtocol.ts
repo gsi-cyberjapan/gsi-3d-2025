@@ -18,6 +18,11 @@ export function getMaplibreWithProtocol(): Promise<MapLibreType> {
       const protocol = new Protocol();
       maplibre.addProtocol("pmtiles", protocol.tile);
 
+      const { getGsiDemProtocolAction } = await import(
+        "maplibre-gl-gsi-terrain"
+      );
+      maplibre.addProtocol("gsidem", getGsiDemProtocolAction("gsidem"));
+
       return maplibre;
     })();
   }

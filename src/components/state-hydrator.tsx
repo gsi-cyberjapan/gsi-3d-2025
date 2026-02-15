@@ -58,6 +58,12 @@ const hydrateStore = () => {
     subProjection: state.subProjection,
     mainOptionalLayers: toOptionalLayers(state.mainOptionalLayers),
     subOptionalLayers: toOptionalLayers(state.subOptionalLayers),
+    mainHillshade: state.mainHillshade,
+    subHillshade: state.subHillshade,
+    mainTerrain: state.mainTerrain,
+    subTerrain: state.subTerrain,
+    mainPointCloud: state.mainPointCloud,
+    subPointCloud: state.subPointCloud,
   });
 
   // Hydrate grid state

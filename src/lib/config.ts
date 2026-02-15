@@ -177,6 +177,22 @@ export const OVERVIEW_MAP_CONFIG = {
   ZOOM_OFFSET: 5,
 } as const;
 
+export const TERRAIN_CONFIG = {
+  DEM_TILE_URL:
+    "gsidem://https://cyberjapandata.gsi.go.jp/xyz/dem_png/{z}/{x}/{y}.png",
+  DEM_MIN_ZOOM: 0,
+  DEM_MAX_ZOOM: 14,
+  DEM_ENCODING: "terrarium",
+  TERRAIN_EXAGGERATION: 1.0,
+  HILLSHADE_EXAGGERATION: 0.5,
+} as const;
+
+export const POINT_CLOUD_CONFIG = {
+  TILES_INDEX_URL: "https://d2g57vdz6jjbu8.cloudfront.net/3dtiles.json",
+  TILESET_BASE_URL: "https://d2g57vdz6jjbu8.cloudfront.net/3dtiles",
+  MIN_ZOOM: 12,
+} as const;
+
 export const DRAW_CONFIG = {
   MARKER: {
     /** GSI シンボルアイコンのベースURL */
