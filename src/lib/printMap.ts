@@ -112,6 +112,14 @@ const EARTH_RADIUS = 6378137;
 const CREDIT_TEXT = "\u51FA\u5178\uFF1A\u56FD\u571F\u5730\u7406\u9662";
 const COMPASS_IMAGE_URL = "https://maps.gsi.go.jp/image/map/compass.png";
 
+/**
+ * Calculate the title area height in pixels for a given DPI
+ */
+export function getTitleHeight(title: string, dpi: number): number {
+  if (title.trim().length === 0) return 0;
+  return Math.round(24 * (dpi / 150)) + Math.round(16 * (dpi / 150)) * 2;
+}
+
 function getGroundResolution(latitude: number, zoom: number): number {
   return (
     (Math.cos((latitude * Math.PI) / 180) * 2 * Math.PI * EARTH_RADIUS) /
@@ -157,6 +165,7 @@ export async function renderHighResMap(
         interactive: false,
         attributionControl: false,
         pixelRatio: 1,
+        canvasContextAttributes: { preserveDrawingBuffer: true },
       });
 
       const onError = (e: { error?: { message?: string } }) => {
@@ -372,11 +381,7 @@ export async function composePrintCanvas(
   const { mapCanvas, title, showCompass, bearing, latitude, zoom, paper } =
     options;
 
-  const hasTitle = title.trim().length > 0;
-  const titleHeight = hasTitle
-    ? Math.round(24 * (paper.dpi / 150)) +
-      Math.round(16 * (paper.dpi / 150)) * 2
-    : 0;
+  const titleHeight = getTitleHeight(title, paper.dpi);
 
   const canvas = document.createElement("canvas");
   canvas.width = paper.width;
@@ -389,7 +394,7 @@ export async function composePrintCanvas(
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   // Title
-  if (hasTitle) {
+  if (titleHeight > 0) {
     drawTitle(ctx, title, canvas.width, paper.dpi);
   }
 
