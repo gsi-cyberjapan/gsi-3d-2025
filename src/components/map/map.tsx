@@ -39,6 +39,7 @@ import { ReliefLayer } from "./relief-layer";
 import { HillshadeLayer } from "./hillshade-layer";
 import { TerrainController } from "./terrain-controller";
 import { PointCloudController } from "./point-cloud-controller";
+import { EquidistantCirclesController } from "../equidistant-circles/equidistant-circles-controller";
 
 const ReactMaplibre = dynamic(
   () => import("react-map-gl/maplibre").then((m) => m.Map),
@@ -162,6 +163,7 @@ export const Map = ({ mapId, className, opacity }: Props) => {
               <TileGridController mapId={mapId} />
               <RegionalMeshController mapId={mapId} />
               <MapSheetNumbersController mapId={mapId} />
+              <EquidistantCirclesController mapId={mapId} />
               <ViewStateController mapId={mapId} />
               <PositionSyncController />
             </ReactMaplibre>

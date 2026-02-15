@@ -10,6 +10,10 @@ import { createGridSlice, GridState } from "./gridState";
 import { createSaveImageSlice, SaveImageState } from "./saveImageState";
 import { createPrintSlice, PrintState } from "./printState";
 import { createShareSlice, ShareState } from "./shareState";
+import {
+  createEquidistantCirclesSlice,
+  EquidistantCirclesState,
+} from "./equidistantCirclesState";
 
 export type GlobalState = MapManagerState &
   MapStateWrapper &
@@ -21,7 +25,8 @@ export type GlobalState = MapManagerState &
   GridState &
   SaveImageState &
   PrintState &
-  ShareState;
+  ShareState &
+  EquidistantCirclesState;
 export const useStore = create<GlobalState>((...args) => ({
   ...createMapManagerSlice(...args),
   ...createMapSlice(...args),
@@ -34,4 +39,5 @@ export const useStore = create<GlobalState>((...args) => ({
   ...createSaveImageSlice(...args),
   ...createPrintSlice(...args),
   ...createShareSlice(...args),
+  ...createEquidistantCirclesSlice(...args),
 }));
