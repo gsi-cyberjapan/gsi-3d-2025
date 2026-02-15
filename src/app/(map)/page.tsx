@@ -6,6 +6,7 @@ import { ReliefWindow } from "@/components/relief/relief-window";
 import { ReliefLayerWatcher } from "@/components/relief/relief-layer-watcher";
 import { StateHydrator } from "@/components/state-hydrator";
 import { StatePersistenceController } from "@/components/state-persistence-controller";
+import { EquidistantCirclesWindow } from "@/components/equidistant-circles/equidistant-circles-window";
 
 const MapPage = () => {
   return (
@@ -15,6 +16,7 @@ const MapPage = () => {
         <DrawWindow />
         <MeasureWindow />
         <ReliefWindow />
+        <EquidistantCirclesWindow />
         <DrawFeatureEditDigalog />
         <ReliefLayerWatcher />
         <StatePersistenceController />

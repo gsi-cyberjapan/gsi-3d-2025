@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useStore } from "@/hooks/store/useStore";
 import { DEFAULT_VIEW_CONFIG } from "@/lib/config";
-import { ExternalLink } from "lucide-react";
+import { Circle, ExternalLink } from "lucide-react";
 import Link from "next/link";
 
 const buildExternalServiceUrl = (
@@ -24,6 +24,9 @@ const buildExternalServiceUrl = (
 export const OthersDropdownContent = () => {
   const focusMapId = useStore((state) => state.focusMapId);
   const viewState = useStore((state) => state.viewStates[focusMapId]);
+  const setIsEquidistantCirclesWindowOpen = useStore(
+    (state) => state.setIsEquidistantCirclesWindowOpen,
+  );
 
   const lat = viewState?.latitude ?? DEFAULT_VIEW_CONFIG.LATITUDE;
   const lng = viewState?.longitude ?? DEFAULT_VIEW_CONFIG.LONGITUDE;
@@ -67,6 +70,15 @@ export const OthersDropdownContent = () => {
             <ExternalLink />
             場所情報コード
           </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          className="text-sm cursor-pointer"
+          onClick={() => {
+            setIsEquidistantCirclesWindowOpen(true);
+          }}
+        >
+          <Circle />
+          等距圏
         </DropdownMenuItem>
       </DropdownMenuGroup>
     </DropdownMenuContent>
