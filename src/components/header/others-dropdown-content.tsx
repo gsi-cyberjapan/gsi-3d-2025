@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useStore } from "@/hooks/store/useStore";
 import { DEFAULT_VIEW_CONFIG } from "@/lib/config";
-import { Circle, ExternalLink } from "lucide-react";
+import { Circle, Compass, ExternalLink } from "lucide-react";
 import Link from "next/link";
 
 const buildExternalServiceUrl = (
@@ -26,6 +26,9 @@ export const OthersDropdownContent = () => {
   const viewState = useStore((state) => state.viewStates[focusMapId]);
   const setIsEquidistantCirclesWindowOpen = useStore(
     (state) => state.setIsEquidistantCirclesWindowOpen,
+  );
+  const setIsAzimuthWindowOpen = useStore(
+    (state) => state.setIsAzimuthWindowOpen,
   );
 
   const lat = viewState?.latitude ?? DEFAULT_VIEW_CONFIG.LATITUDE;
@@ -79,6 +82,15 @@ export const OthersDropdownContent = () => {
         >
           <Circle />
           等距圏
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          className="text-sm cursor-pointer"
+          onClick={() => {
+            setIsAzimuthWindowOpen(true);
+          }}
+        >
+          <Compass />
+          方位線
         </DropdownMenuItem>
       </DropdownMenuGroup>
     </DropdownMenuContent>
