@@ -13,6 +13,7 @@ import {
   Ruler,
   Save,
   Settings,
+  Share2,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -27,6 +28,7 @@ import { SettingDropdownContent } from "./setting-dropdown-content";
 import { ButtonGroup } from "../ui/button-group";
 import { useStore } from "@/hooks/store/useStore";
 import { SearchInput } from "./search-input";
+import { ShareDialog } from "@/components/share/share-dialog";
 
 export const Header = () => {
   const setIsDrawWindowOpen = useStore((state) => state.setIsDrawWindowOpen);
@@ -37,6 +39,7 @@ export const Header = () => {
     (state) => state.setIsSaveImageDialogOpen,
   );
   const setIsPrintDialogOpen = useStore((state) => state.setIsPrintDialogOpen);
+  const setIsShareDialogOpen = useStore((state) => state.setIsShareDialogOpen);
 
   return (
     <div className="flex border-b py-1 px-2 gap-2 justify-between">
@@ -89,6 +92,15 @@ export const Header = () => {
               </DropdownMenuGroup>
             </DropdownMenuContent>
           </DropdownMenu>
+          <Button
+            size="xs"
+            variant="outline"
+            onClick={() => {
+              setIsShareDialogOpen(true);
+            }}
+          >
+            <Share2 /> 共有
+          </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button size="xs" variant="outline">
@@ -156,6 +168,15 @@ export const Header = () => {
                 <Printer /> 印刷
               </div>
             </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                setIsShareDialogOpen(true);
+              }}
+            >
+              <div className="flex gap-2 items-center">
+                <Share2 /> 共有
+              </div>
+            </DropdownMenuItem>
             <DropdownMenuItem>
               <DropdownMenu>
                 <DropdownMenuTrigger>
@@ -186,6 +207,7 @@ export const Header = () => {
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
+      <ShareDialog />
     </div>
   );
 };

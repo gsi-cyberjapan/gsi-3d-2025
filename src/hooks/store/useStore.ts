@@ -9,6 +9,7 @@ import { createReliefSlice, ReliefState } from "./reliefState";
 import { createGridSlice, GridState } from "./gridState";
 import { createSaveImageSlice, SaveImageState } from "./saveImageState";
 import { createPrintSlice, PrintState } from "./printState";
+import { createShareSlice, ShareState } from "./shareState";
 
 export type GlobalState = MapManagerState &
   MapStateWrapper &
@@ -19,7 +20,8 @@ export type GlobalState = MapManagerState &
   ReliefState &
   GridState &
   SaveImageState &
-  PrintState;
+  PrintState &
+  ShareState;
 export const useStore = create<GlobalState>((...args) => ({
   ...createMapManagerSlice(...args),
   ...createMapSlice(...args),
@@ -31,4 +33,5 @@ export const useStore = create<GlobalState>((...args) => ({
   ...createGridSlice(...args),
   ...createSaveImageSlice(...args),
   ...createPrintSlice(...args),
+  ...createShareSlice(...args),
 }));
