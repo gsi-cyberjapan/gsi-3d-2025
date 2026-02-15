@@ -7,6 +7,7 @@ import { ReliefLayerWatcher } from "@/components/relief/relief-layer-watcher";
 import { StateHydrator } from "@/components/state-hydrator";
 import { StatePersistenceController } from "@/components/state-persistence-controller";
 import { EquidistantCirclesWindow } from "@/components/equidistant-circles/equidistant-circles-window";
+import { AzimuthWindow } from "@/components/azimuth/azimuth-window";
 
 const MapPage = () => {
   return (
@@ -17,6 +18,7 @@ const MapPage = () => {
         <MeasureWindow />
         <ReliefWindow />
         <EquidistantCirclesWindow />
+        <AzimuthWindow />
         <DrawFeatureEditDigalog />
         <ReliefLayerWatcher />
         <StatePersistenceController />

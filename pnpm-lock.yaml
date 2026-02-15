@@ -86,6 +86,9 @@ importers:
       '@turf/circle':
         specifier: ^7.3.4
         version: 7.3.4
+      '@turf/destination':
+        specifier: ^7.3.4
+        version: 7.3.4
       '@turf/helpers':
         specifier: ^7.3.3
         version: 7.3.3

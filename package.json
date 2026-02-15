@@ -37,6 +37,7 @@
     "@tmcw/togeojson": "^7.1.2",
     "@turf/area": "^7.3.3",
     "@turf/circle": "^7.3.4",
+    "@turf/destination": "^7.3.4",
     "@turf/helpers": "^7.3.3",
     "@turf/length": "^7.3.3",
     "class-variance-authority": "^0.7.1",
