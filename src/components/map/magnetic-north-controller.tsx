@@ -20,8 +20,12 @@ const LABEL_LINE_INTERVAL = 5;
 const formatDeclination = (declinationDeg: number): string => {
   const direction = declinationDeg < 0 ? "西偏" : "東偏";
   const absDeg = Math.abs(declinationDeg);
-  const degrees = Math.floor(absDeg);
-  const minutes = Math.round((absDeg - degrees) * 60);
+  let degrees = Math.floor(absDeg);
+  let minutes = Math.round((absDeg - degrees) * 60);
+  if (minutes === 60) {
+    degrees += 1;
+    minutes = 0;
+  }
   return `${direction} ${String(degrees)}°${String(minutes)}'`;
 };
 
