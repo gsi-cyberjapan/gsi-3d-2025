@@ -38,14 +38,16 @@ export const writeCookieState = (serialized: string): void => {
 
   let value = serialized;
 
-  // Overflow protection: if too large, strip optional layers
+  // Overflow protection: if too large, strip layer params
   if (new Blob([value]).size > COOKIE_MAX_BYTES) {
-    // Remove ol= and sol= params
+    // Remove ls=, disp=, sls=, sdisp= params
     value = value
       .split("&")
       .filter((part) => {
         const key = part.split("=")[0];
-        return key !== "ol" && key !== "sol";
+        return (
+          key !== "ls" && key !== "disp" && key !== "sls" && key !== "sdisp"
+        );
       })
       .join("&");
   }

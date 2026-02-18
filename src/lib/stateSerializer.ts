@@ -99,46 +99,67 @@ const shortToProj = (s: string): "mercator" | "globe" | undefined => {
   return undefined;
 };
 
-const serializeOptionalLayers = (
-  layers: {
+// --- Layer serialization (gsimaps-vector-experiment compatible) ---
+
+const serializeLayers = (
+  baseLayerId: string,
+  optionalLayers: {
     layerId: string;
     title: string;
     opacity: number;
     visible: boolean;
     tileUrl: string;
   }[],
-): string =>
-  layers
-    .map(
-      (l) =>
-        `${l.layerId}|${l.title}|${fmtFloat(l.opacity, 2)}|${fmtBool(l.visible)}|${l.tileUrl}`,
-    )
-    .join(",");
+): { ls: string; disp: string } => {
+  // Base layer: first entry, always opacity 1.00, always visible
+  const lsParts = [`${baseLayerId},${fmtFloat(1.0, 2)}`];
+  let disp = "1";
 
-const deserializeOptionalLayers = (s: string): SerializedOptionalLayer[] => {
-  if (!s) return [];
-  return s
-    .split(",")
-    .map((entry) => {
-      const parts = entry.split("|");
-      if (parts.length < 4) return null;
-      const opacity = parseFloat(parts[2]);
-      if (isNaN(opacity)) return null;
-      // 後方互換性: 旧形式(4パート)は visible=true、新形式(5パート以上)は visible フラグあり
-      const hasVisibleField =
-        parts.length >= 5 && (parts[3] === "0" || parts[3] === "1");
-      const visible = hasVisibleField ? parts[3] === "1" : true;
-      const tileUrlStartIndex = hasVisibleField ? 4 : 3;
-      return {
-        layerId: parts[0],
-        title: parts[1],
-        opacity,
-        visible,
-        tileUrl: parts.slice(tileUrlStartIndex).join("|"), // tileUrl may contain |
-      };
-    })
-    .filter((x): x is SerializedOptionalLayer => x !== null);
+  for (const l of optionalLayers) {
+    lsParts.push(
+      `${l.layerId},${fmtFloat(l.opacity, 2)},${encodeURIComponent(l.title)},${encodeURIComponent(l.tileUrl)}`,
+    );
+    disp += l.visible ? "1" : "0";
+  }
+
+  return { ls: lsParts.join("|"), disp };
 };
+
+const deserializeLayers = (
+  ls: string,
+  disp: string,
+): { baseLayerId: string; optionalLayers: SerializedOptionalLayer[] } => {
+  if (!ls) return { baseLayerId: DEFAULT_BASE_LAYER_ID, optionalLayers: [] };
+
+  const entries = ls.split("|");
+  let baseLayerId = DEFAULT_BASE_LAYER_ID;
+  const optionalLayers: SerializedOptionalLayer[] = [];
+
+  entries.forEach((entry, index) => {
+    const parts = entry.split(",");
+    const isVisible = disp ? disp[index] === "1" : true;
+
+    if (parts.length === 2) {
+      // Base layer: layerId,opacity
+      baseLayerId = parts[0];
+    } else if (parts.length >= 4) {
+      // Optional layer: layerId,opacity,title,tileUrl
+      const opacity = parseFloat(parts[1]);
+      if (isNaN(opacity)) return;
+      optionalLayers.push({
+        layerId: parts[0],
+        title: decodeURIComponent(parts[2]),
+        opacity,
+        visible: isVisible,
+        tileUrl: decodeURIComponent(parts.slice(3).join(",")),
+      });
+    }
+  });
+
+  return { baseLayerId, optionalLayers };
+};
+
+// --- Elevation range helpers ---
 
 const serializeElevationRanges = (ranges: ElevationRange[]): string =>
   ranges.map((r) => `${String(r.minElevation)}:${r.color}`).join(",");
@@ -205,28 +226,35 @@ export interface SerializableStoreState {
 // --- Serialize ---
 
 export const serializeState = (state: SerializableStoreState): string => {
-  const params: [string, string][] = [];
+  // Position segment: zoom/lat/lng/ (always present)
+  const mv = state.viewStates.main;
+  const zoom = mv
+    ? fmtFloat(mv.zoom, 3)
+    : fmtFloat(DEFAULT_VIEW_CONFIG.ZOOM, 3);
+  const lat = mv
+    ? fmtFloat(mv.latitude, 6)
+    : fmtFloat(DEFAULT_VIEW_CONFIG.LATITUDE, 6);
+  const lng = mv
+    ? fmtFloat(mv.longitude, 6)
+    : fmtFloat(DEFAULT_VIEW_CONFIG.LONGITUDE, 6);
+  const positionSegment = `${zoom}/${lat}/${lng}/`;
 
+  const parts: string[] = [];
+
+  // Helper: push encoded param (only when different from default)
   const push = (key: string, value: string, defaultValue: string) => {
     if (value !== defaultValue) {
-      params.push([key, value]);
+      parts.push(`${key}=${encodeURIComponent(value)}`);
     }
   };
 
-  // Main view state
-  const mv = state.viewStates.main;
+  // Helper: push raw param (for ls/disp with structural delimiters)
+  const pushRaw = (key: string, value: string) => {
+    parts.push(`${key}=${value}`);
+  };
+
+  // Bearing and pitch (only when non-default)
   if (mv) {
-    push(
-      "lat",
-      fmtFloat(mv.latitude, 6),
-      fmtFloat(DEFAULT_VIEW_CONFIG.LATITUDE, 6),
-    );
-    push(
-      "lng",
-      fmtFloat(mv.longitude, 6),
-      fmtFloat(DEFAULT_VIEW_CONFIG.LONGITUDE, 6),
-    );
-    push("z", fmtFloat(mv.zoom, 2), fmtFloat(DEFAULT_VIEW_CONFIG.ZOOM, 2));
     push(
       "b",
       fmtFloat(mv.bearing, 1),
@@ -235,13 +263,47 @@ export const serializeState = (state: SerializableStoreState): string => {
     push("p", fmtFloat(mv.pitch, 1), fmtFloat(DEFAULT_VIEW_CONFIG.PITCH, 1));
   }
 
-  // Sub view state (only when not single)
+  // Layout mode (omitted for single)
+  push(
+    "lm",
+    layoutModeToShort[state.layoutMode],
+    layoutModeToShort[DEFAULT_LAYOUT_MODE],
+  );
+
+  // Main layers: ls= and disp= (always present)
+  const mainLayers = serializeLayers(
+    state.maps.main.baseLayer.id,
+    state.maps.main.optionalLayers,
+  );
+  pushRaw("ls", mainLayers.ls);
+  pushRaw("disp", mainLayers.disp);
+
+  // Main map params
+  push(
+    "pj",
+    projToShort(state.maps.main.projection),
+    projToShort(DEFAULT_PROJECTION),
+  );
+  push("hil", fmtBool(state.maps.main.isHillshadeEnabled), fmtBool(false));
+  push("ter", fmtBool(state.maps.main.isTerrainEnabled), fmtBool(false));
+  push("pc", fmtBool(state.maps.main.isPointCloudEnabled), fmtBool(false));
+
+  // Sub map (only when not single)
   if (state.layoutMode !== "single") {
+    // Sub layers
+    const subLayers = serializeLayers(
+      state.maps.sub.baseLayer.id,
+      state.maps.sub.optionalLayers,
+    );
+    pushRaw("sls", subLayers.ls);
+    pushRaw("sdisp", subLayers.disp);
+
+    // Sub view state
     const sv = state.viewStates.sub;
     if (sv) {
       push("slat", fmtFloat(sv.latitude, 6), "");
       push("slng", fmtFloat(sv.longitude, 6), "");
-      push("sz", fmtFloat(sv.zoom, 2), "");
+      push("sz", fmtFloat(sv.zoom, 3), "");
       push(
         "sb",
         fmtFloat(sv.bearing, 1),
@@ -249,14 +311,19 @@ export const serializeState = (state: SerializableStoreState): string => {
       );
       push("sp", fmtFloat(sv.pitch, 1), fmtFloat(DEFAULT_VIEW_CONFIG.PITCH, 1));
     }
+
+    // Sub map params
+    push(
+      "spj",
+      projToShort(state.maps.sub.projection),
+      projToShort(DEFAULT_PROJECTION),
+    );
+    push("shil", fmtBool(state.maps.sub.isHillshadeEnabled), fmtBool(false));
+    push("ster", fmtBool(state.maps.sub.isTerrainEnabled), fmtBool(false));
+    push("spc", fmtBool(state.maps.sub.isPointCloudEnabled), fmtBool(false));
   }
 
-  // Layout & UI
-  push(
-    "lm",
-    layoutModeToShort[state.layoutMode],
-    layoutModeToShort[DEFAULT_LAYOUT_MODE],
-  );
+  // UI toggles
   push("sync", fmtBool(state.isSyncPosition), fmtBool(DEFAULT_SYNC));
   push(
     "opa",
@@ -276,42 +343,6 @@ export const serializeState = (state: SerializableStoreState): string => {
     fmtBool(DEFAULT_MAGNETIC_NORTH),
   );
 
-  // Map layers - main
-  push("bl", state.maps.main.baseLayer.id, DEFAULT_BASE_LAYER_ID);
-  push(
-    "pj",
-    projToShort(state.maps.main.projection),
-    projToShort(DEFAULT_PROJECTION),
-  );
-  if (state.maps.main.optionalLayers.length > 0) {
-    params.push([
-      "ol",
-      serializeOptionalLayers(state.maps.main.optionalLayers),
-    ]);
-  }
-
-  // Map layers - sub
-  push("sbl", state.maps.sub.baseLayer.id, DEFAULT_BASE_LAYER_ID);
-  push(
-    "spj",
-    projToShort(state.maps.sub.projection),
-    projToShort(DEFAULT_PROJECTION),
-  );
-  if (state.maps.sub.optionalLayers.length > 0) {
-    params.push([
-      "sol",
-      serializeOptionalLayers(state.maps.sub.optionalLayers),
-    ]);
-  }
-
-  // Per-map display toggles
-  push("hil", fmtBool(state.maps.main.isHillshadeEnabled), fmtBool(false));
-  push("shil", fmtBool(state.maps.sub.isHillshadeEnabled), fmtBool(false));
-  push("ter", fmtBool(state.maps.main.isTerrainEnabled), fmtBool(false));
-  push("ster", fmtBool(state.maps.sub.isTerrainEnabled), fmtBool(false));
-  push("pc", fmtBool(state.maps.main.isPointCloudEnabled), fmtBool(false));
-  push("spc", fmtBool(state.maps.sub.isPointCloudEnabled), fmtBool(false));
-
   // Grid
   push("llg", fmtBool(state.isDisplayLatLngGrid), fmtBool(false));
   push("utmg", fmtBool(state.isDisplayUtmGrid), fmtBool(false));
@@ -330,55 +361,86 @@ export const serializeState = (state: SerializableStoreState): string => {
     push("er", rangesStr, defaultRangesString());
   }
 
-  return params.map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join("&");
+  const paramStr = parts.join("&");
+  return paramStr ? `${positionSegment}&${paramStr}` : positionSegment;
 };
 
 // --- Deserialize ---
 
+// Position segment regex: zoom/lat/lng/ (trailing slash optional)
+const POSITION_REGEX =
+  /^([+-]?(?:\d+)(?:\.\d+)?)\/([+-]?(?:\d+)(?:\.\d+)?)\/([+-]?(?:\d+)(?:\.\d+)?)\/?/;
+
 export const deserializeState = (paramString: string): DeserializedState => {
   if (!paramString) return {};
 
-  const map = new Map<string, string>();
-  for (const part of paramString.split("&")) {
+  const result: DeserializedState = {};
+
+  // Phase 1: Parse position segment (zoom/lat/lng/)
+  let remainder = paramString;
+  const posMatch = paramString.match(POSITION_REGEX);
+  if (posMatch) {
+    const zoom = parseFloat(posMatch[1]);
+    const lat = parseFloat(posMatch[2]);
+    const lng = parseFloat(posMatch[3]);
+    if (!isNaN(zoom) && !isNaN(lat) && !isNaN(lng)) {
+      result.mainViewState = {
+        latitude: lat,
+        longitude: lng,
+        zoom,
+        bearing: DEFAULT_VIEW_CONFIG.BEARING,
+        pitch: DEFAULT_VIEW_CONFIG.PITCH,
+      };
+    }
+    remainder = paramString.substring(posMatch[0].length);
+  }
+
+  // Phase 2: Parse &-separated params from remainder
+  if (remainder.startsWith("&")) {
+    remainder = remainder.substring(1);
+  }
+
+  // Store raw values (not decoded) so ls/disp can be parsed without
+  // decoding structural delimiters like | and ,
+  const rawMap = new Map<string, string>();
+  for (const part of remainder.split("&")) {
+    if (!part) continue;
     const eqIndex = part.indexOf("=");
     if (eqIndex === -1) continue;
     const key = part.substring(0, eqIndex);
-    const value = decodeURIComponent(part.substring(eqIndex + 1));
-    map.set(key, value);
+    const rawValue = part.substring(eqIndex + 1);
+    rawMap.set(key, rawValue);
   }
 
-  const result: DeserializedState = {};
-
+  // Helpers for decoded values (regular params)
   const getFloat = (key: string): number | undefined => {
-    const v = map.get(key);
+    const v = rawMap.get(key);
     if (v === undefined) return undefined;
-    const n = parseFloat(v);
+    const n = parseFloat(decodeURIComponent(v));
     return isNaN(n) ? undefined : n;
   };
 
   const getBool = (key: string): boolean | undefined => {
-    const v = map.get(key);
+    const v = rawMap.get(key);
     if (v === "1") return true;
     if (v === "0") return false;
     return undefined;
   };
 
-  const getString = (key: string): string | undefined => map.get(key);
+  const getString = (key: string): string | undefined => {
+    const v = rawMap.get(key);
+    return v !== undefined ? decodeURIComponent(v) : undefined;
+  };
 
-  // Main view state
-  const lat = getFloat("lat");
-  const lng = getFloat("lng");
-  const z = getFloat("z");
+  // Helper for raw values (ls/disp — parsed internally with own decoding)
+  const getRaw = (key: string): string | undefined => rawMap.get(key);
+
+  // Apply bearing/pitch to mainViewState if present
   const b = getFloat("b");
   const p = getFloat("p");
-  if (lat !== undefined && lng !== undefined && z !== undefined) {
-    result.mainViewState = {
-      latitude: lat,
-      longitude: lng,
-      zoom: z,
-      bearing: b ?? DEFAULT_VIEW_CONFIG.BEARING,
-      pitch: p ?? DEFAULT_VIEW_CONFIG.PITCH,
-    };
+  if (result.mainViewState) {
+    if (b !== undefined) result.mainViewState.bearing = b;
+    if (p !== undefined) result.mainViewState.pitch = p;
   }
 
   // Sub view state
@@ -421,26 +483,34 @@ export const deserializeState = (paramString: string): DeserializedState => {
   const mn = getBool("mn");
   if (mn !== undefined) result.isDisplayMagneticNorth = mn;
 
-  // Map layers
-  const bl = getString("bl");
-  if (bl !== undefined) result.mainBaseLayerId = bl;
+  // Main layers (ls=/disp=)
+  const ls = getRaw("ls");
+  const disp = getRaw("disp");
+  if (ls !== undefined) {
+    const { baseLayerId, optionalLayers } = deserializeLayers(ls, disp ?? "");
+    result.mainBaseLayerId = baseLayerId;
+    if (optionalLayers.length > 0) {
+      result.mainOptionalLayers = optionalLayers;
+    }
+  }
 
-  const sbl = getString("sbl");
-  if (sbl !== undefined) result.subBaseLayerId = sbl;
+  // Sub layers (sls=/sdisp=)
+  const sls = getRaw("sls");
+  const sdisp = getRaw("sdisp");
+  if (sls !== undefined) {
+    const { baseLayerId, optionalLayers } = deserializeLayers(sls, sdisp ?? "");
+    result.subBaseLayerId = baseLayerId;
+    if (optionalLayers.length > 0) {
+      result.subOptionalLayers = optionalLayers;
+    }
+  }
 
+  // Projection
   const pj = getString("pj");
   if (pj !== undefined) result.mainProjection = shortToProj(pj);
 
   const spj = getString("spj");
   if (spj !== undefined) result.subProjection = shortToProj(spj);
-
-  const ol = getString("ol");
-  if (ol !== undefined)
-    result.mainOptionalLayers = deserializeOptionalLayers(ol);
-
-  const sol = getString("sol");
-  if (sol !== undefined)
-    result.subOptionalLayers = deserializeOptionalLayers(sol);
 
   // Per-map display toggles
   const hil = getBool("hil");
