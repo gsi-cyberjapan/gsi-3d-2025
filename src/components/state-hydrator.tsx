@@ -64,6 +64,8 @@ const hydrateStore = () => {
     subTerrain: state.subTerrain,
     mainPointCloud: state.mainPointCloud,
     subPointCloud: state.subPointCloud,
+    mainDenshi3d: state.mainDenshi3d,
+    subDenshi3d: state.subDenshi3d,
   });
 
   // Hydrate grid state

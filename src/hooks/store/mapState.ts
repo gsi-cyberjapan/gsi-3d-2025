@@ -31,6 +31,8 @@ export interface MapState {
   isTerrainEnabled: boolean;
   /** 点群表示 */
   isPointCloudEnabled: boolean;
+  /** 3次元基本図表示 */
+  isDenshi3dEnabled: boolean;
 }
 
 export const MAP_INITIAL_STATE: MapState = {
@@ -41,6 +43,7 @@ export const MAP_INITIAL_STATE: MapState = {
   isHillshadeEnabled: false,
   isTerrainEnabled: false,
   isPointCloudEnabled: false,
+  isDenshi3dEnabled: false,
 };
 
 export interface MapStateWrapper {
@@ -90,6 +93,14 @@ export interface MapStateWrapper {
     mapId: MapId;
     enabled: boolean;
   }) => void;
+  /** 3次元基本図表示の切り替え */
+  setDenshi3dEnabled: ({
+    mapId,
+    enabled,
+  }: {
+    mapId: MapId;
+    enabled: boolean;
+  }) => void;
   /** ハイドレーション */
   hydrateMapState: (partial: {
     mainBaseLayer?: BaseLayer;
@@ -104,6 +115,8 @@ export interface MapStateWrapper {
     subTerrain?: boolean;
     mainPointCloud?: boolean;
     subPointCloud?: boolean;
+    mainDenshi3d?: boolean;
+    subDenshi3d?: boolean;
   }) => void;
 }
 
@@ -206,6 +219,17 @@ export const createMapSlice: StateCreator<
       },
     }));
   },
+  setDenshi3dEnabled: ({ mapId, enabled }) => {
+    set((state) => ({
+      maps: {
+        ...state.maps,
+        [mapId]: {
+          ...state.maps[mapId],
+          isDenshi3dEnabled: enabled,
+        },
+      },
+    }));
+  },
   hydrateMapState: (partial) => {
     set((state) => {
       const maps = { ...state.maps };
@@ -215,7 +239,8 @@ export const createMapSlice: StateCreator<
         partial.mainOptionalLayers ||
         partial.mainHillshade !== undefined ||
         partial.mainTerrain !== undefined ||
-        partial.mainPointCloud !== undefined
+        partial.mainPointCloud !== undefined ||
+        partial.mainDenshi3d !== undefined
       ) {
         maps.main = {
           ...maps.main,
@@ -233,6 +258,9 @@ export const createMapSlice: StateCreator<
           ...(partial.mainPointCloud !== undefined && {
             isPointCloudEnabled: partial.mainPointCloud,
           }),
+          ...(partial.mainDenshi3d !== undefined && {
+            isDenshi3dEnabled: partial.mainDenshi3d,
+          }),
         };
       }
       if (
@@ -241,7 +269,8 @@ export const createMapSlice: StateCreator<
         partial.subOptionalLayers ||
         partial.subHillshade !== undefined ||
         partial.subTerrain !== undefined ||
-        partial.subPointCloud !== undefined
+        partial.subPointCloud !== undefined ||
+        partial.subDenshi3d !== undefined
       ) {
         maps.sub = {
           ...maps.sub,
@@ -258,6 +287,9 @@ export const createMapSlice: StateCreator<
           }),
           ...(partial.subPointCloud !== undefined && {
             isPointCloudEnabled: partial.subPointCloud,
+          }),
+          ...(partial.subDenshi3d !== undefined && {
+            isDenshi3dEnabled: partial.subDenshi3d,
           }),
         };
       }

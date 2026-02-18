@@ -39,6 +39,7 @@ import { ReliefLayer } from "./relief-layer";
 import { HillshadeLayer } from "./hillshade-layer";
 import { TerrainController } from "./terrain-controller";
 import { PointCloudController } from "./point-cloud-controller";
+import { Denshi3dController } from "./denshi-3d-controller";
 import { EquidistantCirclesController } from "../equidistant-circles/equidistant-circles-controller";
 import { AzimuthController } from "../azimuth/azimuth-controller";
 
@@ -149,6 +150,7 @@ export const Map = ({ mapId, className, opacity }: Props) => {
               <HillshadeLayer mapId={mapId} />
               <TerrainController mapId={mapId} />
               <PointCloudController mapId={mapId} />
+              <Denshi3dController mapId={mapId} />
               {/* Mapインスタンスを直接操作するコンポーネント */}
               <DrawController mapId={mapId} />
               <MeasureController mapId={mapId} />
