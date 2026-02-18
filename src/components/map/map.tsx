@@ -42,6 +42,7 @@ import { PointCloudController } from "./point-cloud-controller";
 import { Denshi3dController } from "./denshi-3d-controller";
 import { EquidistantCirclesController } from "../equidistant-circles/equidistant-circles-controller";
 import { AzimuthController } from "../azimuth/azimuth-controller";
+import { FeaturePopupController } from "./feature-popup-controller";
 
 const ReactMaplibre = dynamic(
   () => import("react-map-gl/maplibre").then((m) => m.Map),
@@ -168,6 +169,7 @@ export const Map = ({ mapId, className, opacity }: Props) => {
               <MapSheetNumbersController mapId={mapId} />
               <EquidistantCirclesController mapId={mapId} />
               <AzimuthController mapId={mapId} />
+              <FeaturePopupController mapId={mapId} />
               <ViewStateController mapId={mapId} />
               <PositionSyncController />
             </ReactMaplibre>

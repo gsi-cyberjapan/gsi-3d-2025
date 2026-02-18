@@ -15,6 +15,10 @@ import {
   EquidistantCirclesState,
 } from "./equidistantCirclesState";
 import { createAzimuthSlice, AzimuthState } from "./azimuthState";
+import {
+  createFeaturePopupSlice,
+  FeaturePopupState,
+} from "./featurePopupState";
 
 export type GlobalState = MapManagerState &
   MapStateWrapper &
@@ -28,7 +32,8 @@ export type GlobalState = MapManagerState &
   PrintState &
   ShareState &
   EquidistantCirclesState &
-  AzimuthState;
+  AzimuthState &
+  FeaturePopupState;
 export const useStore = create<GlobalState>((...args) => ({
   ...createMapManagerSlice(...args),
   ...createMapSlice(...args),
@@ -43,4 +48,5 @@ export const useStore = create<GlobalState>((...args) => ({
   ...createShareSlice(...args),
   ...createEquidistantCirclesSlice(...args),
   ...createAzimuthSlice(...args),
+  ...createFeaturePopupSlice(...args),
 }));
