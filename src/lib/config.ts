@@ -193,6 +193,20 @@ export const POINT_CLOUD_CONFIG = {
   MIN_ZOOM: 12,
 } as const;
 
+export const DENSHI_KOKUDO_3D_CONFIG = {
+  RAILS_URL:
+    "https://geolonia.github.io/gsi-3d-2025-demo-3dgeojson/rails.geojson",
+  ROADS_URL:
+    "https://geolonia.github.io/gsi-3d-2025-demo-3dgeojson/roads.geojson",
+  BUILDINGS_TILE_URL:
+    "https://geolonia.github.io/gsi-3d-2025-demo-3dgeojson/buildings/{z}/{x}/{y}.pbf",
+  MIN_ZOOM: 10,
+  MAX_ZOOM: 16,
+  ADD_HEIGHT: 1.5,
+  ROAD_CASING_WIDTH_OFFSET: 1.0,
+  ROAD_INNER_HEIGHT_OFFSET: 0.1,
+} as const;
+
 export const DRAW_CONFIG = {
   MARKER: {
     /** GSI シンボルアイコンのベースURL */

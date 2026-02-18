@@ -15,9 +15,13 @@ export const MapDisplayToggles = () => {
   const isPointCloudEnabled = useStore(
     (state) => state.maps[focusMapId].isPointCloudEnabled,
   );
+  const isDenshi3dEnabled = useStore(
+    (state) => state.maps[focusMapId].isDenshi3dEnabled,
+  );
   const setHillshadeEnabled = useStore((state) => state.setHillshadeEnabled);
   const setTerrainEnabled = useStore((state) => state.setTerrainEnabled);
   const setPointCloudEnabled = useStore((state) => state.setPointCloudEnabled);
+  const setDenshi3dEnabled = useStore((state) => state.setDenshi3dEnabled);
 
   const toggles = [
     {
@@ -47,6 +51,16 @@ export const MapDisplayToggles = () => {
         setPointCloudEnabled({
           mapId: focusMapId,
           enabled: !isPointCloudEnabled,
+        });
+      },
+    },
+    {
+      label: "3次元基本図",
+      checked: isDenshi3dEnabled,
+      onChange: () => {
+        setDenshi3dEnabled({
+          mapId: focusMapId,
+          enabled: !isDenshi3dEnabled,
         });
       },
     },

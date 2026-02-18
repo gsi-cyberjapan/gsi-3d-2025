@@ -45,6 +45,8 @@ export interface DeserializedState {
   subTerrain?: boolean;
   mainPointCloud?: boolean;
   subPointCloud?: boolean;
+  mainDenshi3d?: boolean;
+  subDenshi3d?: boolean;
   // Grid
   isDisplayLatLngGrid?: boolean;
   isDisplayUtmGrid?: boolean;
@@ -210,6 +212,7 @@ export interface SerializableStoreState {
       isHillshadeEnabled: boolean;
       isTerrainEnabled: boolean;
       isPointCloudEnabled: boolean;
+      isDenshi3dEnabled: boolean;
     }
   >;
   isDisplayLatLngGrid: boolean;
@@ -287,6 +290,7 @@ export const serializeState = (state: SerializableStoreState): string => {
   push("hil", fmtBool(state.maps.main.isHillshadeEnabled), fmtBool(false));
   push("ter", fmtBool(state.maps.main.isTerrainEnabled), fmtBool(false));
   push("pc", fmtBool(state.maps.main.isPointCloudEnabled), fmtBool(false));
+  push("d3d", fmtBool(state.maps.main.isDenshi3dEnabled), fmtBool(false));
 
   // Sub map (only when not single)
   if (state.layoutMode !== "single") {
@@ -321,6 +325,7 @@ export const serializeState = (state: SerializableStoreState): string => {
     push("shil", fmtBool(state.maps.sub.isHillshadeEnabled), fmtBool(false));
     push("ster", fmtBool(state.maps.sub.isTerrainEnabled), fmtBool(false));
     push("spc", fmtBool(state.maps.sub.isPointCloudEnabled), fmtBool(false));
+    push("sd3d", fmtBool(state.maps.sub.isDenshi3dEnabled), fmtBool(false));
   }
 
   // UI toggles
@@ -530,6 +535,12 @@ export const deserializeState = (paramString: string): DeserializedState => {
 
   const spc = getBool("spc");
   if (spc !== undefined) result.subPointCloud = spc;
+
+  const d3d = getBool("d3d");
+  if (d3d !== undefined) result.mainDenshi3d = d3d;
+
+  const sd3d = getBool("sd3d");
+  if (sd3d !== undefined) result.subDenshi3d = sd3d;
 
   // Grid
   const llg = getBool("llg");
