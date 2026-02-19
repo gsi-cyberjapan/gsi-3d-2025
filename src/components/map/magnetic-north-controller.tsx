@@ -13,41 +13,54 @@ interface Props {
   mapId: MapId;
 }
 
-const LINE_SPACING_PX = 40;
-const LABEL_SPACING_PX = 200;
-const LABEL_LINE_INTERVAL = 5;
+const MIN_ZOOM_LEVEL = 10;
+const LINE_COUNT = 3;
+
+const formatDeclination = (declinationDeg: number): string => {
+  const direction = declinationDeg < 0 ? "西偏" : "東偏";
+  const absDeg = Math.abs(declinationDeg);
+  let degrees = Math.floor(absDeg);
+  let minutes = Math.round(((absDeg - degrees) * 60) / 10) * 10;
+  if (minutes === 60) {
+    degrees += 1;
+    minutes = 0;
+  }
+  return `${direction} ${String(degrees)}°${String(minutes)}'`;
+};
 
 const buildMagneticNorthLines = (map: maplibregl.Map) => {
+  if (map.getZoom() < MIN_ZOOM_LEVEL) return null;
+
   const center = map.getCenter();
   if (!isValidForMagneticDeclination(center.lat, center.lng)) {
     return null;
   }
 
   const declination = getMagneticDeclination(center.lat, center.lng);
+  if (declination === null) return null;
   const bearing = map.getBearing();
   const angleRad = ((declination - bearing) * Math.PI) / 180;
 
-  const direction = declination < 0 ? "西偏" : "東偏";
-  const label = `${direction} ${String(Math.abs(Math.round(declination * 10) / 10))}°`;
-  const rotation = declination;
+  const label = formatDeclination(declination);
 
   const canvas = map.getCanvas();
-  const width = canvas.width;
-  const height = canvas.height;
+  const width = canvas.clientWidth;
+  const height = canvas.clientHeight;
   const diagonal = Math.sqrt(width * width + height * height);
   const centerX = width / 2;
   const centerY = height / 2;
 
-  const lineCount = Math.ceil(diagonal / LINE_SPACING_PX) + 1;
+  const lineSpacing = width / LINE_COUNT;
 
   const cosA = Math.cos(angleRad);
   const sinA = Math.sin(angleRad);
 
   const features = [];
+  const half = Math.floor(LINE_COUNT / 2);
 
-  for (let i = -lineCount; i <= lineCount; i++) {
-    const offsetX = i * LINE_SPACING_PX * cosA;
-    const offsetY = i * LINE_SPACING_PX * sinA;
+  for (let i = -half; i <= half; i++) {
+    const offsetX = i * lineSpacing * cosA;
+    const offsetY = i * lineSpacing * sinA;
 
     const x1 = centerX + offsetX + diagonal * sinA;
     const y1 = centerY + offsetY - diagonal * cosA;
@@ -69,23 +82,22 @@ const buildMagneticNorthLines = (map: maplibregl.Map) => {
       },
     });
 
-    if (i % LABEL_LINE_INTERVAL === 0) {
-      const lineLength = 2 * diagonal;
-      const labelCount = Math.floor(lineLength / LABEL_SPACING_PX);
-      for (let j = 1; j <= labelCount; j++) {
-        const t = j / (labelCount + 1);
-        const px = x1 + (x2 - x1) * t;
-        const py = y1 + (y2 - y1) * t;
-        const point = map.unproject([px, py]);
-        features.push({
-          type: "Feature" as const,
-          properties: { label, rotation },
-          geometry: {
-            type: "Point" as const,
-            coordinates: [point.lng, point.lat] as [number, number],
-          },
-        });
-      }
+    if (i === 0) {
+      const labelOffset = 40;
+      const labelX = centerX + labelOffset * sinA;
+      const labelY = centerY - labelOffset * cosA;
+      const point = map.unproject([labelX, labelY]);
+      features.push({
+        type: "Feature" as const,
+        properties: {
+          label,
+          rotation: declination,
+        },
+        geometry: {
+          type: "Point" as const,
+          coordinates: [point.lng, point.lat] as [number, number],
+        },
+      });
     }
   }
 
