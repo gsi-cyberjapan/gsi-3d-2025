@@ -1,7 +1,7 @@
 "use client";
 
 import { useStore } from "@/hooks/store/useStore";
-import { CenterInfo } from "./center-info";
+import { CenterInfo } from "@/components/map/center-info";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -33,11 +33,11 @@ export const ViewFooter = () => {
       </button>
       <div
         className={cn(
-          "border-t transition-all duration-300 overflow-hidden",
-          isOpen ? "h-auto" : "h-0 border-t-0",
+          "border-t overflow-hidden grid transition-[grid-template-rows] duration-300",
+          isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr] border-t-0",
         )}
       >
-        <div className="flex gap-1 py-1 px-1">
+        <div className="flex gap-1 py-1 px-1 overflow-hidden">
           <div className="flex flex-1 gap-1">
             {(() => {
               if (layoutMode === "split") {
