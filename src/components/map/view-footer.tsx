@@ -24,11 +24,9 @@ export const ViewFooter = () => {
     let currentPx = "0px";
 
     const applyBottom = (px: string) => {
-      document
-        .querySelectorAll<HTMLElement>(selector)
-        .forEach((ctrl) => {
-          ctrl.style.bottom = px;
-        });
+      document.querySelectorAll<HTMLElement>(selector).forEach((ctrl) => {
+        ctrl.style.bottom = px;
+      });
     };
 
     const resizeObserver = new ResizeObserver(([entry]) => {
@@ -68,7 +66,10 @@ export const ViewFooter = () => {
   if (activeMapIds.length === 0) return null;
 
   return (
-    <div ref={rootRef} className="absolute bottom-0 left-0 right-0 z-10 bg-background">
+    <div
+      ref={rootRef}
+      className="absolute bottom-0 left-0 right-0 z-10 bg-background"
+    >
       <button
         type="button"
         onClick={handleToggle}
