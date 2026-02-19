@@ -3,7 +3,7 @@
  * 地理院地図と同じ2次メッシュコードを用いたルックアップ方式
  */
 
-import { meshDeclination } from "./meshDeclination";
+import { meshDeclination } from "@/lib/meshDeclination";
 
 /**
  * 緯度・経度から2次メッシュコードを計算する
