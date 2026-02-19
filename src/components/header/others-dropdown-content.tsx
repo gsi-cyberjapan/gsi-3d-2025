@@ -9,16 +9,60 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useStore } from "@/hooks/store/useStore";
 import { DEFAULT_VIEW_CONFIG } from "@/lib/config";
-import { Circle, Compass, ExternalLink } from "lucide-react";
+import { Circle, Compass, ExternalLink, Map } from "lucide-react";
 import Link from "next/link";
+import proj4 from "proj4";
 
-const buildExternalServiceUrl = (
-  site: string,
-  lat: number,
-  lng: number,
-  zoom: number,
-) => {
-  return `https://maps.gsi.go.jp/link.html?site=${site}&lat=${String(lat)}&lng=${String(lng)}&z=${String(zoom)}`;
+// 日本測地系 (Tokyo Datum / EPSG:4301)
+proj4.defs(
+  "EPSG:4301",
+  "+proj=longlat +ellps=bessel +towgs84=-146.336,506.832,680.254,0,0,0,0 +no_defs",
+);
+
+/**
+ * MapLibre GLのズームレベルをLeaflet（地理院地図）のズームレベルに変換する。
+ * LeafletはMapLibre GLよりズームレベルが1大きい。
+ */
+const toLeafletZoom = (maplibreZoom: number) => Math.round(maplibreZoom + 1);
+
+const buildGsiMapsUrl = (lat: number, lng: number, zoom: number) => {
+  const z = toLeafletZoom(zoom);
+  return `https://maps.gsi.go.jp/#${String(z)}/${lat.toFixed(6)}/${lng.toFixed(6)}`;
+};
+
+const buildMapionUrl = (lat: number, lng: number, zoom: number) => {
+  const z = Math.max(6, toLeafletZoom(zoom));
+  return `https://maps.gsi.go.jp/link.html?site=mapion&lat=${String(lat)}&lng=${String(lng)}&z=${String(z)}`;
+};
+
+/**
+ * Leafletズームレベルからいつもナビ独自ズームレベルへのマッピング。
+ * gsimaps のロジックを移植。
+ */
+const leafletZoomToItsumoNaviZoom = (leafletZoom: number): number => {
+  if (leafletZoom <= 5) return 1;
+  if (leafletZoom <= 6) return 2;
+  if (leafletZoom <= 7) return 3;
+  if (leafletZoom <= 8) return 4;
+  if (leafletZoom <= 9) return 6;
+  if (leafletZoom <= 10) return 7;
+  if (leafletZoom <= 11) return 8;
+  if (leafletZoom <= 12) return 9;
+  if (leafletZoom <= 13) return 10;
+  if (leafletZoom <= 14) return 11;
+  if (leafletZoom <= 15) return 13;
+  if (leafletZoom <= 16) return 14;
+  if (leafletZoom <= 17) return 16;
+  return 18;
+};
+
+const buildItsumoNaviUrl = (lat: number, lng: number, zoom: number) => {
+  // WGS84 → 日本測地系 (EPSG:4301) に変換
+  const [tokyoLng, tokyoLat] = proj4("EPSG:4326", "EPSG:4301", [lng, lat]);
+  const y = Math.round(tokyoLat * 3600 * 1000);
+  const x = Math.round(tokyoLng * 3600 * 1000);
+  const z = leafletZoomToItsumoNaviZoom(Math.round(zoom));
+  return `https://maps.gsi.go.jp/link.html?site=itsumonavi&lat=${String(y)}&lng=${String(x)}&z=${String(z)}`;
 };
 
 export const OthersDropdownContent = () => {
@@ -38,23 +82,26 @@ export const OthersDropdownContent = () => {
   return (
     <DropdownMenuContent className="w-56" align="end">
       <DropdownMenuGroup>
+        <DropdownMenuItem asChild className="text-sm cursor-pointer">
+          <Link href={buildGsiMapsUrl(lat, lng, zoom)} target="_blank">
+            <Map />
+            地理院地図で見る
+          </Link>
+        </DropdownMenuItem>
+      </DropdownMenuGroup>
+      <DropdownMenuSeparator />
+      <DropdownMenuGroup>
         <DropdownMenuLabel className="text-sm text-muted-foreground">
           外部サービスで見る
         </DropdownMenuLabel>
         <DropdownMenuItem asChild className="text-sm cursor-pointer">
-          <Link
-            href={buildExternalServiceUrl("itsumonavi", lat, lng, zoom)}
-            target="_blank"
-          >
+          <Link href={buildItsumoNaviUrl(lat, lng, zoom)} target="_blank">
             <ExternalLink />
             いつもNAVI
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild className="text-sm cursor-pointer">
-          <Link
-            href={buildExternalServiceUrl("mapion", lat, lng, zoom)}
-            target="_blank"
-          >
+          <Link href={buildMapionUrl(lat, lng, zoom)} target="_blank">
             <ExternalLink />
             Mapion
           </Link>

@@ -3,6 +3,7 @@ import { GlobalState } from "./useStore";
 
 export type MapId = "main" | "sub";
 export type LayoutMode = "single" | "split" | "overlay";
+export type FooterDisplayMode = "closed" | "full";
 
 export interface ViewState {
   latitude: number;
@@ -42,6 +43,9 @@ export interface MapManagerState {
   /** 磁北線を表示するかどうか */
   isDisplayMagneticNorth: boolean;
   setIsDisplayMagneticNorth: (value: boolean) => void;
+  /** フッターの表示モード */
+  footerDisplayMode: FooterDisplayMode;
+  setFooterDisplayMode: (mode: FooterDisplayMode) => void;
   /** ハイドレーション完了フラグ */
   isHydrated: boolean;
   /** ハイドレーション */
@@ -53,6 +57,7 @@ export interface MapManagerState {
     isDisplayOverview?: boolean;
     isClickToMoveEnabled?: boolean;
     isDisplayMagneticNorth?: boolean;
+    footerDisplayMode?: FooterDisplayMode;
     mainViewState?: ViewState;
     subViewState?: ViewState;
   }) => void;
@@ -152,6 +157,12 @@ export const createMapManagerSlice: StateCreator<
       isDisplayMagneticNorth: value,
     }));
   },
+  footerDisplayMode: "full",
+  setFooterDisplayMode: (mode) => {
+    set(() => ({
+      footerDisplayMode: mode,
+    }));
+  },
   isHydrated: false,
   hydrateMapManagerState: (partial) => {
     set((state) => {
@@ -184,6 +195,9 @@ export const createMapManagerSlice: StateCreator<
       }
       if (partial.isDisplayMagneticNorth !== undefined) {
         updates.isDisplayMagneticNorth = partial.isDisplayMagneticNorth;
+      }
+      if (partial.footerDisplayMode !== undefined) {
+        updates.footerDisplayMode = partial.footerDisplayMode;
       }
 
       const viewStates = { ...state.viewStates };
