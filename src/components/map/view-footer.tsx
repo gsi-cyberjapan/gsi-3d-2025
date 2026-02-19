@@ -17,6 +17,8 @@ export const ViewFooter = () => {
     setFooterDisplayMode(isOpen ? "closed" : "full");
   };
 
+  if (activeMapIds.length === 0) return null;
+
   return (
     <div className="relative">
       <button
@@ -24,6 +26,8 @@ export const ViewFooter = () => {
         onClick={handleToggle}
         className="absolute -top-7 left-1/2 -translate-x-1/2 z-10 bg-background border border-b-0 rounded-t px-3 py-1 hover:bg-input transition-colors text-muted-foreground"
         aria-label="フッターの表示を切り替え"
+        aria-expanded={isOpen}
+        aria-controls="view-footer-panel"
       >
         {isOpen ? (
           <ChevronDown className="size-5" />
@@ -32,6 +36,7 @@ export const ViewFooter = () => {
         )}
       </button>
       <div
+        id="view-footer-panel"
         className={cn(
           "border-t overflow-hidden grid transition-[grid-template-rows] duration-300",
           isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr] border-t-0",
