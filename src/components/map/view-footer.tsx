@@ -4,6 +4,7 @@ import { useStore } from "@/hooks/store/useStore";
 import { CenterInfo } from "@/components/map/center-info";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useEffect, useRef } from "react";
 
 export const ViewFooter = () => {
   const activeMapIds = useStore((state) => state.activeMapIds);
@@ -12,6 +13,53 @@ export const ViewFooter = () => {
   const setFooterDisplayMode = useStore((state) => state.setFooterDisplayMode);
 
   const isOpen = footerDisplayMode === "full";
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = rootRef.current;
+    if (!el) return;
+
+    const selector =
+      ".maplibregl-ctrl-bottom-left, .maplibregl-ctrl-bottom-right";
+    let currentPx = "0px";
+
+    const applyBottom = (px: string) => {
+      document
+        .querySelectorAll<HTMLElement>(selector)
+        .forEach((ctrl) => {
+          ctrl.style.bottom = px;
+        });
+    };
+
+    const resizeObserver = new ResizeObserver(([entry]) => {
+      const height = entry.contentRect.height;
+      currentPx = `${String(height)}px`;
+      document.documentElement.style.setProperty("--footer-height", currentPx);
+      applyBottom(currentPx);
+    });
+    resizeObserver.observe(el);
+
+    // MapLibreコントロールが後からDOMに追加される場合に対応
+    const mutationObserver = new MutationObserver((mutations) => {
+      for (const m of mutations) {
+        for (const node of m.addedNodes) {
+          if (!(node instanceof HTMLElement)) continue;
+          if (node.matches(selector) || node.querySelector(selector)) {
+            applyBottom(currentPx);
+            return;
+          }
+        }
+      }
+    });
+    mutationObserver.observe(document.body, { childList: true, subtree: true });
+
+    return () => {
+      resizeObserver.disconnect();
+      mutationObserver.disconnect();
+      document.documentElement.style.removeProperty("--footer-height");
+      applyBottom("");
+    };
+  }, []);
 
   const handleToggle = () => {
     setFooterDisplayMode(isOpen ? "closed" : "full");
@@ -20,7 +68,7 @@ export const ViewFooter = () => {
   if (activeMapIds.length === 0) return null;
 
   return (
-    <div className="absolute bottom-0 left-0 right-0 z-10 bg-background">
+    <div ref={rootRef} className="absolute bottom-0 left-0 right-0 z-10 bg-background">
       <button
         type="button"
         onClick={handleToggle}
