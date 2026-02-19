@@ -36,23 +36,24 @@ const buildMapionUrl = (lat: number, lng: number, zoom: number) => {
 };
 
 /**
- * Leafletズームレベルからいつもナビ独自ズームレベルへのマッピング。
- * gsimaps のロジックを移植。
+ * MapLibre GLのズームレベルからいつもナビ独自ズームレベルへのマッピング。
+ * gsimaps (Leaflet) のマッピングテーブルをMapLibre GL基準に調整したもの。
  */
-const leafletZoomToItsumoNaviZoom = (leafletZoom: number): number => {
-  if (leafletZoom <= 5) return 1;
-  if (leafletZoom <= 6) return 2;
-  if (leafletZoom <= 7) return 3;
-  if (leafletZoom <= 8) return 4;
-  if (leafletZoom <= 9) return 6;
-  if (leafletZoom <= 10) return 7;
-  if (leafletZoom <= 11) return 8;
-  if (leafletZoom <= 12) return 9;
-  if (leafletZoom <= 13) return 10;
-  if (leafletZoom <= 14) return 11;
-  if (leafletZoom <= 15) return 13;
-  if (leafletZoom <= 16) return 14;
-  if (leafletZoom <= 17) return 16;
+const toItsumoNaviZoom = (maplibreZoom: number): number => {
+  const z = Math.round(maplibreZoom);
+  if (z <= 5) return 1;
+  if (z <= 6) return 2;
+  if (z <= 7) return 3;
+  if (z <= 8) return 4;
+  if (z <= 9) return 6;
+  if (z <= 10) return 7;
+  if (z <= 11) return 8;
+  if (z <= 12) return 9;
+  if (z <= 13) return 10;
+  if (z <= 14) return 11;
+  if (z <= 15) return 13;
+  if (z <= 16) return 14;
+  if (z <= 17) return 16;
   return 18;
 };
 
@@ -61,7 +62,7 @@ const buildItsumoNaviUrl = (lat: number, lng: number, zoom: number) => {
   const [tokyoLng, tokyoLat] = proj4("EPSG:4326", "EPSG:4301", [lng, lat]);
   const y = Math.round(tokyoLat * 3600 * 1000);
   const x = Math.round(tokyoLng * 3600 * 1000);
-  const z = leafletZoomToItsumoNaviZoom(Math.round(zoom));
+  const z = toItsumoNaviZoom(zoom);
   return `https://maps.gsi.go.jp/link.html?site=itsumonavi&lat=${String(y)}&lng=${String(x)}&z=${String(z)}`;
 };
 
