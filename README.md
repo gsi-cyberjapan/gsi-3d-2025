@@ -1,36 +1,94 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# gsi-3d-2025（3次元地図可視化サイト）
 
-## Getting Started
+国土地理院が提供する3次元地図可視化Webアプリケーションのソースコードです。
 
-First, run the development server:
+## 概要
+
+地理院地図の地図データや各種タイルを3D表示で閲覧できるWebアプリケーションです。
+
+### 主な機能
+
+- 地図の3D表示（地形の起伏表現、Globe表示）
+- 描画・注記（ポイント、ライン、ポリゴン、テキスト）
+- 距離・面積の計測
+- 点群データの表示（3D Tiles）
+- 住所検索（日本語住所ジオコーディング）
+- 印刷・画像保存
+- URL共有
+- 複数地図の並列表示・重ね合わせ
+
+## サイト
+
+- デモ: https://geolonia.github.io/gsi-3d-2025/
+- 地理院地図: https://maps.gsi.go.jp/
+
+## セットアップ
+
+### 必要環境
+
+- Node.js 24.4.1（[Volta](https://volta.sh/) の利用を推奨）
+- pnpm 10.13.1
+
+### インストール・起動
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+git clone https://github.com/geolonia/gsi-3d-2025.git
+cd gsi-3d-2025
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+ブラウザで http://localhost:3000 を開くと開発版が表示されます。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### ビルド・デプロイ
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+pnpm build
+```
 
-## Learn More
+静的サイトとして `./out` ディレクトリに出力されます。任意のWebサーバに配置してください。
 
-To learn more about Next.js, take a look at the following resources:
+サブディレクトリに配置する場合は `BASE_PATH` 環境変数を指定します。
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+BASE_PATH=/gsi-3d-2025 pnpm build
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+GitHub Pagesへのデプロイは `main` ブランチへのプッシュで自動実行されます。
 
-## Deploy on Vercel
+### 開発コマンド一覧
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| コマンド      | 説明                                 |
+| ------------- | ------------------------------------ |
+| `pnpm dev`    | 開発サーバを起動                     |
+| `pnpm build`  | 静的サイトをビルド（`./out` に出力） |
+| `pnpm start`  | ビルド済みサイトをローカルで配信     |
+| `pnpm lint`   | ESLintによるコードチェック           |
+| `pnpm fix`    | Prettier・ESLintの自動修正           |
+| `pnpm format` | Prettierによるフォーマットチェック   |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 技術スタック
+
+- [Next.js](https://nextjs.org/) 16（App Router、静的エクスポート）
+- [React](https://react.dev/) 19
+- [MapLibre GL JS](https://maplibre.org/)
+- [TerraDraw](https://terradraw.io/)
+- [Deck.gl](https://deck.gl/)
+- [Zustand](https://zustand.docs.pmnd.rs/)
+- [Tailwind CSS](https://tailwindcss.com/) 4
+
+## 利用上の留意点
+
+- 本リポジトリのソースコードは [BSD-2-Clause ライセンス](./LICENSE)で提供しています。利用される場合はライセンスの条件に従ってください。サードパーティライブラリについては各ライブラリのライセンスに従います。
+- 本アプリケーションで利用している[地理院タイル](https://maps.gsi.go.jp/development/ichiran.html)については、[国土地理院の利用規約](https://www.gsi.go.jp/kikakuchousei/kikakuchousei40182.html)に従ってご利用ください。
+- 住所検索等で利用しているサーバサイド機能は、予告なく仕様変更や提供終了する場合があります。安定した運用が必要な場合は、ご自身の環境で同等の機能を構築することを推奨します。
+- プルリクエストを送っていただく場合、その内容は BSD-2-Clause ライセンスに同意したものとして取り扱います。
+
+## 関連リポジトリ
+
+- [gsi-cyberjapan/gsimaps](https://github.com/gsi-cyberjapan/gsimaps) - 地理院地図
+- [gsi-cyberjapan/layers-dot-txt-spec](https://github.com/gsi-cyberjapan/layers-dot-txt-spec) - レイヤー定義仕様
+
+## ライセンス
+
+[BSD-2-Clause](./LICENSE)
