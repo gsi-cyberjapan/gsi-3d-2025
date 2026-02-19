@@ -13,6 +13,7 @@ interface Props {
   mapId: MapId;
 }
 
+const MIN_ZOOM_LEVEL = 11;
 const LINE_SPACING_PX = 40;
 const LABEL_SPACING_PX = 200;
 const LABEL_LINE_INTERVAL = 5;
@@ -30,12 +31,15 @@ const formatDeclination = (declinationDeg: number): string => {
 };
 
 const buildMagneticNorthLines = (map: maplibregl.Map) => {
+  if (map.getZoom() < MIN_ZOOM_LEVEL) return null;
+
   const center = map.getCenter();
   if (!isValidForMagneticDeclination(center.lat, center.lng)) {
     return null;
   }
 
   const declination = getMagneticDeclination(center.lat, center.lng);
+  if (declination === null) return null;
   const bearing = map.getBearing();
   const angleRad = ((declination - bearing) * Math.PI) / 180;
 
@@ -86,6 +90,7 @@ const buildMagneticNorthLines = (map: maplibregl.Map) => {
         const py = y1 + (y2 - y1) * t;
         const point = map.unproject([px, py]);
         const localDeclination = getMagneticDeclination(point.lat, point.lng);
+        if (localDeclination === null) continue;
         features.push({
           type: "Feature" as const,
           properties: {

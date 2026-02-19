@@ -1,29 +1,38 @@
 /**
- * GSI磁気図2020.0年値の多項式近似による磁気偏角の計算
- * 基準点: 北緯37度, 東経138度
- * 参考: https://vldb.gsi.go.jp/sokuchi/geomag/menu_04/index.html
+ * メッシュベースの磁気偏角データによる偏角取得
+ * 地理院地図と同じ2次メッシュコードを用いたルックアップ方式
  */
+
+import { meshDeclination } from "./meshDeclination";
+
+/**
+ * 緯度・経度から2次メッシュコードを計算する
+ * 地理院地図 gsimaps.js の実装を移植
+ */
+const get2ndMesh = (lat: number, lng: number): string => {
+  const lat1 = Math.floor((lat * 60) / 40);
+  const lat2 = (lat * 60) % 40;
+  const lon1 = Math.floor(lng - 100);
+  const lon2 = lng - 100 - lon1;
+  const m2lat = Math.floor(lat2 / 5);
+  const m2lon = Math.floor((lon2 * 60) / 7.5);
+  return String(lat1) + String(lon1) + String(m2lat) + String(m2lon);
+};
 
 /**
  * 指定した緯度・経度における磁気偏角（度）を返す
  * 西偏はマイナス値
+ * メッシュデータがない場合（海域など）は null を返す
  */
-export const getMagneticDeclination = (lat: number, lng: number): number => {
-  // 基準点からの差分（度）
-  const dLat = lat - 37;
-  const dLng = lng - 138;
-
-  // GSI磁気図2020.0年値の近似多項式（結果は「分」単位、西偏が正）
-  const declinationMinutes =
-    495.822 +
-    18.462 * dLat -
-    7.726 * dLng +
-    0.007 * dLat * dLat -
-    0.007 * dLat * dLng -
-    0.655 * dLng * dLng;
-
-  // 分→度に変換、西偏を負値にする（既存コードの符号規約に合わせる）
-  return -(declinationMinutes / 60);
+export const getMagneticDeclination = (
+  lat: number,
+  lng: number,
+): number | null => {
+  const meshCode = get2ndMesh(lat, lng);
+  if (!(meshCode in meshDeclination)) return null;
+  const value = meshDeclination[meshCode];
+  // メッシュデータは西偏が正。既存コードの符号規約（西偏が負）に合わせて符号反転
+  return -value;
 };
 
 /**
