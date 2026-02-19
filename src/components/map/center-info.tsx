@@ -182,6 +182,7 @@ export const CenterInfo = ({ mapId }: Props) => {
       </div>
     );
   }
+
   return (
     <div className="text-xs text-muted-foreground relative px-1">
       <div

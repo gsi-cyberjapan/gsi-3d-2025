@@ -137,6 +137,9 @@ importers:
       pmtiles:
         specifier: ^4.3.0
         version: 4.3.0
+      proj4:
+        specifier: ^2.20.2
+        version: 2.20.2
       qrcode.react:
         specifier: ^4.2.0
         version: 4.2.0(react@19.2.0)
@@ -3209,6 +3212,9 @@ packages:
     resolution: {integrity: sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==}
     engines: {node: '>= 8'}
 
+  mgrs@1.0.0:
+    resolution: {integrity: sha512-awNbTOqCxK1DBGjalK3xqWIstBZgN6fxsMSiXLs9/spqWkF2pAhb2rrYCFSsr1/tT7PhcDGjZndG8SWYn0byYA==}
+
   mgrs@2.1.0:
     resolution: {integrity: sha512-/pjuM02PUAhp4dazfccTSKBGTGPFkRz9LKwGJKusc/B20apcGG/CYnRHx0kXmLXy4m5O3p6y6nOVxEnErPpFvQ==}
 
@@ -3436,6 +3442,9 @@ packages:
 
   process-nextick-args@2.0.1:
     resolution: {integrity: sha512-3ouUOpQhtgrbOa17J7+uxOTpITYWaGP7/AhoR3+A+/1e9skrzelGi/dXzEYyvbxubEF6Wn2ypscTKiKJFFn1ag==}
+
+  proj4@2.20.2:
+    resolution: {integrity: sha512-ipfBRfQly0HhHTO7hnC1GfaX8bvroO7VV4KH889ehmADSE8C/qzp2j+Jj6783S9Tj6c2qX/hhYm7oH0kgXzBAA==}
 
   prop-types@15.8.1:
     resolution: {integrity: sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==}
@@ -3986,6 +3995,9 @@ packages:
   widest-line@4.0.1:
     resolution: {integrity: sha512-o0cyEG0e8GPzT4iGHphIOh0cJOV8fivsXxddQasHPHfoZf1ZexrfeA21w2NaEN1RHE+fXlfISmOE8R9N3u3Qig==}
     engines: {node: '>=12'}
+
+  wkt-parser@1.5.2:
+    resolution: {integrity: sha512-1ZUiV1FTwSiSrgWzV9KXJuOF2BVW91KY/mau04BhnmgOdroRQea7Q0s5TVqwGLm0D2tZwObd/tBYXW49sSxp3Q==}
 
   word-wrap@1.2.5:
     resolution: {integrity: sha512-BN22B5eaMMI9UMtjrGd5g5eCYPpCPDUy0FJXbYsaT5zYxjFOckS53SQDE3pWkVoWpHXVb3BrYcEN4Twa55B5cA==}
@@ -7372,6 +7384,8 @@ snapshots:
 
   merge2@1.4.1: {}
 
+  mgrs@1.0.0: {}
+
   mgrs@2.1.0: {}
 
   micromatch@4.0.8:
@@ -7579,6 +7593,11 @@ snapshots:
   prettier@3.6.2: {}
 
   process-nextick-args@2.0.1: {}
+
+  proj4@2.20.2:
+    dependencies:
+      mgrs: 1.0.0
+      wkt-parser: 1.5.2
 
   prop-types@15.8.1:
     dependencies:
@@ -8314,6 +8333,8 @@ snapshots:
   widest-line@4.0.1:
     dependencies:
       string-width: 5.1.2
+
+  wkt-parser@1.5.2: {}
 
   word-wrap@1.2.5: {}
 

@@ -216,3 +216,8 @@
     border-radius: 9999px;
   }
 }
+
+.maplibregl-ctrl-bottom-left,
+.maplibregl-ctrl-bottom-right {
+  transition: bottom 300ms ease;
+}

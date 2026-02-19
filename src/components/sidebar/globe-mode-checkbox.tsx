@@ -3,6 +3,7 @@
 import { Label } from "../ui/label";
 import { Checkbox } from "../ui/checkbox";
 import { useStore } from "@/hooks/store/useStore";
+import { FeatureInfoPopover } from "./feature-info-popover";
 
 export const GlobeModeCheckbox = () => {
   const focusMapId = useStore((state) => state.focusMapId);
@@ -23,9 +24,13 @@ export const GlobeModeCheckbox = () => {
         onCheckedChange={handleChecked}
         className="data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600 data-[state=checked]:text-white dark:data-[state=checked]:border-blue-700 dark:data-[state=checked]:bg-blue-700"
       />
-      <div className="grid gap-1.5 font-normal">
+      <div className="grid gap-1.5 font-normal flex-1">
         <p className="text-sm leading-none font-normal">Globe表示</p>
       </div>
+      <FeatureInfoPopover
+        title="Globe表示"
+        description="地図や空中写真を地球儀のように3次元で表示します。地形や地表の状況を直感的に理解できます。"
+      />
     </Label>
   );
 };
