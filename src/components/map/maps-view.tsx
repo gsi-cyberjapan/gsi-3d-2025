@@ -17,23 +17,21 @@ export const MapsView = () => {
 
   return (
     <MapProvider>
-      <div className="flex flex-col h-full">
-        <div className="flex-1 flex gap-1 relative w-full min-h-0">
-          {activeMapIds.map((id) => (
-            <Map
-              key={id}
-              mapId={id}
-              className={cn({
-                absolute: layoutMode === "overlay" && id === "sub",
-              })}
-              opacity={
-                layoutMode === "overlay" && id === "sub"
-                  ? subMapOpacityOnOverlay
-                  : undefined
-              }
-            />
-          ))}
-        </div>
+      <div className="flex gap-1 relative w-full h-full min-h-0">
+        {activeMapIds.map((id) => (
+          <Map
+            key={id}
+            mapId={id}
+            className={cn({
+              absolute: layoutMode === "overlay" && id === "sub",
+            })}
+            opacity={
+              layoutMode === "overlay" && id === "sub"
+                ? subMapOpacityOnOverlay
+                : undefined
+            }
+          />
+        ))}
         <ViewFooter />
       </div>
       <SaveImageDialog />

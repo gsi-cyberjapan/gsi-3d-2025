@@ -20,7 +20,7 @@ export const ViewFooter = () => {
   if (activeMapIds.length === 0) return null;
 
   return (
-    <div className="relative">
+    <div className="absolute bottom-0 left-0 right-0 z-10 bg-background">
       <button
         type="button"
         onClick={handleToggle}
