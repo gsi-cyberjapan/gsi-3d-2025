@@ -90,9 +90,9 @@ describe("mapManagerState", () => {
     });
   });
 
-  describe("setIsDisaplayCenterLine", () => {
+  describe("setIsDisplayCenterLine", () => {
     it("中心線の表示を切り替えられる", () => {
-      store.getState().setIsDisaplayCenterLine(false);
+      store.getState().setIsDisplayCenterLine(false);
       expect(store.getState().isDisplayCenterLine).toBe(false);
     });
   });

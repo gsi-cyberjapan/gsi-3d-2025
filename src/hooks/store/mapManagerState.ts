@@ -30,7 +30,7 @@ export interface MapManagerState {
   setSubMapOpacityOnOverlay: (value: number) => void;
   /** 中心の十字線を表示するかどうか */
   isDisplayCenterLine: boolean;
-  setIsDisaplayCenterLine: (value: boolean) => void;
+  setIsDisplayCenterLine: (value: boolean) => void;
   /** 広域図を表示するかどうか */
   isDisplayOverview: boolean;
   setIsDisplayOverview: (value: boolean) => void;
@@ -122,7 +122,7 @@ export const createMapManagerSlice: StateCreator<
     });
   },
   isDisplayCenterLine: true,
-  setIsDisaplayCenterLine: (value) => {
+  setIsDisplayCenterLine: (value) => {
     set(() => {
       return {
         isDisplayCenterLine: value,
