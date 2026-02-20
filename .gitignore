@@ -48,3 +48,8 @@ next-env.d.ts
 
 # ai
 .tasks/
+
+# playwright
+/test-results/
+/playwright-report/
+/playwright/.cache/

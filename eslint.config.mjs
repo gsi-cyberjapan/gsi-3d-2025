@@ -87,6 +87,15 @@ const eslintConfig = defineConfig([
   /** eslint-plugin-query */
   ...pluginQuery.configs["flat/recommended"],
 
+  /** E2E テスト (Playwright) — React 向けルールを無効化 */
+  {
+    files: ["e2e/**/*.ts"],
+    rules: {
+      "react-hooks/rules-of-hooks": "off",
+      "@typescript-eslint/require-await": "off",
+    },
+  },
+
   /** Prettier (最後に上書きして競合するルールを無効化) */
   prettier,
 ]);
