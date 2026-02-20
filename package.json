@@ -73,6 +73,8 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@tanstack/eslint-plugin-query": "^5.91.2",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
@@ -83,6 +85,7 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-unused-imports": "^4.3.0",
+    "happy-dom": "^20.6.3",
     "prettier": "^3.6.2",
     "serve": "^14.2.5",
     "tailwindcss": "^4",

@@ -1,1 +1,1 @@
-// グローバルセットアップ（将来の拡張用）
+import "@testing-library/jest-dom/vitest";
