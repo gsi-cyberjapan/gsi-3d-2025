@@ -36,6 +36,13 @@ jobs:
       - name: Build
         run: pnpm build
 
+      - name: Upload build output
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: out/
+          retention-days: 1
+
   lint:
     name: Lint
     runs-on: ubuntu-latest
@@ -99,11 +106,20 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run tests
-        run: pnpm test
+      - name: Run tests with coverage
+        run: pnpm test:coverage
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 14
 
   e2e:
     name: E2E
+    needs: [build]
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -121,11 +137,17 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Download build output
+        uses: actions/download-artifact@v4
+        with:
+          name: build-output
+          path: out/
+
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps chromium
 
       - name: Run E2E tests
-        run: pnpm test:e2e
+        run: pnpm exec playwright test
 
       - name: Upload report
         uses: actions/upload-artifact@v4
