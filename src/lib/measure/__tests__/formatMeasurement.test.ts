@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatArea, formatDistance } from "../formatMeasurement";
+import { formatArea, formatDistance } from "@/lib/measure/formatMeasurement";
 
 describe("formatDistance", () => {
   it("500m を表示する", () => {

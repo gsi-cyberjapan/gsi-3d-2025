@@ -3,7 +3,7 @@ import {
   COLOR_PATTERNS,
   getDefaultRanges,
   getPatternById,
-} from "../colorPatterns";
+} from "@/lib/relief/colorPatterns";
 
 describe("getPatternById", () => {
   it("defaultパターンを取得する", () => {

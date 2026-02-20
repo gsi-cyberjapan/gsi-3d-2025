@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { latToTileY, lngToTileX, tileXToLng, tileYToLat } from "../tileGrid";
+import {
+  latToTileY,
+  lngToTileX,
+  tileXToLng,
+  tileYToLat,
+} from "@/lib/grids/tileGrid";
 
 describe("latToTileY", () => {
   it("東京(35.68)のzoom=10でのタイルY座標", () => {

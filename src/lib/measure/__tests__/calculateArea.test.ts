@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { calculateArea } from "../calculateArea";
+import { calculateArea } from "@/lib/measure/calculateArea";
 
 describe("calculateArea", () => {
   it("正方形ポリゴンの面積を計算する", () => {
@@ -16,7 +16,7 @@ describe("calculateArea", () => {
     expect(area).toBeLessThan(2000000);
   });
 
-  it("座標が3点未満は0を返す", () => {
+  it("座標が4点未満は0を返す", () => {
     expect(calculateArea([])).toBe(0);
     expect(calculateArea([[0, 0]])).toBe(0);
     expect(

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { cn, omit } from "../utils";
+import { cn, omit } from "@/lib/utils";
 
 describe("omit", () => {
   it("1キーを削除する", () => {

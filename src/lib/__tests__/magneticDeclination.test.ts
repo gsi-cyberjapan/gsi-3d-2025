@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   getMagneticDeclination,
   isValidForMagneticDeclination,
-} from "../magneticDeclination";
+} from "@/lib/magneticDeclination";
 
 describe("getMagneticDeclination", () => {
   it("東京の座標で数値を返す", () => {

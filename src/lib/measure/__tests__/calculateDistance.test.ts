@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { calculateDistance } from "../calculateDistance";
+import { calculateDistance } from "@/lib/measure/calculateDistance";
 
 describe("calculateDistance", () => {
   it("2点間の距離を計算する", () => {

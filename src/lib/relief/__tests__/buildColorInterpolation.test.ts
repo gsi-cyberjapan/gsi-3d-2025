@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { buildColorInterpolation } from "../buildColorInterpolation";
-import type { ElevationRange } from "../colorPatterns";
+import { buildColorInterpolation } from "@/lib/relief/buildColorInterpolation";
+import type { ElevationRange } from "@/lib/relief/colorPatterns";
 
 describe("buildColorInterpolation", () => {
   it("正常な入力でinterpolation式を生成する", () => {

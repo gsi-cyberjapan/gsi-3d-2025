@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { getLatLngGridIntervalSeconds, secondsToDms } from "../latLngGrid";
+import {
+  getLatLngGridIntervalSeconds,
+  secondsToDms,
+} from "@/lib/grids/latLngGrid";
 
 describe("getLatLngGridIntervalSeconds", () => {
   it("zoom<=3 は 144000秒(40°)", () => {

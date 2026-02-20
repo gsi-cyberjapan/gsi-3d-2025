@@ -4,7 +4,7 @@ import {
   getUtmLatBand,
   lngToUtmZone,
   utmZoneCentralMeridian,
-} from "../utmGrid";
+} from "@/lib/grids/utmGrid";
 
 describe("lngToUtmZone", () => {
   it("東京(139.69)はゾーン54", () => {
@@ -65,6 +65,30 @@ describe("getUtmGridIntervalMeters", () => {
 
   it("zoom=15 は1000m", () => {
     expect(getUtmGridIntervalMeters(15)).toBe(1000);
+  });
+
+  it("zoom=11 は20000m", () => {
+    expect(getUtmGridIntervalMeters(11)).toBe(20000);
+  });
+
+  it("zoom=12 は10000m", () => {
+    expect(getUtmGridIntervalMeters(12)).toBe(10000);
+  });
+
+  it("zoom=13 は5000m", () => {
+    expect(getUtmGridIntervalMeters(13)).toBe(5000);
+  });
+
+  it("zoom=14 は3000m", () => {
+    expect(getUtmGridIntervalMeters(14)).toBe(3000);
+  });
+
+  it("zoom=16 は500m", () => {
+    expect(getUtmGridIntervalMeters(16)).toBe(500);
+  });
+
+  it("zoom=17 は250m", () => {
+    expect(getUtmGridIntervalMeters(17)).toBe(250);
   });
 
   it("zoom>=18 は100m", () => {

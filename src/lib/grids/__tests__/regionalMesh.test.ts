@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { get1stMeshCode, get2ndMeshCode, getMeshConfig } from "../regionalMesh";
+import {
+  get1stMeshCode,
+  get2ndMeshCode,
+  getMeshConfig,
+} from "@/lib/grids/regionalMesh";
 
 describe("getMeshConfig", () => {
   it("zoom<=3 はnullを返す", () => {

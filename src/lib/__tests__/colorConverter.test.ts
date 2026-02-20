@@ -10,7 +10,7 @@ import {
   rgbaToColorAndOpacity,
   rgbaToHex,
   rgbaToHsla,
-} from "../colorConverter";
+} from "@/lib/colorConverter";
 
 describe("hexToRgb", () => {
   it("赤色を変換する", () => {
