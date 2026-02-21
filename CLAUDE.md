@@ -9,11 +9,14 @@ This is a 3D map visualization application built with Next.js 16 (App Router), R
 ## Development Commands
 
 ```bash
-pnpm dev       # Development server
-pnpm build     # Build for production (static export)
-pnpm lint      # Linting
-pnpm fix       # Auto-fix linting and formatting issues
-pnpm format    # Check formatting
+pnpm dev            # Development server
+pnpm build          # Build for production (static export)
+pnpm lint           # Linting
+pnpm fix            # Auto-fix linting and formatting issues
+pnpm format         # Check formatting
+pnpm test           # テスト実行
+pnpm test:watch     # ウォッチモードでテスト実行
+pnpm test:coverage  # カバレッジ付きテスト実行
 ```
 
 **Package Manager:** `pnpm` (10.13.1) | **Node:** 24.4.1 (Volta)
@@ -31,6 +34,7 @@ Never use `eslint-disable` comments in any form. If ESLint reports an error, fix
 After making any code changes, you **MUST** run these commands and ensure they all succeed:
 
 ```bash
+pnpm test      # Must pass with no errors
 pnpm lint      # Must pass with no errors
 pnpm build     # Must complete successfully
 pnpm format    # Must pass with no formatting issues
@@ -116,6 +120,26 @@ Maps are rendered using `react-map-gl/maplibre` with a controller pattern:
 ### Japanese Address Geocoding
 
 Uses `@geolonia/normalize-japanese-addresses`, CSIS Simple Geocoding Service, and GSI MUNI data. Implementation: `src/lib/geocode.ts`
+
+## Testing
+
+### テスト構造
+
+- **フレームワーク**: Vitest
+- **ユニットテスト**: `src/lib/*/__tests__/` — 対象ファイルの近くにコロケーション配置
+- **設定**: `vitest.config.ts`（パスエイリアス `@/` 対応）
+
+### テストの書き方
+
+- テストファイルは対象ファイルと同階層の `__tests__/` ディレクトリに `<対象ファイル名>.test.ts` として作成
+- `describe` で関数名をグループ化し、`it` で具体的な振る舞いを記述
+- 純粋関数のテストを優先し、外部依存がある場合は `vi.mock()` でモック化
+- テストが失敗した場合は実装を修正する（テストを実装に合わせて変更しない）
+
+### カバレッジ
+
+- 新規ファイル: 可能な限り高いカバレッジを目指す
+- `pnpm test:coverage` でレポート生成（`coverage/` ディレクトリ）
 
 ## Code Conventions
 

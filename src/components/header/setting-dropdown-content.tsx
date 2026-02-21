@@ -14,7 +14,7 @@ import { useStore } from "@/hooks/store/useStore";
 export const SettingDropdownContent = () => {
   const isDisplayCenterLine = useStore((state) => state.isDisplayCenterLine);
   const setIsDisplayCenterLine = useStore(
-    (state) => state.setIsDisaplayCenterLine,
+    (state) => state.setIsDisplayCenterLine,
   );
   const isDisplayOverview = useStore((state) => state.isDisplayOverview);
   const setIsDisplayOverview = useStore((state) => state.setIsDisplayOverview);
