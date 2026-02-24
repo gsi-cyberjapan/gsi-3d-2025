@@ -239,21 +239,7 @@ export const CenterInfo = ({ mapId }: Props) => {
             <td>{utm ?? "-"}</td>
           </tr>
           <tr>
-            <td className="pr-2 align-top whitespace-nowrap">
-              標高
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button
-                    type="button"
-                    className="cursor-help"
-                    aria-label="標高データの注意事項"
-                  >
-                    <Info className="size-3 inline-block ml-0.5 text-muted-foreground" />
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent>全国標高改定以前の値</TooltipContent>
-              </Tooltip>
-            </td>
+            <td className="pr-2 align-top">標高</td>
             <td>
               {elevation != null
                 ? `${elevation.elevation.toFixed(elevation.fixed)}m（データソース：${elevation.hsrc}）`
