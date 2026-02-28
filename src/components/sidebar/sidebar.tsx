@@ -10,6 +10,7 @@ import { OptionalLayerSelector } from "./optional-layer/optional-layer-selector"
 import { OptionalLayerControler } from "./optional-layer/optional-layer-controler";
 import { GlobeModeCheckbox } from "./globe-mode-checkbox";
 import { MapDisplayToggles } from "./map-display-toggles";
+import { OptionalLayerResetButton } from "./optional-layer/optional-layer-reset-button";
 
 export const Sidebar = () => {
   return (
@@ -29,7 +30,12 @@ export const Sidebar = () => {
         </SidebarGroup>
         <SidebarGroup>
           <div className="flex flex-col gap-1">
-            <span className="text-xs text-muted-foreground">選択中の地図</span>
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-muted-foreground">
+                選択中の地図
+              </span>
+              <OptionalLayerResetButton />
+            </div>
             <OptionalLayerControler />
           </div>
         </SidebarGroup>
