@@ -5,6 +5,8 @@ import { Window } from "../ui/window";
 import { MeasureModeSelector } from "./measure-mode-selector";
 import { MeasureResultDisplay } from "./measure-result-display";
 import { Separator } from "@/components/ui/separator";
+import { ExternalLink } from "lucide-react";
+import Link from "next/link";
 
 export const MeasureWindow = () => {
   const isMeasureWindowOpen = useStore((state) => state.isMeasureWindowOpen);
@@ -27,6 +29,14 @@ export const MeasureWindow = () => {
         </div>
         <Separator />
         <MeasureResultDisplay />
+        <Link
+          href="https://maps.gsi.go.jp/help/howtouse.html"
+          target="_blank"
+          className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <ExternalLink className="size-3" />
+          計測値の説明
+        </Link>
       </div>
     </Window>
   );
