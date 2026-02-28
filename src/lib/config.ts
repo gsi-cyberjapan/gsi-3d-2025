@@ -149,6 +149,8 @@ export const OPTIONAL_LAYER_CONFIG = {
     "https://raw.githubusercontent.com/gsi-cyberjapan/gsimaps/refs/heads/gh-pages",
   /** レイヤー一覧の定義ファイル */
   LAYERS_DEFINITION_FILE_PATH: "/layers.txt",
+  /** 未実装のため選択不可にするレイヤーID */
+  DISABLED_LAYER_IDS: ["gsi-compare-photo"] as readonly string[],
 } as const;
 
 export const GEOCODING_CONFIG = {
