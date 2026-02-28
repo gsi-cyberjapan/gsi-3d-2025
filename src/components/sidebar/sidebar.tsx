@@ -2,8 +2,10 @@ import {
   Sidebar as UISidebar,
   SidebarContent,
   SidebarGroup,
+  SidebarHeader,
   SidebarFooter,
 } from "@/components/ui/sidebar";
+import { Logo } from "@/components/header/logo";
 import { BaseLayerSelector } from "./base-layer-selector";
 import { LayoutSelector } from "./layout-control/layout-selector";
 import { OptionalLayerSelector } from "./optional-layer/optional-layer-selector";
@@ -14,6 +16,9 @@ import { MapDisplayToggles } from "./map-display-toggles";
 export const Sidebar = () => {
   return (
     <UISidebar>
+      <SidebarHeader className="md:hidden">
+        <Logo />
+      </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
           <div className="flex flex-col gap-1">
