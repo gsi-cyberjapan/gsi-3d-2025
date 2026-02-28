@@ -110,7 +110,6 @@ const SCALE_BAR_DISTANCES: ScaleBarEntry[] = [
 
 const EARTH_RADIUS = 6378137;
 const CREDIT_TEXT = "\u51FA\u5178\uFF1A\u56FD\u571F\u5730\u7406\u9662";
-const COMPASS_IMAGE_URL = "https://maps.gsi.go.jp/image/map/compass.png";
 
 /**
  * Calculate the title area height in pixels for a given DPI
@@ -185,17 +184,14 @@ export async function renderHighResMap(
         attributionControl: false,
         pixelRatio: 1,
         canvasContextAttributes: { preserveDrawingBuffer: true },
+        fadeDuration: 0,
       });
 
-      const onError = (e: { error?: { message?: string } }) => {
-        renderMap.remove();
-        document.body.removeChild(container);
-        reject(new Error(`Map render error: ${e.error?.message ?? "unknown"}`));
-      };
+      renderMap.on("error", (e: { error?: { message?: string } }) => {
+        console.warn("Map render warning:", e.error?.message ?? "unknown");
+      });
 
-      renderMap.on("error", onError);
-
-      void renderMap.once("idle", () => {
+      const onSettled = () => {
         const captureAndResolve = () => {
           try {
             const mapCanvas = renderMap.getCanvas();
@@ -219,7 +215,6 @@ export async function renderHighResMap(
               err instanceof Error ? err : new Error("Failed to render map"),
             );
           } finally {
-            renderMap.off("error", onError);
             renderMap.remove();
             document.body.removeChild(container);
           }
@@ -236,13 +231,20 @@ export async function renderHighResMap(
                   ? err
                   : new Error("Failed to setup overlay"),
               );
-              renderMap.off("error", onError);
               renderMap.remove();
               document.body.removeChild(container);
             });
         } else {
           captureAndResolve();
         }
+      };
+
+      // Wait for two idle cycles: the first idle may fire before all sources
+      // have started requesting tiles. Triggering a repaint after the first
+      // idle forces a second render pass, ensuring all layers are loaded.
+      void renderMap.once("idle", () => {
+        renderMap.triggerRepaint();
+        void renderMap.once("idle", onSettled);
       });
     } catch (err) {
       document.body.removeChild(container);
@@ -281,36 +283,67 @@ function drawTitle(
 }
 
 /**
- * Draw compass icon rotated by bearing
+ * Draw compass (north arrow + "N") rotated by bearing
  */
-async function drawCompass(
+function drawCompass(
   ctx: CanvasRenderingContext2D,
   bearing: number,
   x: number,
   y: number,
   size: number,
-): Promise<void> {
-  const img = await loadImage(COMPASS_IMAGE_URL);
+): void {
+  const cx = x + size / 2;
+  const cy = y + size / 2;
+  const r = size / 2;
 
   ctx.save();
-  ctx.translate(x + size / 2, y + size / 2);
+  ctx.translate(cx, cy);
   ctx.rotate((-bearing * Math.PI) / 180);
-  ctx.drawImage(img, -size / 2, -size / 2, size, size);
-  ctx.restore();
-}
 
-function loadImage(url: string): Promise<HTMLImageElement> {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.onload = () => {
-      resolve(img);
-    };
-    img.onerror = () => {
-      reject(new Error(`Failed to load image: ${url}`));
-    };
-    img.src = url;
-  });
+  // North half (red)
+  ctx.beginPath();
+  ctx.moveTo(0, -r * 0.85);
+  ctx.lineTo(-r * 0.22, r * 0.15);
+  ctx.lineTo(0, 0);
+  ctx.closePath();
+  ctx.fillStyle = "#cc0000";
+  ctx.fill();
+
+  // North half outline side
+  ctx.beginPath();
+  ctx.moveTo(0, -r * 0.85);
+  ctx.lineTo(r * 0.22, r * 0.15);
+  ctx.lineTo(0, 0);
+  ctx.closePath();
+  ctx.fillStyle = "#ff3333";
+  ctx.fill();
+
+  // South half (dark)
+  ctx.beginPath();
+  ctx.moveTo(0, r * 0.85);
+  ctx.lineTo(-r * 0.22, -r * 0.15);
+  ctx.lineTo(0, 0);
+  ctx.closePath();
+  ctx.fillStyle = "#555555";
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.moveTo(0, r * 0.85);
+  ctx.lineTo(r * 0.22, -r * 0.15);
+  ctx.lineTo(0, 0);
+  ctx.closePath();
+  ctx.fillStyle = "#333333";
+  ctx.fill();
+
+  // "N" label
+  const fontSize = Math.round(r * 0.45);
+  ctx.font = `bold ${String(fontSize)}px sans-serif`;
+  ctx.fillStyle = "#333333";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "bottom";
+  ctx.fillText("N", 0, -r * 0.88);
+
+  ctx.restore();
 }
 
 /**
@@ -423,9 +456,7 @@ interface ComposeOptions {
 /**
  * Compose the final print canvas with title, map, scale bar, credit, and compass
  */
-export async function composePrintCanvas(
-  options: ComposeOptions,
-): Promise<HTMLCanvasElement> {
+export function composePrintCanvas(options: ComposeOptions): HTMLCanvasElement {
   const { mapCanvas, title, showCompass, bearing, latitude, zoom, paper } =
     options;
 
@@ -470,37 +501,50 @@ export async function composePrintCanvas(
     const compassMargin = Math.round(12 * (paper.dpi / 150));
     const compassX = canvas.width - compassMargin - compassSize;
     const compassY = mapY + compassMargin;
-    try {
-      await drawCompass(ctx, bearing, compassX, compassY, compassSize);
-    } catch {
-      // Compass image failed to load - skip silently
-    }
+    drawCompass(ctx, bearing, compassX, compassY, compassSize);
   }
 
   return canvas;
 }
 
 /**
- * Open a new window with the print image and trigger browser print dialog
+ * Synchronously open a print window (must be called within a user gesture context)
  */
-export function triggerBrowserPrint(
+export function openPrintWindow(): Window | null {
+  // ポップアップウィンドウとして開くことで、元タブがバックグラウンドにならない
+  // （バックグラウンドタブでは rAF がスロットルされ、MapLibre の idle が発火しない）
+  const printWindow = window.open(
+    "",
+    "print_window",
+    "popup,width=800,height=600",
+  );
+  if (!printWindow) return null;
+
+  const doc = printWindow.document;
+  doc.title = "印刷";
+  doc.body.style.display = "flex";
+  doc.body.style.justifyContent = "center";
+  doc.body.style.alignItems = "center";
+  doc.body.style.height = "100vh";
+  doc.body.style.fontFamily = "sans-serif";
+  doc.body.textContent = "印刷データを準備中...";
+
+  return printWindow;
+}
+
+/**
+ * Write print content to an already-opened window and trigger browser print dialog
+ */
+export function writeToPrintWindow(
+  printWindow: Window,
   canvas: HTMLCanvasElement,
   paper: PaperSize,
 ): void {
   const dataUrl = canvas.toDataURL("image/png");
-
-  const printWindow = window.open("", "_blank");
-  if (!printWindow) {
-    alert(
-      "\u30DD\u30C3\u30D7\u30A2\u30C3\u30D7\u304C\u30D6\u30ED\u30C3\u30AF\u3055\u308C\u307E\u3057\u305F\u3002\u30DD\u30C3\u30D7\u30A2\u30C3\u30D7\u30D6\u30ED\u30C3\u30AB\u30FC\u3092\u7121\u52B9\u306B\u3057\u3066\u3082\u3046\u4E00\u5EA6\u304A\u8A66\u3057\u304F\u3060\u3055\u3044\u3002",
-    );
-    return;
-  }
-
   const doc = printWindow.document;
 
-  // Build document using DOM API instead of deprecated document.write
-  doc.title = "\u5370\u5237";
+  doc.body.innerHTML = "";
+  doc.body.removeAttribute("style");
 
   const style = doc.createElement("style");
   style.textContent = [
