@@ -11,6 +11,7 @@ import { Folder, Layers, TriangleAlert } from "lucide-react";
 import { useStore } from "@/hooks/store/useStore";
 import { cn } from "@/lib/utils";
 import { LayerInfoPopover } from "@/components/sidebar/optional-layer/layer-info-popover";
+import { OPTIONAL_LAYER_CONFIG } from "@/lib/config";
 
 type LayerGroupEntry = Extract<OptionalLayerEntry, { type: "layer-group" }>;
 type LayerEntry = Extract<OptionalLayerEntry, { type: "layer" }>;
@@ -130,9 +131,12 @@ export const OptionalLayerLayerRow = ({
   const setOptionalLayer = useStore((state) => state.setOptionalLayer);
   const isSelected = optionalLayers.some((l) => l.layerId === layerId);
   const isGeojsonTileLayer = tileUrl.endsWith(".geojson");
+  const isDisabledLayer =
+    OPTIONAL_LAYER_CONFIG.DISABLED_LAYER_IDS.includes(layerId);
+  const isUnavailable = isGeojsonTileLayer || isDisabledLayer;
 
   const handleClick = () => {
-    if (isGeojsonTileLayer) return;
+    if (isUnavailable) return;
     if (isSelected) {
       setOptionalLayer({
         mapId: focusMapId,
@@ -162,17 +166,17 @@ export const OptionalLayerLayerRow = ({
       className={cn(
         "flex gap-1 text-xs items-center",
         isSelected && "text-blue-500",
-        isGeojsonTileLayer ? "opacity-60 cursor-not-allowed" : "",
+        isUnavailable ? "opacity-60 cursor-not-allowed" : "",
       )}
     >
       <div
         className={cn(
           "flex gap-1 items-start cursor-pointer min-w-0 flex-1",
-          !isGeojsonTileLayer && "hover:opacity-80",
+          !isUnavailable && "hover:opacity-80",
         )}
         onClick={handleClick}
       >
-        {isGeojsonTileLayer ? (
+        {isUnavailable ? (
           <TriangleAlert className="text-muted-foreground size-3 shrink-0 mt-0.5" />
         ) : (
           <Layers className="text-muted-foreground size-3 shrink-0 mt-0.5" />
