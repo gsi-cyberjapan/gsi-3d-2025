@@ -39,6 +39,8 @@ const hydrateStore = () => {
       opacity: number;
       visible: boolean;
       tileUrl: string;
+      minZoom?: number;
+      maxZoom?: number;
     }[],
   ): OptionalLayerEntry[] | undefined => {
     if (!serialized || serialized.length === 0) return undefined;
@@ -48,6 +50,8 @@ const hydrateStore = () => {
       opacity: l.opacity,
       visible: l.visible,
       tileUrl: l.tileUrl,
+      ...(l.minZoom !== undefined ? { minZoom: l.minZoom } : {}),
+      ...(l.maxZoom !== undefined ? { maxZoom: l.maxZoom } : {}),
     }));
   };
 

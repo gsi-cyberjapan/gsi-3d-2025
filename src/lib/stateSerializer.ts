@@ -15,6 +15,8 @@ export interface SerializedOptionalLayer {
   opacity: number;
   visible: boolean;
   tileUrl: string;
+  minZoom?: number;
+  maxZoom?: number;
 }
 
 /** Shape of deserialized state that hydrate actions accept */
@@ -111,6 +113,8 @@ const serializeLayers = (
     opacity: number;
     visible: boolean;
     tileUrl: string;
+    minZoom?: number;
+    maxZoom?: number;
   }[],
 ): { ls: string; disp: string } => {
   // Base layer: first entry, always opacity 1.00, always visible
@@ -118,9 +122,13 @@ const serializeLayers = (
   let disp = "1";
 
   for (const l of optionalLayers) {
-    lsParts.push(
-      `${l.layerId},${fmtFloat(l.opacity, 2)},${encodeURIComponent(l.title)},${encodeURIComponent(l.tileUrl)}`,
-    );
+    let entry = `${l.layerId},${fmtFloat(l.opacity, 2)},${encodeURIComponent(l.title)},${encodeURIComponent(l.tileUrl)}`;
+    if (l.minZoom !== undefined || l.maxZoom !== undefined) {
+      const minZ = l.minZoom !== undefined ? String(l.minZoom) : "";
+      const maxZ = l.maxZoom !== undefined ? String(l.maxZoom) : "";
+      entry += `,${minZ},${maxZ}`;
+    }
+    lsParts.push(entry);
     disp += l.visible ? "1" : "0";
   }
 
@@ -144,8 +152,25 @@ const deserializeLayers = (
     if (parts.length === 2) {
       // Base layer: layerId,opacity
       baseLayerId = parts[0];
+    } else if (parts.length >= 6) {
+      // Optional layer with zoom range: layerId,opacity,title,tileUrl,minZoom,maxZoom
+      const opacity = parseFloat(parts[1]);
+      if (isNaN(opacity)) return;
+      const minZoomStr = parts[4];
+      const maxZoomStr = parts[5];
+      const minZoom = minZoomStr !== "" ? parseFloat(minZoomStr) : undefined;
+      const maxZoom = maxZoomStr !== "" ? parseFloat(maxZoomStr) : undefined;
+      optionalLayers.push({
+        layerId: parts[0],
+        title: decodeURIComponent(parts[2]),
+        opacity,
+        visible: isVisible,
+        tileUrl: decodeURIComponent(parts[3]),
+        ...(minZoom !== undefined && !isNaN(minZoom) ? { minZoom } : {}),
+        ...(maxZoom !== undefined && !isNaN(maxZoom) ? { maxZoom } : {}),
+      });
     } else if (parts.length >= 4) {
-      // Optional layer: layerId,opacity,title,tileUrl
+      // Optional layer (legacy 4-part format): layerId,opacity,title,tileUrl
       const opacity = parseFloat(parts[1]);
       if (isNaN(opacity)) return;
       optionalLayers.push({
@@ -153,7 +178,7 @@ const deserializeLayers = (
         title: decodeURIComponent(parts[2]),
         opacity,
         visible: isVisible,
-        tileUrl: decodeURIComponent(parts.slice(3).join(",")),
+        tileUrl: decodeURIComponent(parts[3]),
       });
     }
   });
@@ -207,6 +232,8 @@ export interface SerializableStoreState {
         opacity: number;
         visible: boolean;
         tileUrl: string;
+        minZoom?: number;
+        maxZoom?: number;
       }[];
       projection: "mercator" | "globe";
       isHillshadeEnabled: boolean;
