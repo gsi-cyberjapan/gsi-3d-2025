@@ -30,7 +30,8 @@ import {
   getTitleHeight,
   renderHighResMap,
   composePrintCanvas,
-  triggerBrowserPrint,
+  openPrintWindow,
+  writeToPrintWindow,
 } from "@/lib/printMap";
 import { POINT_CLOUD_CONFIG } from "@/lib/config";
 import { getVisibleTileEntries } from "@/lib/pointcloud/tilesIndex";
@@ -118,30 +119,33 @@ export const PrintDialog = () => {
 
     previewMapRef.current = previewMap;
 
+    const observer = new ResizeObserver(() => {
+      previewMap.resize();
+    });
+    observer.observe(previewContainer);
+
     return () => {
+      observer.disconnect();
       previewMapRef.current = null;
       previewMap.remove();
     };
   }, [isPrintDialogOpen, mapLib, maps.main, previewContainer]);
 
-  // Resize preview map when paper size or title changes
-  useEffect(() => {
-    const previewMap = previewMapRef.current;
-    if (!previewMap) return;
-
-    // Small delay to allow CSS aspect-ratio to update
-    const timer = setTimeout(() => {
-      previewMap.resize();
-    }, 50);
-
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [paperSizeId, previewDims.width, previewDims.height]);
-
   const handlePrint = useCallback(async () => {
     const previewMap = previewMapRef.current;
     if (!previewMap || !previewContainer) return;
+
+    // Open window synchronously within the user gesture context
+    const printWindow = openPrintWindow();
+    if (!printWindow) {
+      alert(
+        "ポップアップがブロックされました。ポップアップブロッカーを無効にしてもう一度お試しください。",
+      );
+      return;
+    }
+
+    // 元タブにフォーカスを戻し、rAF スロットルを防ぐ
+    window.focus();
 
     try {
       const center = previewMap.getCenter();
@@ -191,7 +195,7 @@ export const PrintDialog = () => {
         setupOverlay,
       });
 
-      const printCanvas = await composePrintCanvas({
+      const printCanvas = composePrintCanvas({
         mapCanvas,
         title,
         showCompass,
@@ -201,11 +205,12 @@ export const PrintDialog = () => {
         paper: paperSize,
       });
 
-      triggerBrowserPrint(printCanvas, paperSize);
+      writeToPrintWindow(printWindow, printCanvas, paperSize);
     } catch (err) {
+      printWindow.close();
       console.error("Print failed:", err);
       alert(
-        "\u5370\u5237\u306B\u5931\u6557\u3057\u307E\u3057\u305F\u3002\u7528\u7D19\u30B5\u30A4\u30BA\u3092\u5C0F\u3055\u304F\u3059\u308B\u304B\u3001\u6A19\u6E96\u753B\u8CEA\u3092\u304A\u8A66\u3057\u304F\u3060\u3055\u3044\u3002",
+        "印刷に失敗しました。用紙サイズを小さくするか、標準画質をお試しください。",
       );
     }
   }, [paperSize, title, showCompass, previewContainer, isPointCloudEnabled]);
@@ -224,7 +229,7 @@ export const PrintDialog = () => {
           <DialogTitle>印刷</DialogTitle>
         </DialogHeader>
 
-        <div className="flex flex-col gap-4 max-h-[70vh]">
+        <div className="flex flex-col gap-4 max-h-[70vh] overflow-y-auto scrollbar-transparent-thin">
           <div className="flex flex-col gap-2">
             <Label className="text-sm font-medium">用紙サイズ</Label>
             <Select value={paperSizeId} onValueChange={setPaperSizeId}>
@@ -272,14 +277,14 @@ export const PrintDialog = () => {
           <div className="flex flex-col gap-2">
             <Label className="text-sm font-medium">プレビュー</Label>
             <div
+              ref={setPreviewContainer}
               className="rounded-md border overflow-hidden bg-muted mx-auto"
               style={{
                 width: previewDims.width,
-                height: previewDims.height,
+                maxWidth: "100%",
+                aspectRatio: `${String(previewDims.width)} / ${String(previewDims.height)}`,
               }}
-            >
-              <div ref={setPreviewContainer} className="w-full h-full" />
-            </div>
+            />
           </div>
 
           <p className="text-muted-foreground text-xs">
