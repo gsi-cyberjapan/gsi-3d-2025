@@ -157,7 +157,7 @@ export const SaveImageDialog = () => {
           <DialogTitle>画像として保存</DialogTitle>
         </DialogHeader>
 
-        <div className="flex flex-col gap-4 max-h-[70vh]">
+        <div className="flex flex-col gap-4 max-h-[70vh] overflow-y-auto scrollbar-transparent-thin">
           {isSplitMode && (
             <div className="flex flex-col gap-2">
               <Label className="text-sm font-medium">地図を選択</Label>
@@ -214,7 +214,7 @@ export const SaveImageDialog = () => {
 
           {rangeMode === "bbox" && !isBBoxValid && (
             <p className="text-destructive text-xs">
-              北緯は南緯より大きく、東経は西経より大きい値を入力してください
+              北端は南端より大きく、東端は西端より大きい値を入力してください
             </p>
           )}
 

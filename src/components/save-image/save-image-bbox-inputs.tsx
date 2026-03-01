@@ -23,7 +23,7 @@ export const SaveImageBBoxInputs = ({
   return (
     <div className="grid grid-cols-2 gap-2">
       <div className="col-span-2 flex flex-col gap-1">
-        <Label className="text-xs">北緯</Label>
+        <Label className="text-xs">北端</Label>
         <Input
           type="number"
           step="0.0001"
@@ -35,7 +35,7 @@ export const SaveImageBBoxInputs = ({
         />
       </div>
       <div className="flex flex-col gap-1">
-        <Label className="text-xs">西経</Label>
+        <Label className="text-xs">西端</Label>
         <Input
           type="number"
           step="0.0001"
@@ -47,7 +47,7 @@ export const SaveImageBBoxInputs = ({
         />
       </div>
       <div className="flex flex-col gap-1">
-        <Label className="text-xs">東経</Label>
+        <Label className="text-xs">東端</Label>
         <Input
           type="number"
           step="0.0001"
@@ -59,7 +59,7 @@ export const SaveImageBBoxInputs = ({
         />
       </div>
       <div className="col-span-2 flex flex-col gap-1">
-        <Label className="text-xs">南緯</Label>
+        <Label className="text-xs">南端</Label>
         <Input
           type="number"
           step="0.0001"
