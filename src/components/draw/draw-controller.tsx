@@ -35,6 +35,14 @@ import {
 import { TerraDrawMapLibreGLAdapter } from "terra-draw-maplibre-gl-adapter";
 import { DRAW_CONFIG } from "@/lib/config";
 
+const TERRA_DRAW_LAYER_IDS = [
+  "td-polygon",
+  "td-polygon-outline",
+  "td-linestring",
+  "td-point",
+  "td-point-marker",
+] as const;
+
 export const DrawController = ({ mapId }: { mapId: MapId }) => {
   const map = useMap()[mapId]?.getMap();
   const drawRef = useRef<TerraDraw | null>(null);
@@ -160,6 +168,36 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
       styles: getSelectModeStyle(drawRef.current),
     });
   }, [hiddenSources, isStart]);
+
+  // TerraDraw レイヤーを常に最上位に維持する
+  useEffect(() => {
+    if (!map || !isStart) return;
+
+    const moveTdLayersToTop = () => {
+      const allExist = TERRA_DRAW_LAYER_IDS.every(
+        (id) => map.getLayer(id) !== undefined,
+      );
+      if (!allExist) return;
+
+      const layerOrder = map.getLayersOrder();
+      const topLayers = layerOrder.slice(-TERRA_DRAW_LAYER_IDS.length);
+      const alreadyOnTop = TERRA_DRAW_LAYER_IDS.every(
+        (id, i) => topLayers[i] === id,
+      );
+      if (alreadyOnTop) return;
+
+      for (const id of TERRA_DRAW_LAYER_IDS) {
+        map.moveLayer(id);
+      }
+    };
+
+    moveTdLayersToTop();
+    map.on("styledata", moveTdLayersToTop);
+
+    return () => {
+      map.off("styledata", moveTdLayersToTop);
+    };
+  }, [map, isStart]);
 
   useEffect(() => {
     if (!map) return;
