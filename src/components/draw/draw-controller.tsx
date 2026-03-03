@@ -73,11 +73,15 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
       const feature = drawRef.current?.getSnapshotFeature(id);
       const featureMode = feature?.properties.mode;
 
-      // 計測モードの場合は編集ダイアログを開かない
+      // 計測モードの場合はプロパティを設定して編集ダイアログを開かない
       if (
         featureMode === "measure-linestring" ||
         featureMode === "measure-polygon"
       ) {
+        drawRef.current?.updateFeatureProperties(id, {
+          mapId,
+          source: "measure",
+        });
         return;
       }
 

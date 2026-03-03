@@ -41,9 +41,11 @@ export const useDrawFeatures = (): FeatureGroup[] => {
       const snapshot = td.getSnapshot();
 
       for (const feature of snapshot) {
-        // 完了したフィーチャーのみカウント（選択ハンドル、選択中、作図中のフィーチャーを除外）
+        // 完了したフィーチャーのみカウント（選択ハンドル、選択中、作図中、計測フィーチャーを除外）
         if (
           feature.properties.mode === "select" ||
+          feature.properties.mode === "measure-linestring" ||
+          feature.properties.mode === "measure-polygon" ||
           feature.properties.selected ||
           feature.properties.currentlyDrawing ||
           feature.properties.closingPoint

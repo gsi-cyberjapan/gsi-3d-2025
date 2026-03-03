@@ -5,6 +5,10 @@ import { useStore } from "@/hooks/store/useStore";
 import { useEffect, useRef, useCallback } from "react";
 import { calculateDistance } from "@/lib/measure/calculateDistance";
 import { calculateArea } from "@/lib/measure/calculateArea";
+import {
+  saveMeasureData,
+  loadMeasureData,
+} from "@/lib/measure/measurePersistence";
 import type { GeoJSONStoreFeatures } from "terra-draw";
 
 export const MeasureController = ({ mapId }: { mapId: MapId }) => {
@@ -14,7 +18,56 @@ export const MeasureController = ({ mapId }: { mapId: MapId }) => {
     (state) => state.setCurrentMeasurement,
   );
   const td = useStore((state) => state.maps[mapId].td);
-  const measureFeatureIdRef = useRef<string | number | null>(null);
+  const addMeasureResult = useStore((state) => state.addMeasureResult);
+  const measureResults = useStore((state) => state.measureResults);
+  const hydrateMeasureState = useStore((state) => state.hydrateMeasureState);
+  const currentDrawingIdRef = useRef<string | number | null>(null);
+  const isRestoredRef = useRef(false);
+
+  // Restore measure features from localStorage on TerraDraw init
+  useEffect(() => {
+    if (!td || isRestoredRef.current) return;
+    isRestoredRef.current = true;
+
+    const stored = loadMeasureData();
+    if (!stored) return;
+
+    const restoredResults = stored.results.filter((r) => r.mapId === mapId);
+    if (restoredResults.length === 0) return;
+
+    try {
+      const featuresToAdd: GeoJSONStoreFeatures[] = restoredResults
+        .map((result) => stored.features[String(result.featureId)])
+        .filter((f): f is GeoJSONStoreFeatures => f !== undefined);
+      if (featuresToAdd.length > 0) {
+        td.addFeatures(featuresToAdd);
+      }
+    } catch {
+      // Features may fail to add if already present or invalid
+    }
+
+    hydrateMeasureState({ measureResults: stored.results });
+  }, [td, mapId, hydrateMeasureState]);
+
+  // Save to localStorage whenever measureResults change
+  useEffect(() => {
+    if (!td) return;
+
+    const features: Record<string, GeoJSON.Feature> = {};
+    for (const result of measureResults) {
+      if (result.mapId !== mapId) continue;
+      try {
+        const feature = td.getSnapshotFeature(result.featureId);
+        if (feature) {
+          features[String(result.featureId)] = feature as GeoJSON.Feature;
+        }
+      } catch {
+        // Feature may no longer exist
+      }
+    }
+
+    saveMeasureData(measureResults, features);
+  }, [td, measureResults, mapId]);
 
   const handleChange = useCallback(
     (ids: (string | number)[], type: string) => {
@@ -31,7 +84,10 @@ export const MeasureController = ({ mapId }: { mapId: MapId }) => {
             | undefined;
           if (!feature || feature.properties.mode !== currentModeName) continue;
 
-          measureFeatureIdRef.current = id;
+          // Only track currently drawing features for real-time display
+          if (feature.properties.currentlyDrawing) {
+            currentDrawingIdRef.current = id;
+          }
 
           if (
             feature.geometry.type === "LineString" &&
@@ -51,18 +107,62 @@ export const MeasureController = ({ mapId }: { mapId: MapId }) => {
         }
       }
 
-      // Handle feature deletion - clear measurement when feature is deleted
+      // Handle feature deletion - clear measurement when currently drawing feature is deleted
       if (type === "delete") {
         if (
-          measureFeatureIdRef.current !== null &&
-          ids.includes(measureFeatureIdRef.current)
+          currentDrawingIdRef.current !== null &&
+          ids.includes(currentDrawingIdRef.current)
         ) {
-          measureFeatureIdRef.current = null;
+          currentDrawingIdRef.current = null;
           setCurrentMeasurement(null);
         }
       }
     },
     [td, isMeasureWindowOpen, measureMode, setCurrentMeasurement],
+  );
+
+  const handleFinish = useCallback(
+    (id: string | number) => {
+      if (!td) return;
+
+      const feature = td.getSnapshotFeature(id) as
+        | GeoJSONStoreFeatures
+        | undefined;
+      if (!feature) return;
+
+      const featureMode = feature.properties.mode;
+      if (
+        featureMode !== "measure-linestring" &&
+        featureMode !== "measure-polygon"
+      ) {
+        return;
+      }
+
+      const type: "distance" | "area" =
+        featureMode === "measure-linestring" ? "distance" : "area";
+
+      let value = 0;
+      if (feature.geometry.type === "LineString" && type === "distance") {
+        const coords = feature.geometry.coordinates as number[][];
+        value = calculateDistance(coords);
+      } else if (feature.geometry.type === "Polygon" && type === "area") {
+        const coords = feature.geometry.coordinates[0] as number[][];
+        value = calculateArea(coords);
+      }
+
+      addMeasureResult({
+        id: crypto.randomUUID(),
+        featureId: id,
+        mapId,
+        type,
+        value,
+      });
+
+      // Reset current measurement display for next drawing
+      currentDrawingIdRef.current = null;
+      setCurrentMeasurement(null);
+    },
+    [td, mapId, addMeasureResult, setCurrentMeasurement],
   );
 
   // Subscribe to TerraDraw change events
@@ -76,36 +176,29 @@ export const MeasureController = ({ mapId }: { mapId: MapId }) => {
     };
   }, [td, isMeasureWindowOpen, handleChange]);
 
-  // Clean up measure features when closing the window or switching modes
+  // Subscribe to TerraDraw finish events
   useEffect(() => {
     if (!td) return;
 
-    // When measure window is closed, delete any measure features
-    if (!isMeasureWindowOpen && measureFeatureIdRef.current !== null) {
-      try {
-        td.removeFeatures([measureFeatureIdRef.current]);
-      } catch {
-        // Feature might already be deleted
-      }
-      measureFeatureIdRef.current = null;
-    }
-  }, [td, isMeasureWindowOpen]);
+    td.on("finish", handleFinish);
 
-  // Clean up when measure mode changes
+    return () => {
+      td.off("finish", handleFinish);
+    };
+  }, [td, handleFinish]);
+
+  // Clear current measurement when closing the window or switching modes
   useEffect(() => {
-    if (!td || !isMeasureWindowOpen) return;
-
-    // Delete previous measure feature when switching modes
-    if (measureFeatureIdRef.current !== null) {
-      try {
-        td.removeFeatures([measureFeatureIdRef.current]);
-      } catch {
-        // Feature might already be deleted
-      }
-      measureFeatureIdRef.current = null;
+    if (!isMeasureWindowOpen) {
+      currentDrawingIdRef.current = null;
       setCurrentMeasurement(null);
     }
-  }, [td, measureMode, isMeasureWindowOpen, setCurrentMeasurement]);
+  }, [isMeasureWindowOpen, setCurrentMeasurement]);
+
+  useEffect(() => {
+    currentDrawingIdRef.current = null;
+    setCurrentMeasurement(null);
+  }, [measureMode, setCurrentMeasurement]);
 
   return null;
 };
