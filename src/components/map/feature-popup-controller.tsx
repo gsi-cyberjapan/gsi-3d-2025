@@ -2,11 +2,13 @@
 
 import { useMap, Popup } from "react-map-gl/maplibre";
 import { useEffect, useCallback, useRef } from "react";
-import type { MapMouseEvent } from "maplibre-gl";
+import type { MapMouseEvent, PointLike } from "maplibre-gl";
 import { useStore } from "@/hooks/store/useStore";
 import { MapId } from "@/hooks/store/mapManagerState";
 import { FeaturePopupFeature } from "@/hooks/store/featurePopupState";
 import { FeaturePopupContent } from "./feature-popup-content";
+
+const QUERY_TOLERANCE_PX = 3;
 
 interface Props {
   mapId: MapId;
@@ -31,14 +33,19 @@ export const FeaturePopupController = ({ mapId }: Props) => {
 
   const handleContextMenu = useCallback(
     (ev: MapMouseEvent) => {
-      if (!map) return;
+      if (!map || !map.isStyleLoaded()) return;
 
       ev.preventDefault();
 
-      const renderedFeatures = map.queryRenderedFeatures(ev.point);
+      const bbox: [PointLike, PointLike] = [
+        [ev.point.x - QUERY_TOLERANCE_PX, ev.point.y - QUERY_TOLERANCE_PX],
+        [ev.point.x + QUERY_TOLERANCE_PX, ev.point.y + QUERY_TOLERANCE_PX],
+      ];
+      const renderedFeatures = map.queryRenderedFeatures(bbox);
       if (!renderedFeatures.length) return;
 
       const features: FeaturePopupFeature[] = [];
+      const seen = new Set<string>();
 
       for (const f of renderedFeatures) {
         const properties: Record<string, unknown> = {};
@@ -52,6 +59,10 @@ export const FeaturePopupController = ({ mapId }: Props) => {
         }
 
         if (!hasProperty) continue;
+
+        const dedupKey = `${f.layer.id}|${f.sourceLayer ?? f.layer.id}|${JSON.stringify(properties)}`;
+        if (seen.has(dedupKey)) continue;
+        seen.add(dedupKey);
 
         features.push({
           layerId: f.layer.id,
@@ -81,10 +92,19 @@ export const FeaturePopupController = ({ mapId }: Props) => {
   useEffect(() => {
     if (!map || baseLayerType !== "vector") return;
 
-    map.on("contextmenu", handleContextMenu);
-    map.on("click", handleClick);
+    const register = () => {
+      map.on("contextmenu", handleContextMenu);
+      map.on("click", handleClick);
+    };
+
+    if (map.isStyleLoaded()) {
+      register();
+    } else {
+      void map.once("style.load", register);
+    }
 
     return () => {
+      map.off("style.load", register);
       map.off("contextmenu", handleContextMenu);
       map.off("click", handleClick);
     };
