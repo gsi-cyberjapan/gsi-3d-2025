@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useMap } from "react-map-gl/maplibre";
 import { MapId } from "@/hooks/store/mapManagerState";
 import { useStore } from "@/hooks/store/useStore";
-import { TERRAIN_CONFIG } from "@/lib/config";
+import { TERRAIN_CONFIG, getDemSourceById } from "@/lib/config";
 
 interface Props {
   mapId: MapId;
@@ -16,24 +16,29 @@ export const TerrainController = ({ mapId }: Props) => {
   const isTerrainEnabled = useStore(
     (state) => state.maps[mapId].isTerrainEnabled,
   );
+  const selectedDemSourceId = useStore((state) => state.selectedDemSourceId);
   const mapInstance = useMap()[mapId]?.getMap();
 
   useEffect(() => {
     if (!mapInstance) return;
 
+    const demSource = getDemSourceById(selectedDemSourceId);
+
     const apply = () => {
       if (isTerrainEnabled) {
-        // Add DEM source if it doesn't exist
-        if (!mapInstance.getSource(TERRAIN_SOURCE_ID)) {
-          mapInstance.addSource(TERRAIN_SOURCE_ID, {
-            type: "raster-dem",
-            tiles: [TERRAIN_CONFIG.DEM_TILE_URL],
-            tileSize: 256,
-            encoding: TERRAIN_CONFIG.DEM_ENCODING,
-            minzoom: TERRAIN_CONFIG.DEM_MIN_ZOOM,
-            maxzoom: TERRAIN_CONFIG.DEM_MAX_ZOOM,
-          });
+        // Remove existing terrain source if it exists (DEM source may have changed)
+        if (mapInstance.getSource(TERRAIN_SOURCE_ID)) {
+          mapInstance.setTerrain(null);
+          mapInstance.removeSource(TERRAIN_SOURCE_ID);
         }
+        mapInstance.addSource(TERRAIN_SOURCE_ID, {
+          type: "raster-dem",
+          tiles: [demSource.tileUrl],
+          tileSize: 256,
+          encoding: TERRAIN_CONFIG.DEM_ENCODING,
+          minzoom: TERRAIN_CONFIG.DEM_MIN_ZOOM,
+          maxzoom: demSource.maxZoom,
+        });
         mapInstance.setTerrain({
           source: TERRAIN_SOURCE_ID,
           exaggeration: TERRAIN_CONFIG.TERRAIN_EXAGGERATION,
@@ -52,7 +57,7 @@ export const TerrainController = ({ mapId }: Props) => {
     return () => {
       mapInstance.off("style.load", apply);
     };
-  }, [mapInstance, isTerrainEnabled]);
+  }, [mapInstance, isTerrainEnabled, selectedDemSourceId]);
 
   return null;
 };

@@ -1,4 +1,9 @@
-import { DEFAULT_VIEW_CONFIG } from "@/lib/config";
+import {
+  DEFAULT_VIEW_CONFIG,
+  DemSourceId,
+  DEFAULT_DEM_SOURCE_ID,
+  DEM_SOURCES,
+} from "@/lib/config";
 import { LayoutMode, MapId, ViewState } from "@/hooks/store/mapManagerState";
 import { getBaseLayers, BaseLayer } from "@/lib/getBaseLayers";
 import { getCustomLayers } from "@/lib/customBaseLayers";
@@ -60,6 +65,8 @@ export interface DeserializedState {
   isHillshadeEnabled?: boolean;
   selectedPatternId?: string;
   elevationRanges?: ElevationRange[];
+  // DEM source
+  selectedDemSourceId?: DemSourceId;
 }
 
 // --- Defaults ---
@@ -251,6 +258,7 @@ export interface SerializableStoreState {
   isHillshadeEnabled: boolean;
   selectedPatternId: string;
   elevationRanges: ElevationRange[];
+  selectedDemSourceId: DemSourceId;
 }
 
 // --- Serialize ---
@@ -392,6 +400,9 @@ export const serializeState = (state: SerializableStoreState): string => {
     const rangesStr = serializeElevationRanges(state.elevationRanges);
     push("er", rangesStr, defaultRangesString());
   }
+
+  // DEM source
+  push("dem", state.selectedDemSourceId, DEFAULT_DEM_SOURCE_ID);
 
   const paramStr = parts.join("&");
   return paramStr ? `${positionSegment}&${paramStr}` : positionSegment;
@@ -601,6 +612,12 @@ export const deserializeState = (paramString: string): DeserializedState => {
     if (ranges.length >= 2) {
       result.elevationRanges = ranges;
     }
+  }
+
+  // DEM source
+  const dem = getString("dem");
+  if (dem !== undefined && DEM_SOURCES.some((s) => s.id === dem)) {
+    result.selectedDemSourceId = dem as DemSourceId;
   }
 
   return result;

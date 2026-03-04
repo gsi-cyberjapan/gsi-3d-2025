@@ -3,7 +3,7 @@
 import { Source, Layer } from "react-map-gl/maplibre";
 import { MapId } from "@/hooks/store/mapManagerState";
 import { useStore } from "@/hooks/store/useStore";
-import { TERRAIN_CONFIG } from "@/lib/config";
+import { TERRAIN_CONFIG, getDemSourceById } from "@/lib/config";
 
 interface Props {
   mapId: MapId;
@@ -13,20 +13,24 @@ export const HillshadeLayer = ({ mapId }: Props) => {
   const isHillshadeEnabled = useStore(
     (state) => state.maps[mapId].isHillshadeEnabled,
   );
+  const selectedDemSourceId = useStore((state) => state.selectedDemSourceId);
 
   if (!isHillshadeEnabled) {
     return null;
   }
 
+  const demSource = getDemSourceById(selectedDemSourceId);
+
   return (
     <Source
-      id={`${mapId}-standalone-dem`}
+      key={selectedDemSourceId}
+      id={`${mapId}-standalone-dem-${selectedDemSourceId}`}
       type="raster-dem"
-      tiles={[TERRAIN_CONFIG.DEM_TILE_URL]}
+      tiles={[demSource.tileUrl]}
       tileSize={256}
       encoding={TERRAIN_CONFIG.DEM_ENCODING}
       minzoom={TERRAIN_CONFIG.DEM_MIN_ZOOM}
-      maxzoom={TERRAIN_CONFIG.DEM_MAX_ZOOM}
+      maxzoom={demSource.maxZoom}
     >
       <Layer
         id={`${mapId}-standalone-hillshade`}

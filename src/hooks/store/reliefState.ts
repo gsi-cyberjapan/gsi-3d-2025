@@ -7,6 +7,7 @@ import {
   getPatternById,
   generateRangeId,
 } from "@/lib/relief/colorPatterns";
+import { DemSourceId, DEFAULT_DEM_SOURCE_ID } from "@/lib/config";
 
 export interface ReliefState {
   /** 段彩図設定ウィンドウの表示状態 */
@@ -34,6 +35,10 @@ export interface ReliefState {
   selectedPatternId: string;
   /** カラーパターンを適用 */
   applyColorPattern: (patternId: string) => void;
+  /** 選択中のDEMソースID */
+  selectedDemSourceId: DemSourceId;
+  /** DEMソースを設定 */
+  setSelectedDemSourceId: (id: DemSourceId) => void;
   /** デフォルトにリセット */
   resetToDefaults: () => void;
   /** ハイドレーション */
@@ -42,6 +47,7 @@ export interface ReliefState {
     isHillshadeEnabled?: boolean;
     selectedPatternId?: string;
     elevationRanges?: ElevationRange[];
+    selectedDemSourceId?: DemSourceId;
   }) => void;
 }
 
@@ -145,6 +151,13 @@ export const createReliefSlice: StateCreator<
     });
   },
 
+  selectedDemSourceId: DEFAULT_DEM_SOURCE_ID,
+  setSelectedDemSourceId: (id) => {
+    set(() => ({
+      selectedDemSourceId: id,
+    }));
+  },
+
   resetToDefaults: () => {
     set(() => ({
       elevationRanges: getDefaultRanges(),
@@ -163,6 +176,8 @@ export const createReliefSlice: StateCreator<
         updates.selectedPatternId = partial.selectedPatternId;
       if (partial.elevationRanges !== undefined)
         updates.elevationRanges = partial.elevationRanges;
+      if (partial.selectedDemSourceId !== undefined)
+        updates.selectedDemSourceId = partial.selectedDemSourceId;
       return updates;
     });
   },

@@ -12,6 +12,7 @@ import { OptionalLayerSelector } from "./optional-layer/optional-layer-selector"
 import { OptionalLayerControler } from "./optional-layer/optional-layer-controler";
 import { GlobeModeCheckbox } from "./globe-mode-checkbox";
 import { MapDisplayToggles } from "./map-display-toggles";
+import { DemSourceSelector } from "./dem-source-selector";
 import { OptionalLayerResetButton } from "./optional-layer/optional-layer-reset-button";
 
 export const Sidebar = () => {
@@ -51,6 +52,7 @@ export const Sidebar = () => {
           <LayoutSelector />
           <GlobeModeCheckbox />
           <MapDisplayToggles />
+          <DemSourceSelector />
         </div>
       </SidebarFooter>
     </UISidebar>
