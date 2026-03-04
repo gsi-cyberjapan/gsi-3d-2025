@@ -85,9 +85,17 @@ export const FeaturePopupController = ({ mapId }: Props) => {
     [map, mapId, showFeaturePopup],
   );
 
-  const handleClick = useCallback(() => {
-    closeFeaturePopup(mapId);
-  }, [mapId, closeFeaturePopup]);
+  const handleClick = useCallback(
+    (ev: MapMouseEvent) => {
+      // Ctrl+左クリックを右クリック（コンテキストメニュー）と同様に扱う
+      if (ev.originalEvent.ctrlKey) {
+        handleContextMenu(ev);
+        return;
+      }
+      closeFeaturePopup(mapId);
+    },
+    [mapId, closeFeaturePopup, handleContextMenu],
+  );
 
   useEffect(() => {
     if (!map || baseLayerType !== "vector") return;
