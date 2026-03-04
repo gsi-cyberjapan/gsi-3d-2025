@@ -1,5 +1,5 @@
 /**
- * 緯度・経度グリッドの間隔を秒単位で返す
+ * 経緯度グリッドの間隔を秒単位で返す
  * GSI旧システムの設定に準拠
  */
 export const getLatLngGridIntervalSeconds = (zoom: number): number => {

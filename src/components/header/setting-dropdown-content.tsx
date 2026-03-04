@@ -87,7 +87,7 @@ export const SettingDropdownContent = () => {
               onCheckedChange={setIsDisplayLatLngGrid}
               className="text-sm cursor-pointer"
             >
-              緯度・経度グリッド
+              経緯度グリッド
             </DropdownMenuCheckboxItem>
             <DropdownMenuCheckboxItem
               checked={isDisplayUtmGrid}
