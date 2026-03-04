@@ -156,14 +156,15 @@ const getLngLatFromLngLatDms = (input: LngLatDmsText): LngLat => {
     return new LngLat(lng, lat);
   }
 
-  // Degree-only pattern: "35.68度 139.76度"
-  const degreeOnlyPattern =
-    /^([+,-]?[0-9]+(\.[0-9]+)?)度[\s,]+([+,-]?[0-9]+(\.[0-9]+)?)度$/;
-  const md = trimmed.match(degreeOnlyPattern);
-  if (md) {
-    const lat = parseFloat(md[1]);
-    const lng = parseFloat(md[3]);
-    return new LngLat(lng, lat);
+  // Degree-only pattern: "35.68度 139.76度", "35.68度 139.76度 15", "35.68度 139.76 15度"
+  if (/度/.test(trimmed) && !/分/.test(trimmed) && !/秒/.test(trimmed)) {
+    const stripped = trimmed.replace(/度/g, "");
+    const nums = stripped.match(/[+,-]?[0-9]+(\.[0-9]+)?/g);
+    if (nums && nums.length >= 2) {
+      const lat = parseFloat(nums[0]);
+      const lng = parseFloat(nums[1]);
+      return new LngLat(lng, lat);
+    }
   }
 
   const numbers = input.match(/[-+]?\d+\.?\d*/g);
