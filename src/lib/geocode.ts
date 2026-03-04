@@ -156,6 +156,16 @@ const getLngLatFromLngLatDms = (input: LngLatDmsText): LngLat => {
     return new LngLat(lng, lat);
   }
 
+  // Degree-only pattern: "35.68度 139.76度"
+  const degreeOnlyPattern =
+    /^([+,-]?[0-9]+(\.[0-9]+)?)度[\s,]+([+,-]?[0-9]+(\.[0-9]+)?)度$/;
+  const md = trimmed.match(degreeOnlyPattern);
+  if (md) {
+    const lat = parseFloat(md[1]);
+    const lng = parseFloat(md[3]);
+    return new LngLat(lng, lat);
+  }
+
   const numbers = input.match(/[-+]?\d+\.?\d*/g);
   if (!numbers || numbers.length < 6) {
     throw new Error("Invalid DMS format");

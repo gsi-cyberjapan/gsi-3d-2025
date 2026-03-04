@@ -85,6 +85,16 @@ describe("geocode", () => {
         expect(result.lnglat.lng).toBeCloseTo(139.7528, 2);
       }
     });
+
+    it("度記号付き小数座標", () => {
+      const result = geocode("35.68度 139.76度");
+      expect(result.type).toBe("point");
+      expect(result.detected.kind).toBe("lnglatDms");
+      if (result.type === "point") {
+        expect(result.lnglat.lat).toBeCloseTo(35.68, 2);
+        expect(result.lnglat.lng).toBeCloseTo(139.76, 2);
+      }
+    });
   });
 
   describe("MGRS", () => {
