@@ -57,6 +57,22 @@ describe("geocode", () => {
       expect(result.type).toBe("point");
       expect(result.detected.kind).toBe("lnglat");
     });
+
+    it("半角スペース区切りの座標", () => {
+      const result = geocode("35.68 139.76");
+      expect(result.type).toBe("point");
+      expect(result.detected.kind).toBe("lnglat");
+      if (result.type === "point") {
+        expect(result.lnglat.lat).toBeCloseTo(35.68, 2);
+        expect(result.lnglat.lng).toBeCloseTo(139.76, 2);
+      }
+    });
+
+    it("半角スペース区切り + ズームレベル", () => {
+      const result = geocode("35.68 139.76 15");
+      expect(result.type).toBe("point");
+      expect(result.detected.kind).toBe("lnglat");
+    });
   });
 
   describe("度分秒 (lnglatDms)", () => {
