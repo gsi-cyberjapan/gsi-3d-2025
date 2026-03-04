@@ -87,6 +87,7 @@ const hydrateStore = () => {
     isHillshadeEnabled: state.isHillshadeEnabled,
     selectedPatternId: state.selectedPatternId,
     elevationRanges: state.elevationRanges,
+    selectedDemSourceId: state.selectedDemSourceId,
   });
 
   store.setIsHydrated(true);

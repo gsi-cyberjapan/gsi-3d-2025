@@ -179,11 +179,65 @@ export const OVERVIEW_MAP_CONFIG = {
   ZOOM_OFFSET: 5,
 } as const;
 
+export type DemSourceId =
+  | "gsidem1a"
+  | "gsidem5a"
+  | "gsidem5b"
+  | "gsidem5c"
+  | "gsidem10b";
+
+export interface DemSource {
+  id: DemSourceId;
+  name: string;
+  tileUrl: string;
+  maxZoom: number;
+}
+
+export const DEFAULT_DEM_SOURCE_ID: DemSourceId = "gsidem10b";
+
+export const DEM_SOURCES: DemSource[] = [
+  {
+    id: "gsidem10b",
+    name: "DEM10B（10mメッシュ標高）",
+    tileUrl:
+      "gsidem://https://cyberjapandata.gsi.go.jp/xyz/dem_png/{z}/{x}/{y}.png",
+    maxZoom: 14,
+  },
+  {
+    id: "gsidem5a",
+    name: "DEM5A（5mメッシュ標高・レーザ）",
+    tileUrl:
+      "gsidem://https://cyberjapandata.gsi.go.jp/xyz/dem5a_png/{z}/{x}/{y}.png",
+    maxZoom: 15,
+  },
+  {
+    id: "gsidem5b",
+    name: "DEM5B（5mメッシュ標高・写真測量）",
+    tileUrl:
+      "gsidem://https://cyberjapandata.gsi.go.jp/xyz/dem5b_png/{z}/{x}/{y}.png",
+    maxZoom: 15,
+  },
+  {
+    id: "gsidem5c",
+    name: "DEM5C（5mメッシュ標高・写真測量）",
+    tileUrl:
+      "gsidem://https://cyberjapandata.gsi.go.jp/xyz/dem5c_png/{z}/{x}/{y}.png",
+    maxZoom: 15,
+  },
+  {
+    id: "gsidem1a",
+    name: "DEM1A（1mメッシュ標高）",
+    tileUrl:
+      "gsidem://https://cyberjapandata.gsi.go.jp/xyz/dem1a_png/{z}/{x}/{y}.png",
+    maxZoom: 17,
+  },
+];
+
+export const getDemSourceById = (id: DemSourceId): DemSource =>
+  DEM_SOURCES.find((s) => s.id === id) ?? DEM_SOURCES[0];
+
 export const TERRAIN_CONFIG = {
-  DEM_TILE_URL:
-    "gsidem://https://cyberjapandata.gsi.go.jp/xyz/dem_png/{z}/{x}/{y}.png",
   DEM_MIN_ZOOM: 0,
-  DEM_MAX_ZOOM: 14,
   DEM_ENCODING: "terrarium",
   TERRAIN_EXAGGERATION: 1.0,
   HILLSHADE_EXAGGERATION: 0.5,

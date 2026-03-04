@@ -31,6 +31,8 @@ export const ClickToMoveController = ({ mapId }: Props) => {
   const handleClick = useCallback(
     (ev: MapMouseEvent) => {
       if (!map) return;
+      // Ctrl+左クリックは右クリック代替として使うため、panToしない
+      if (ev.originalEvent.ctrlKey) return;
 
       clearClickTimer();
 

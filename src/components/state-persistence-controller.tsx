@@ -57,6 +57,7 @@ export const StatePersistenceController = () => {
           isHillshadeEnabled: state.isHillshadeEnabled,
           selectedPatternId: state.selectedPatternId,
           elevationRanges: state.elevationRanges,
+          selectedDemSourceId: state.selectedDemSourceId,
         };
 
         const serialized = serializeState(storeState);
