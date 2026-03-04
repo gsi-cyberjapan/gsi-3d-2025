@@ -11,6 +11,7 @@ import {
   NativeSelectOption,
 } from "@/components/ui/native-select";
 import { Button } from "../ui/button";
+import { cn } from "@/lib/utils";
 
 interface SuggestFilterOption {
   prefCode: string;
@@ -143,10 +144,16 @@ const SuggestItem = ({
   const setIsAddressSearchSuggestOpen = useStore(
     (state) => state.setIsAddressSearchSuggestOpen,
   );
+  const isHovering = useStore(
+    (state) => state.hoveringAddressSearchSuggestId === item.id,
+  );
 
   return (
     <Button
-      className="w-full p-0 justify-start px-1 rounded-xs"
+      className={cn(
+        "w-full p-0 justify-start px-1 rounded-xs",
+        isHovering && "bg-accent",
+      )}
       variant="ghost"
       size="xs"
       onClick={() => {

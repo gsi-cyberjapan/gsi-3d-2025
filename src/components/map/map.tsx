@@ -161,7 +161,7 @@ export const Map = ({ mapId, className, opacity }: Props) => {
               <IconRenderLayer mapId={mapId} />
               <SelectionActionButtons mapId={mapId} />
               <ZoomLevelController mapId={mapId} />
-              <SearchResultController />
+              <SearchResultController mapId={mapId} />
               <ClickToMoveController mapId={mapId} />
               <MagneticNorthController mapId={mapId} />
               <LatLngGridController mapId={mapId} />
