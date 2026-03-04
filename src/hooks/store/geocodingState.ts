@@ -51,18 +51,22 @@ export const createGeocodingSlice: StateCreator<
   },
   selectedAddrssCandidate: null,
   geocode: async (query) => {
-    const result = geocode(query);
+    try {
+      const result = geocode(query);
 
-    if (result.type === "point") {
-      set({
-        resultLngLat: result.lnglat,
-      });
-      return;
+      if (result.type === "point") {
+        set({
+          resultLngLat: result.lnglat,
+        });
+        return;
+      }
+
+      set({ isAddressSearchLoading: true, isAddressSearchSuggestOpen: true });
+      const addressSearchResult = await result.getAddressSearchResult;
+      set({ addressSearchResult, isAddressSearchLoading: false });
+    } catch (error) {
+      console.error("Geocoding failed:", error);
     }
-
-    set({ isAddressSearchLoading: true, isAddressSearchSuggestOpen: true });
-    const addressSearchResult = await result.getAddressSearchResult;
-    set({ addressSearchResult, isAddressSearchLoading: false });
   },
   clearAddressSearchResult: () => {
     set({

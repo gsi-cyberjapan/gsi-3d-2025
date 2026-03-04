@@ -30,7 +30,7 @@ const isLngLatText = (s: string): s is LngLatText => {
   // Pattern 1: lat lng [z] または lat,lng[,z]
   // Examples: "35.00 135.00", "35.00,135.00", "35.00 135.00 15"
   const LNGLAT_PATTERN_1 =
-    /^([-+]?[0-9]+(\.[0-9]+)?)([s,]+)([-+]?[0-9]+(\.[0-9]+)?)(([\s,]+)([0-9]+(\.[0-9]+)?))?$/;
+    /^([-+]?[0-9]+(\.[0-9]+)?)([\s,]+)([-+]?[0-9]+(\.[0-9]+)?)(([\s,]+)([0-9]+(\.[0-9]+)?))?$/;
 
   // Pattern 2: #z/lat/lng または z/lat/lng
   // Examples: "#15/35.00/135.00", "15/35.00/135.00"
@@ -108,7 +108,7 @@ const getLngLatFromLngLatString = (input: LngLatText): LngLat => {
   const trimmed = input.trim();
 
   const LNGLAT_PATTERN_1 =
-    /^([-+]?[0-9]+(\.[0-9]+)?)([s,]+)([-+]?[0-9]+(\.[0-9]+)?)(([\s,]+)([0-9]+(\.[0-9]+)?))?$/;
+    /^([-+]?[0-9]+(\.[0-9]+)?)([\s,]+)([-+]?[0-9]+(\.[0-9]+)?)(([\s,]+)([0-9]+(\.[0-9]+)?))?$/;
 
   const LNGLAT_PATTERN_2 =
     /^[#]?([0-9]+(\.[0-9]+)?)([/]+)([-+]?[0-9]+(\.[0-9]+)?)([/]+)([-+]?[0-9]+(\.[0-9]+)?)$/;
@@ -154,6 +154,17 @@ const getLngLatFromLngLatDms = (input: LngLatDmsText): LngLat => {
     if (lngMinus) lng *= -1;
 
     return new LngLat(lng, lat);
+  }
+
+  // Degree-only pattern: "35.68度 139.76度", "35.68度 139.76度 15", "35.68度 139.76 15度"
+  if (/度/.test(trimmed) && !/分/.test(trimmed) && !/秒/.test(trimmed)) {
+    const stripped = trimmed.replace(/度/g, "");
+    const nums = stripped.match(/[+,-]?[0-9]+(\.[0-9]+)?/g);
+    if (nums && nums.length >= 2) {
+      const lat = parseFloat(nums[0]);
+      const lng = parseFloat(nums[1]);
+      return new LngLat(lng, lat);
+    }
   }
 
   const numbers = input.match(/[-+]?\d+\.?\d*/g);
