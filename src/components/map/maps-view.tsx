@@ -7,12 +7,13 @@ import { cn } from "@/lib/utils";
 import { ViewFooter } from "./view-footer";
 import { SaveImageDialog } from "../save-image/save-image-dialog";
 import { PrintDialog } from "../print/print-dialog";
+import { OverlaySliderHandle } from "./overlay-slider-handle";
 
 export const MapsView = () => {
   const activeMapIds = useStore((state) => state.activeMapIds);
   const layoutMode = useStore((state) => state.layoutMode);
-  const subMapOpacityOnOverlay = useStore(
-    (state) => state.subMapOpacityOnOverlay,
+  const overlaySliderPosition = useStore(
+    (state) => state.overlaySliderPosition,
   );
 
   return (
@@ -23,15 +24,18 @@ export const MapsView = () => {
             key={id}
             mapId={id}
             className={cn({
-              absolute: layoutMode === "overlay" && id === "sub",
+              "absolute inset-0": layoutMode === "overlay",
             })}
-            opacity={
-              layoutMode === "overlay" && id === "sub"
-                ? subMapOpacityOnOverlay
+            clipPath={
+              layoutMode === "overlay"
+                ? id === "main"
+                  ? `inset(0 ${String((1 - overlaySliderPosition) * 100)}% 0 0)`
+                  : `inset(0 0 0 ${String(overlaySliderPosition * 100)}%)`
                 : undefined
             }
           />
         ))}
+        {layoutMode === "overlay" && <OverlaySliderHandle />}
         <ViewFooter />
       </div>
       <SaveImageDialog />

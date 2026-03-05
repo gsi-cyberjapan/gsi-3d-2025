@@ -16,6 +16,7 @@ const hydrateStore = () => {
     layoutMode: state.layoutMode,
     isSyncPosition: state.isSyncPosition,
     subMapOpacityOnOverlay: state.subMapOpacityOnOverlay,
+    overlaySliderPosition: state.overlaySliderPosition,
     isDisplayCenterLine: state.isDisplayCenterLine,
     isDisplayOverview: state.isDisplayOverview,
     isClickToMoveEnabled: state.isClickToMoveEnabled,

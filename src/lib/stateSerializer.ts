@@ -34,6 +34,7 @@ export interface DeserializedState {
   layoutMode?: LayoutMode;
   isSyncPosition?: boolean;
   subMapOpacityOnOverlay?: number;
+  overlaySliderPosition?: number;
   isDisplayCenterLine?: boolean;
   isDisplayOverview?: boolean;
   isClickToMoveEnabled?: boolean;
@@ -74,6 +75,7 @@ export interface DeserializedState {
 const DEFAULT_LAYOUT_MODE: LayoutMode = "single";
 const DEFAULT_SYNC = false;
 const DEFAULT_OPACITY = 0.5;
+const DEFAULT_SLIDER_POSITION = 0.5;
 const DEFAULT_CENTER_LINE = true;
 const DEFAULT_OVERVIEW = false;
 const DEFAULT_CLICK_TO_MOVE = false;
@@ -225,6 +227,7 @@ export interface SerializableStoreState {
   layoutMode: LayoutMode;
   isSyncPosition: boolean;
   subMapOpacityOnOverlay: number;
+  overlaySliderPosition: number;
   isDisplayCenterLine: boolean;
   isDisplayOverview: boolean;
   isClickToMoveEnabled: boolean;
@@ -370,6 +373,11 @@ export const serializeState = (state: SerializableStoreState): string => {
     fmtFloat(state.subMapOpacityOnOverlay, 2),
     fmtFloat(DEFAULT_OPACITY, 2),
   );
+  push(
+    "spos",
+    fmtFloat(state.overlaySliderPosition, 2),
+    fmtFloat(DEFAULT_SLIDER_POSITION, 2),
+  );
   push("cl", fmtBool(state.isDisplayCenterLine), fmtBool(DEFAULT_CENTER_LINE));
   push("ov", fmtBool(state.isDisplayOverview), fmtBool(DEFAULT_OVERVIEW));
   push(
@@ -513,6 +521,9 @@ export const deserializeState = (paramString: string): DeserializedState => {
 
   const opa = getFloat("opa");
   if (opa !== undefined) result.subMapOpacityOnOverlay = opa;
+
+  const spos = getFloat("spos");
+  if (spos !== undefined) result.overlaySliderPosition = spos;
 
   const cl = getBool("cl");
   if (cl !== undefined) result.isDisplayCenterLine = cl;

@@ -55,10 +55,10 @@ const ReactMaplibre = dynamic(
 
 interface Props {
   mapId: MapId;
-  opacity?: number;
+  clipPath?: string;
   className?: string;
 }
-export const Map = ({ mapId, className, opacity }: Props) => {
+export const Map = ({ mapId, className, clipPath }: Props) => {
   const baseLayer = useStore((state) => state.maps[mapId].baseLayer);
   const [mapLib, setMapLib] = useState<MapLibreType | null>(null);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
@@ -124,9 +124,11 @@ export const Map = ({ mapId, className, opacity }: Props) => {
   }, [mapLib, isMapLoaded]);
 
   return (
-    <div className={cn("relative w-full h-full", className)}>
-      {/* opacityはこの内側のdivにのみ適用される */}
-      <div className="w-full h-full" style={{ opacity }}>
+    <div
+      className={cn("relative w-full h-full", className)}
+      style={{ clipPath }}
+    >
+      <div className="w-full h-full">
         {mapLib && (
           <div
             className={cn(

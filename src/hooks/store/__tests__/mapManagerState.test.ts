@@ -90,6 +90,13 @@ describe("mapManagerState", () => {
     });
   });
 
+  describe("setOverlaySliderPosition", () => {
+    it("スライダー位置を変更できる", () => {
+      store.getState().setOverlaySliderPosition(0.7);
+      expect(store.getState().overlaySliderPosition).toBe(0.7);
+    });
+  });
+
   describe("setIsDisplayCenterLine", () => {
     it("中心線の表示を切り替えられる", () => {
       store.getState().setIsDisplayCenterLine(false);
@@ -146,6 +153,7 @@ describe("mapManagerState", () => {
       store.getState().hydrateMapManagerState({
         isSyncPosition: true,
         subMapOpacityOnOverlay: 0.7,
+        overlaySliderPosition: 0.3,
         isDisplayCenterLine: false,
         isDisplayOverview: true,
         isClickToMoveEnabled: true,
@@ -155,6 +163,7 @@ describe("mapManagerState", () => {
       const s = store.getState();
       expect(s.isSyncPosition).toBe(true);
       expect(s.subMapOpacityOnOverlay).toBe(0.7);
+      expect(s.overlaySliderPosition).toBe(0.3);
       expect(s.isDisplayCenterLine).toBe(false);
       expect(s.isDisplayOverview).toBe(true);
       expect(s.isClickToMoveEnabled).toBe(true);
