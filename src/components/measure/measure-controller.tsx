@@ -20,6 +20,7 @@ export const MeasureController = ({ mapId }: { mapId: MapId }) => {
   const td = useStore((state) => state.maps[mapId].td);
   const addMeasureResult = useStore((state) => state.addMeasureResult);
   const measureResults = useStore((state) => state.measureResults);
+  const removeMeasureResult = useStore((state) => state.removeMeasureResult);
   const hydrateMeasureState = useStore((state) => state.hydrateMeasureState);
   const currentDrawingIdRef = useRef<string | number | null>(null);
   const isRestoredRef = useRef(false);
@@ -76,6 +77,28 @@ export const MeasureController = ({ mapId }: { mapId: MapId }) => {
       const currentModeName =
         measureMode === "distance" ? "measure-linestring" : "measure-polygon";
 
+      // Remove previous measure features when a new one is created
+      if (type === "create") {
+        const newMeasureFeature = ids.some((id) => {
+          const f = td.getSnapshotFeature(id);
+          return f?.properties.mode === currentModeName;
+        });
+
+        if (newMeasureFeature) {
+          const existingResults = measureResults.filter(
+            (r) => r.mapId === mapId,
+          );
+          for (const result of existingResults) {
+            try {
+              td.removeFeatures([result.featureId]);
+            } catch {
+              /* Feature may already be removed */
+            }
+            removeMeasureResult(result.id);
+          }
+        }
+      }
+
       // Handle feature creation and update
       if (type === "create" || type === "update") {
         for (const id of ids) {
@@ -118,7 +141,15 @@ export const MeasureController = ({ mapId }: { mapId: MapId }) => {
         }
       }
     },
-    [td, isMeasureWindowOpen, measureMode, setCurrentMeasurement],
+    [
+      td,
+      isMeasureWindowOpen,
+      measureMode,
+      setCurrentMeasurement,
+      measureResults,
+      removeMeasureResult,
+      mapId,
+    ],
   );
 
   const handleFinish = useCallback(
