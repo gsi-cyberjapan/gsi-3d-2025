@@ -14,7 +14,7 @@ export const ReliefWindow = () => {
 
   return (
     <Window
-      title="段彩図設定"
+      title="自分で作る色別標高図"
       className="w-72"
       isOpen={isReliefWindowOpen}
       onClose={() => {

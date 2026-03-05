@@ -10,9 +10,9 @@ import {
 import { DemSourceId, DEFAULT_DEM_SOURCE_ID } from "@/lib/config";
 
 export interface ReliefState {
-  /** 段彩図設定ウィンドウの表示状態 */
+  /** 自分で作る色別標高図ウィンドウの表示状態 */
   isReliefWindowOpen: boolean;
-  /** 段彩図設定ウィンドウの表示状態を設定 */
+  /** 自分で作る色別標高図ウィンドウの表示状態を設定 */
   setIsReliefWindowOpen: (value: boolean) => void;
   /** 標高レンジの配列 */
   elevationRanges: ElevationRange[];
