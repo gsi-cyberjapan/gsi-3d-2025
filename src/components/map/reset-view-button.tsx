@@ -4,7 +4,6 @@ import { useMap } from "react-map-gl/maplibre";
 import { useStore } from "@/hooks/store/useStore";
 import { Button } from "@/components/ui/button";
 import { Eye } from "lucide-react";
-import { DEFAULT_VIEW_CONFIG } from "@/lib/config";
 import { useCallback } from "react";
 import { MapId } from "@/hooks/store/mapManagerState";
 
@@ -19,36 +18,24 @@ export const ResetViewButton = ({ mapId }: Props) => {
   const isSyncPosition = useStore((state) => state.isSyncPosition);
 
   const handleResetView = useCallback(() => {
-    const center = {
-      lng: DEFAULT_VIEW_CONFIG.LONGITUDE,
-      lat: DEFAULT_VIEW_CONFIG.LATITUDE,
-    };
-    const zoom = DEFAULT_VIEW_CONFIG.ZOOM;
-    const bearing = DEFAULT_VIEW_CONFIG.BEARING;
-    const pitch = DEFAULT_VIEW_CONFIG.PITCH;
-
-    const flyToOptions = {
-      center,
-      zoom,
-      bearing,
-      pitch,
-      duration: 500,
+    const resetMap = (map: maplibregl.Map) => {
+      map.flyTo({
+        center: map.getCenter(),
+        zoom: map.getZoom(),
+        bearing: 0,
+        pitch: 0,
+        duration: 500,
+      });
     };
 
     if (isSyncPosition) {
       // Position sync enabled: reset all active maps
-      if (mainMap && activeMapIds.includes("main")) {
-        mainMap.flyTo(flyToOptions);
-      }
-      if (subMap && activeMapIds.includes("sub")) {
-        subMap.flyTo(flyToOptions);
-      }
+      if (mainMap && activeMapIds.includes("main")) resetMap(mainMap);
+      if (subMap && activeMapIds.includes("sub")) resetMap(subMap);
     } else {
       // Position sync disabled: reset only this map
       const targetMap = mapId === "main" ? mainMap : subMap;
-      if (targetMap) {
-        targetMap.flyTo(flyToOptions);
-      }
+      if (targetMap) resetMap(targetMap);
     }
   }, [mainMap, subMap, activeMapIds, isSyncPosition, mapId]);
 
