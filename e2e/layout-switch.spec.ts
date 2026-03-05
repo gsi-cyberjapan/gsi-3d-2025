@@ -1,7 +1,7 @@
 import { test, expect } from "./fixtures/map-page";
 
 test.describe("レイアウト切替", () => {
-  test("通常 → 分割 → 重ねる でレイアウトが変わる", async ({
+  test("通常 → 並べて比較 → 重ねて比較 でレイアウトが変わる", async ({
     mapPage: page,
   }) => {
     // 初期状態: canvas は 1 つ
@@ -16,7 +16,7 @@ test.describe("レイアウト切替", () => {
       .getByRole("combobox")
       .filter({ hasText: "通常" });
     await layoutCombobox.dispatchEvent("click");
-    await page.getByRole("option", { name: "分割" }).click();
+    await page.getByRole("option", { name: "並べて比較" }).click();
 
     // canvas が 2 つに増える
     await expect(page.locator(".maplibregl-canvas")).toHaveCount(2, {
@@ -29,9 +29,9 @@ test.describe("レイアウト切替", () => {
     // 「重ねる」を選択
     const splitCombobox = page
       .getByRole("combobox")
-      .filter({ hasText: "分割" });
+      .filter({ hasText: "並べて比較" });
     await splitCombobox.dispatchEvent("click");
-    await page.getByRole("option", { name: "重ねる" }).click();
+    await page.getByRole("option", { name: "重ねて比較" }).click();
 
     // canvas は 2 つのまま
     await expect(page.locator(".maplibregl-canvas")).toHaveCount(2, {
@@ -44,7 +44,7 @@ test.describe("レイアウト切替", () => {
     // 「通常」に戻す
     const overlayCombobox = page
       .getByRole("combobox")
-      .filter({ hasText: "重ねる" });
+      .filter({ hasText: "重ねて比較" });
     await overlayCombobox.dispatchEvent("click");
     await page.getByRole("option", { name: "通常" }).click();
 

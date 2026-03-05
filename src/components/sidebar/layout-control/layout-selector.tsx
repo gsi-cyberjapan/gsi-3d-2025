@@ -50,14 +50,14 @@ const LayoutSelectItem = ({ layoutMode }: LayoutSelectItemProps) => {
           return (
             <>
               <Layers2 />
-              <span>重ねる</span>
+              <span>重ねて比較</span>
             </>
           );
         } else if (layoutMode === "split") {
           return (
             <>
               <Columns2 />
-              <span>分割</span>
+              <span>並べて比較</span>
             </>
           );
         } else {
