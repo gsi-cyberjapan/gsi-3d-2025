@@ -2,7 +2,7 @@ import { StateCreator } from "zustand";
 import { GlobalState } from "./useStore";
 
 export interface GridState {
-  /** 緯度・経度グリッド */
+  /** 経緯度グリッド */
   isDisplayLatLngGrid: boolean;
   setIsDisplayLatLngGrid: (value: boolean) => void;
   /** UTMグリッド */
