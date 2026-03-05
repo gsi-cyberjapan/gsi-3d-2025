@@ -28,6 +28,9 @@ export interface MapManagerState {
   /** サブマップの透過度 */
   subMapOpacityOnOverlay: number;
   setSubMapOpacityOnOverlay: (value: number) => void;
+  /** オーバーレイモードのスライダー位置（0-1） */
+  overlaySliderPosition: number;
+  setOverlaySliderPosition: (value: number) => void;
   /** 中心の十字線を表示するかどうか */
   isDisplayCenterLine: boolean;
   setIsDisplayCenterLine: (value: boolean) => void;
@@ -53,6 +56,7 @@ export interface MapManagerState {
     layoutMode?: LayoutMode;
     isSyncPosition?: boolean;
     subMapOpacityOnOverlay?: number;
+    overlaySliderPosition?: number;
     isDisplayCenterLine?: boolean;
     isDisplayOverview?: boolean;
     isClickToMoveEnabled?: boolean;
@@ -121,6 +125,12 @@ export const createMapManagerSlice: StateCreator<
       };
     });
   },
+  overlaySliderPosition: 0.5,
+  setOverlaySliderPosition: (value) => {
+    set(() => ({
+      overlaySliderPosition: value,
+    }));
+  },
   isDisplayCenterLine: true,
   setIsDisplayCenterLine: (value) => {
     set(() => {
@@ -183,6 +193,9 @@ export const createMapManagerSlice: StateCreator<
       }
       if (partial.subMapOpacityOnOverlay !== undefined) {
         updates.subMapOpacityOnOverlay = partial.subMapOpacityOnOverlay;
+      }
+      if (partial.overlaySliderPosition !== undefined) {
+        updates.overlaySliderPosition = partial.overlaySliderPosition;
       }
       if (partial.isDisplayCenterLine !== undefined) {
         updates.isDisplayCenterLine = partial.isDisplayCenterLine;

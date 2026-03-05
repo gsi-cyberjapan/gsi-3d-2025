@@ -19,10 +19,7 @@ export const LayoutSelector = () => {
   const setFocusMapId = useStore((state) => state.setFocusMapId);
 
   const focusLabel = (id: MapId) => {
-    if (layoutMode === "split") {
-      return id === "main" ? "左の地図" : "右の地図";
-    }
-    return id === "main" ? "背面の地図" : "手前の地図";
+    return id === "main" ? "左の地図" : "右の地図";
   };
 
   return (

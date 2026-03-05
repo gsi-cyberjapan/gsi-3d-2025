@@ -29,6 +29,7 @@ const makeBaseState = (
   layoutMode: "single",
   isSyncPosition: false,
   subMapOpacityOnOverlay: 0.5,
+  overlaySliderPosition: 0.5,
   isDisplayCenterLine: true,
   isDisplayOverview: false,
   isClickToMoveEnabled: false,
@@ -197,6 +198,27 @@ describe("serializeState / deserializeState", () => {
       const layer = deserialized.mainOptionalLayers?.[0];
       expect(layer?.minZoom).toBe(5);
       expect(layer?.maxZoom).toBeUndefined();
+    });
+  });
+
+  describe("overlay slider position", () => {
+    it("overlaySliderPosition をシリアライズ・デシリアライズする", () => {
+      const state = makeBaseState({
+        layoutMode: "overlay",
+        overlaySliderPosition: 0.3,
+      });
+      const serialized = serializeState(state);
+      const deserialized = deserializeState(serialized);
+      expect(deserialized.overlaySliderPosition).toBeCloseTo(0.3);
+    });
+
+    it("デフォルト値 0.5 はシリアライズされない", () => {
+      const state = makeBaseState({
+        layoutMode: "overlay",
+        overlaySliderPosition: 0.5,
+      });
+      const serialized = serializeState(state);
+      expect(serialized).not.toContain("spos");
     });
   });
 
