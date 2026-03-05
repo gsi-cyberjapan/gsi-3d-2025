@@ -5,9 +5,9 @@
  */
 export const formatDistance = (meters: number): string => {
   if (meters < 1000) {
-    return `${meters.toFixed(1)} m`;
+    return `${String(Math.round(meters))} m`;
   }
-  return `${(meters / 1000).toFixed(2)} km`;
+  return `${(meters / 1000).toFixed(3)} km`;
 };
 
 /**
@@ -16,11 +16,8 @@ export const formatDistance = (meters: number): string => {
  * @returns Formatted string
  */
 export const formatArea = (squareMeters: number): string => {
-  if (squareMeters < 10000) {
-    return `${squareMeters.toFixed(1)} m\u00B2`;
-  }
   if (squareMeters < 1000000) {
-    return `${(squareMeters / 10000).toFixed(2)} ha`;
+    return `${String(Math.round(squareMeters))} m\u00B2`;
   }
-  return `${(squareMeters / 1000000).toFixed(2)} km\u00B2`;
+  return `${(squareMeters / 1000000).toFixed(3)} km\u00B2`;
 };
