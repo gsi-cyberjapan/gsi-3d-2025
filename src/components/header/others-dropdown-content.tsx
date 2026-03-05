@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
@@ -75,6 +76,12 @@ export const OthersDropdownContent = () => {
   const setIsAzimuthWindowOpen = useStore(
     (state) => state.setIsAzimuthWindowOpen,
   );
+  const isDisplayMagneticNorth = useStore(
+    (state) => state.isDisplayMagneticNorth,
+  );
+  const setIsDisplayMagneticNorth = useStore(
+    (state) => state.setIsDisplayMagneticNorth,
+  );
 
   const lat = viewState?.latitude ?? DEFAULT_VIEW_CONFIG.LATITUDE;
   const lng = viewState?.longitude ?? DEFAULT_VIEW_CONFIG.LONGITUDE;
@@ -140,6 +147,13 @@ export const OthersDropdownContent = () => {
           <Compass />
           方位線
         </DropdownMenuItem>
+        <DropdownMenuCheckboxItem
+          checked={isDisplayMagneticNorth}
+          onCheckedChange={setIsDisplayMagneticNorth}
+          className="text-sm cursor-pointer"
+        >
+          磁北線
+        </DropdownMenuCheckboxItem>
       </DropdownMenuGroup>
     </DropdownMenuContent>
   );
