@@ -4,6 +4,10 @@ import {
   getUtmLatBand,
   lngToUtmZone,
   utmZoneCentralMeridian,
+  latLngToUtm,
+  utmToLatLng,
+  getUtmGridLabel,
+  getIntermediateStepMeters,
 } from "@/lib/grids/utmGrid";
 
 describe("lngToUtmZone", () => {
@@ -94,5 +98,78 @@ describe("getUtmGridIntervalMeters", () => {
   it("zoom>=18 は100m", () => {
     expect(getUtmGridIntervalMeters(18)).toBe(100);
     expect(getUtmGridIntervalMeters(20)).toBe(100);
+  });
+});
+
+describe("latLngToUtm / utmToLatLng", () => {
+  it("東京(zone 54)でラウンドトリップ変換", () => {
+    const lng = 139.6917;
+    const lat = 35.6895;
+    const zone = 54;
+
+    const utm = latLngToUtm(lng, lat, zone);
+    expect(utm.southern).toBe(false);
+    expect(utm.easting).toBeGreaterThan(0);
+    expect(utm.northing).toBeGreaterThan(0);
+
+    const result = utmToLatLng(utm.easting, utm.northing, zone, utm.southern);
+    expect(result.lng).toBeCloseTo(lng, 5);
+    expect(result.lat).toBeCloseTo(lat, 5);
+  });
+
+  it("南半球(-33.86, 151.21 シドニー zone 56)でラウンドトリップ変換", () => {
+    const lng = 151.21;
+    const lat = -33.86;
+    const zone = 56;
+
+    const utm = latLngToUtm(lng, lat, zone);
+    expect(utm.southern).toBe(true);
+
+    const result = utmToLatLng(utm.easting, utm.northing, zone, utm.southern);
+    expect(result.lng).toBeCloseTo(lng, 5);
+    expect(result.lat).toBeCloseTo(lat, 5);
+  });
+});
+
+describe("getUtmGridLabel", () => {
+  it("100kmグリッドで5文字のMGRSラベルを返す", () => {
+    const label = getUtmGridLabel(139.69, 35.68, 100000);
+    expect(label).not.toBeNull();
+    expect(label).toHaveLength(5);
+    expect(label).toMatch(/^\d{2}[A-Z]{3}$/);
+  });
+
+  it("サブグリッドでMGRS精度4ラベルを返す", () => {
+    const label = getUtmGridLabel(139.69, 35.68, 10000);
+    expect(label).not.toBeNull();
+    // ゾーン(2桁) + バンド(1文字) + 100km(2文字) + easting(4桁) + northing(4桁) = 13文字
+    expect(label).toHaveLength(13);
+  });
+
+  it("極域ではnullを返す", () => {
+    expect(getUtmGridLabel(0, 85, 100000)).toBeNull();
+    expect(getUtmGridLabel(0, -81, 100000)).toBeNull();
+  });
+});
+
+describe("getIntermediateStepMeters", () => {
+  it("100km間隔は10km刻み", () => {
+    expect(getIntermediateStepMeters(100000)).toBe(10000);
+  });
+
+  it("20km間隔は10km刻み", () => {
+    expect(getIntermediateStepMeters(20000)).toBe(10000);
+  });
+
+  it("10km間隔はそのまま10km", () => {
+    expect(getIntermediateStepMeters(10000)).toBe(10000);
+  });
+
+  it("5km間隔はそのまま5km", () => {
+    expect(getIntermediateStepMeters(5000)).toBe(5000);
+  });
+
+  it("1km間隔はそのまま1km", () => {
+    expect(getIntermediateStepMeters(1000)).toBe(1000);
   });
 });
