@@ -280,10 +280,10 @@ export const Denshi3dController = ({ mapId }: Props) => {
           maxZoom: DENSHI_KOKUDO_3D_CONFIG.MAX_ZOOM,
           getFillColor: getBuildingColor,
           getElevation: (f: { properties: Record<string, unknown> }) => {
-            const roofElv = f.properties[roofElevationType];
-            return roofElv != null && Number(roofElv) !== -9999
-              ? Number(roofElv)
-              : 0;
+            const rawRoofElv = f.properties[roofElevationType];
+            const roofElv = Number(rawRoofElv);
+            if (!Number.isFinite(roofElv) || roofElv === -9999) return 0;
+            return Math.max(0, roofElv);
           },
           extruded: true,
           wireframe: false,
