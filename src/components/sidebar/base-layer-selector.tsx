@@ -152,17 +152,19 @@ export const BaseLayerSelector = () => {
                 </SelectItem>
               ))}
           </SelectGroup>
-          {baseLayers
-            .filter((l) => l.type === "none")
-            .map((layer) => (
-              <SelectItem
-                key={layer.id}
-                value={layer.id}
-                className="cursor-pointer"
-              >
-                <BaseLayerSelectItem baseLayer={layer} />
-              </SelectItem>
-            ))}
+          <SelectGroup>
+            {baseLayers
+              .filter((l) => l.type === "none")
+              .map((layer) => (
+                <SelectItem
+                  key={layer.id}
+                  value={layer.id}
+                  className="cursor-pointer"
+                >
+                  <BaseLayerSelectItem baseLayer={layer} />
+                </SelectItem>
+              ))}
+          </SelectGroup>
           <div className="px-1 py-1">
             <div className="text-xs text-muted-foreground py-1">
               カスタム ({customLayers.length}/{MAX_CUSTOM_LAYERS})
