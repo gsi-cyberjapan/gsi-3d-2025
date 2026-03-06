@@ -281,14 +281,9 @@ export const Denshi3dController = ({ mapId }: Props) => {
           getFillColor: getBuildingColor,
           getElevation: (f: { properties: Record<string, unknown> }) => {
             const roofElv = f.properties[roofElevationType];
-            const grElv = f.properties.grElv;
-            const roof =
-              roofElv != null && Number(roofElv) !== -9999
-                ? Number(roofElv)
-                : 0;
-            const ground =
-              grElv != null && Number(grElv) !== -9999 ? Number(grElv) : 0;
-            return Math.max(0, roof - ground);
+            return roofElv != null && Number(roofElv) !== -9999
+              ? Number(roofElv)
+              : 0;
           },
           extruded: true,
           wireframe: false,
