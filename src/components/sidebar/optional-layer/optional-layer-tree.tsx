@@ -191,7 +191,7 @@ export const OptionalLayerLayerRow = ({
         onClick={handleClick}
       >
         <Layers className="text-muted-foreground size-3 shrink-0 mt-0.5" />
-        <span>{title}</span>
+        <span className="whitespace-pre-line">{title}</span>
       </div>
       <LayerInfoPopover layerId={layerId} />
     </div>
@@ -206,7 +206,7 @@ export const OptionalLayerDirRow = ({ title }: OptionalLayerDirRowProps) => {
   return (
     <div className="flex gap-1 text-xs items-start">
       <Folder className="text-muted-foreground size-3 shrink-0 mt-0.5" />
-      <span>{title}</span>
+      <span className="whitespace-pre-line">{title}</span>
     </div>
   );
 };
