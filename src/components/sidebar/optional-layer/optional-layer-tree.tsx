@@ -7,7 +7,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import type { OptionalLayerEntry } from "@/lib/getOptionalLayers";
-import { Folder, Layers, TriangleAlert } from "lucide-react";
+import { Folder, Layers } from "lucide-react";
 import { useStore } from "@/hooks/store/useStore";
 import { cn } from "@/lib/utils";
 import { LayerInfoPopover } from "@/components/sidebar/optional-layer/layer-info-popover";
@@ -23,14 +23,37 @@ const isLayerGroupEntry = (
 const isLayerEntry = (entry: OptionalLayerEntry): entry is LayerEntry =>
   entry.type === "layer";
 
+const filterAvailableEntries = (
+  entries: OptionalLayerEntry[],
+): OptionalLayerEntry[] => {
+  return entries.reduce<OptionalLayerEntry[]>((acc, entry) => {
+    if (isLayerEntry(entry)) {
+      const isGeojsonTileLayer = entry.tileUrl.endsWith(".geojson");
+      const isDisabledLayer = OPTIONAL_LAYER_CONFIG.DISABLED_LAYER_IDS.includes(
+        entry.id,
+      );
+      if (!isGeojsonTileLayer && !isDisabledLayer) {
+        acc.push(entry);
+      }
+    } else if (isLayerGroupEntry(entry)) {
+      const filteredEntries = filterAvailableEntries(entry.entries);
+      if (filteredEntries.length > 0) {
+        acc.push({ ...entry, entries: filteredEntries });
+      }
+    }
+    return acc;
+  }, []);
+};
+
 interface OptionalLayerTreeProps {
   entries: OptionalLayerEntry[];
 }
 
 export const OptionalLayerTree = ({ entries }: OptionalLayerTreeProps) => {
+  const availableEntries = filterAvailableEntries(entries);
   return (
     <nav aria-label="オプションレイヤー" className="flex flex-col gap-2">
-      <OptionalLayerBranch entries={entries} path="root" depth={0} />
+      <OptionalLayerBranch entries={availableEntries} path="root" depth={0} />
     </nav>
   );
 };
@@ -130,13 +153,8 @@ export const OptionalLayerLayerRow = ({
   );
   const setOptionalLayer = useStore((state) => state.setOptionalLayer);
   const isSelected = optionalLayers.some((l) => l.layerId === layerId);
-  const isGeojsonTileLayer = tileUrl.endsWith(".geojson");
-  const isDisabledLayer =
-    OPTIONAL_LAYER_CONFIG.DISABLED_LAYER_IDS.includes(layerId);
-  const isUnavailable = isGeojsonTileLayer || isDisabledLayer;
 
   const handleClick = () => {
-    if (isUnavailable) return;
     if (isSelected) {
       setOptionalLayer({
         mapId: focusMapId,
@@ -166,21 +184,13 @@ export const OptionalLayerLayerRow = ({
       className={cn(
         "flex gap-1 text-xs items-center",
         isSelected && "text-blue-500",
-        isUnavailable ? "opacity-60 cursor-not-allowed" : "",
       )}
     >
       <div
-        className={cn(
-          "flex gap-1 items-start cursor-pointer min-w-0 flex-1",
-          !isUnavailable && "hover:opacity-80",
-        )}
+        className="flex gap-1 items-start cursor-pointer min-w-0 flex-1 hover:opacity-80"
         onClick={handleClick}
       >
-        {isUnavailable ? (
-          <TriangleAlert className="text-muted-foreground size-3 shrink-0 mt-0.5" />
-        ) : (
-          <Layers className="text-muted-foreground size-3 shrink-0 mt-0.5" />
-        )}
+        <Layers className="text-muted-foreground size-3 shrink-0 mt-0.5" />
         <span>{title}</span>
       </div>
       <LayerInfoPopover layerId={layerId} />
