@@ -5,34 +5,46 @@ import {
 } from "@/lib/grids/latLngGrid";
 
 describe("getLatLngGridIntervalSeconds", () => {
-  it("zoom<=3 は 144000秒(40°)", () => {
-    expect(getLatLngGridIntervalSeconds(1)).toBe(144000);
-    expect(getLatLngGridIntervalSeconds(3)).toBe(144000);
+  it("zoom<=3 は 72000秒(20°)", () => {
+    expect(getLatLngGridIntervalSeconds(1)).toBe(72000);
+    expect(getLatLngGridIntervalSeconds(3)).toBe(72000);
   });
 
-  it("zoom=4 は 72000秒(20°)", () => {
-    expect(getLatLngGridIntervalSeconds(4)).toBe(72000);
+  it("zoom=4 は 36000秒(10°)", () => {
+    expect(getLatLngGridIntervalSeconds(4)).toBe(36000);
   });
 
-  it("zoom=5 は 36000秒(10°)", () => {
-    expect(getLatLngGridIntervalSeconds(5)).toBe(36000);
+  it("zoom=5 は 18000秒(5°)", () => {
+    expect(getLatLngGridIntervalSeconds(5)).toBe(18000);
   });
 
-  it("zoom=9 は 3600秒(1°)", () => {
-    expect(getLatLngGridIntervalSeconds(9)).toBe(3600);
+  it("zoom=6 は 9000秒(2°30')", () => {
+    expect(getLatLngGridIntervalSeconds(6)).toBe(9000);
   });
 
-  it("zoom=10 は 1800秒(30')", () => {
-    expect(getLatLngGridIntervalSeconds(10)).toBe(1800);
+  it("zoom=7 は 5400秒(1°30')", () => {
+    expect(getLatLngGridIntervalSeconds(7)).toBe(5400);
   });
 
-  it("zoom=15 は 60秒(1')", () => {
-    expect(getLatLngGridIntervalSeconds(15)).toBe(60);
+  it("zoom=8 は 3600秒(1°)", () => {
+    expect(getLatLngGridIntervalSeconds(8)).toBe(3600);
   });
 
-  it("zoom>=18 は 10秒", () => {
-    expect(getLatLngGridIntervalSeconds(18)).toBe(10);
-    expect(getLatLngGridIntervalSeconds(20)).toBe(10);
+  it("zoom=9 は 1800秒(30')", () => {
+    expect(getLatLngGridIntervalSeconds(9)).toBe(1800);
+  });
+
+  it("zoom=10 は 900秒(15')", () => {
+    expect(getLatLngGridIntervalSeconds(10)).toBe(900);
+  });
+
+  it('zoom=15 は 30秒(30")', () => {
+    expect(getLatLngGridIntervalSeconds(15)).toBe(30);
+  });
+
+  it("zoom>=18 は 5秒", () => {
+    expect(getLatLngGridIntervalSeconds(18)).toBe(5);
+    expect(getLatLngGridIntervalSeconds(20)).toBe(5);
   });
 });
 
@@ -59,5 +71,25 @@ describe("secondsToDms", () => {
 
   it("大きな値(40°)", () => {
     expect(secondsToDms(144000, true)).toBe("40°");
+  });
+
+  it("2°30' (9000秒)", () => {
+    expect(secondsToDms(9000, true)).toBe("2°30′");
+  });
+
+  it("15' (900秒)", () => {
+    expect(secondsToDms(900, true)).toBe("0°15′");
+  });
+
+  it("1'30\" (90秒)", () => {
+    expect(secondsToDms(90, true)).toBe("0°1′30″");
+  });
+
+  it('15" (15秒)', () => {
+    expect(secondsToDms(15, true)).toBe("0°0′15″");
+  });
+
+  it('5" (5秒)', () => {
+    expect(secondsToDms(5, true)).toBe("0°0′5″");
   });
 });
