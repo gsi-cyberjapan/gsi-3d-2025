@@ -251,7 +251,7 @@ export const POINT_CLOUD_CONFIG = {
 
 export type RoofElevationType =
   | "medElv"
-  | "outElv"
+  // | "outElv" // サンプルデータで全件 None のため無効化
   | "maxElv"
   | "upQrtElv"
   | "loQrtElv";
@@ -264,7 +264,7 @@ export interface RoofElevationOption {
 export const DEFAULT_ROOF_ELEVATION_TYPE: RoofElevationType = "medElv";
 
 export const ROOF_ELEVATION_OPTIONS: RoofElevationOption[] = [
-  { id: "outElv", name: "極大標高" },
+  // { id: "outElv", name: "極大標高" }, // サンプルデータで全件 None のため無効化
   { id: "maxElv", name: "最大標高" },
   { id: "upQrtElv", name: "75%標高" },
   { id: "medElv", name: "中央値標高" },
