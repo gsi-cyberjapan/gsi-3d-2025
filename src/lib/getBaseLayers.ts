@@ -1,4 +1,4 @@
-import { BASE_LAYER_CONFIG } from "./config";
+import { BASE_LAYER_CONFIG, NONE_LAYER_CONFIG } from "./config";
 
 interface RasterBaseLayer {
   id: string;
@@ -73,7 +73,11 @@ export const getBaseLayers = (): BaseLayer[] => {
     });
   });
 
-  baseLayers.push({ id: "none", type: "none", label: "なし（白）" });
+  baseLayers.push({
+    id: NONE_LAYER_CONFIG.ID,
+    type: "none",
+    label: NONE_LAYER_CONFIG.LABEL,
+  });
 
   return baseLayers;
 };

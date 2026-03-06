@@ -234,7 +234,7 @@ const BaseLayerSelectItem = ({
   baseLayer,
   displayType = false,
 }: BaseLayerSelectItemProps) => {
-  const getTypeLabel = (type: BaseLayer["type"]) => {
+  const getTypeLabel = (type: BaseLayer["type"]): string | null => {
     switch (type) {
       case "raster":
         return "画像形式";
@@ -243,7 +243,7 @@ const BaseLayerSelectItem = ({
       case "custom":
         return "カスタム";
       case "none":
-        return "";
+        return null;
     }
   };
 
@@ -266,7 +266,7 @@ const BaseLayerSelectItem = ({
       </div>
       <div className="flex items-center gap-2">
         {baseLayer.label}
-        {displayType && (
+        {displayType && getTypeLabel(baseLayer.type) && (
           <span className="text-muted-foreground">
             {getTypeLabel(baseLayer.type)}
           </span>

@@ -140,6 +140,12 @@ export const BASE_LAYER_CONFIG = {
   ],
 } as const;
 
+export const NONE_LAYER_CONFIG = {
+  /** ベースマップなし */
+  ID: "none",
+  LABEL: "なし（白）",
+} as const;
+
 export const OPTIONAL_LAYER_CONFIG = {
   /** レイヤ一覧が存在するルートURL */
   BASE_LAYER_URL:
