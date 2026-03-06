@@ -1,4 +1,4 @@
-import { BASE_LAYER_CONFIG } from "./config";
+import { BASE_LAYER_CONFIG, NONE_LAYER_CONFIG } from "./config";
 
 interface RasterBaseLayer {
   id: string;
@@ -33,7 +33,17 @@ export interface CustomBaseLayer {
   maxZoom: number;
 }
 
-export type BaseLayer = RasterBaseLayer | VectorBaseLayer | CustomBaseLayer;
+interface NoneBaseLayer {
+  id: string;
+  type: "none";
+  label: string;
+}
+
+export type BaseLayer =
+  | RasterBaseLayer
+  | VectorBaseLayer
+  | CustomBaseLayer
+  | NoneBaseLayer;
 
 export const getBaseLayers = (): BaseLayer[] => {
   const baseLayers: BaseLayer[] = [];
@@ -61,6 +71,12 @@ export const getBaseLayers = (): BaseLayer[] => {
       minZoom: layer.MIN_ZOOM,
       maxZoom: layer.MAX_ZOOM,
     });
+  });
+
+  baseLayers.push({
+    id: NONE_LAYER_CONFIG.ID,
+    type: "none",
+    label: NONE_LAYER_CONFIG.LABEL,
   });
 
   return baseLayers;

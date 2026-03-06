@@ -78,7 +78,7 @@ describe("validateTileJSON", () => {
     const result = validateTileJSON({ tiles: [123] });
     expect(result.valid).toBe(false);
     if (!result.valid) {
-      expect(result.error).toContain("array of strings");
+      expect(result.error).toContain("文字列の配列");
     }
   });
 
@@ -177,7 +177,7 @@ describe("parseAndValidate", () => {
     const result = parseAndValidate("not json");
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error).toContain("Invalid JSON");
+      expect(result.error).toContain("不正なJSON");
     }
   });
 

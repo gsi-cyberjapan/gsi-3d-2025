@@ -37,7 +37,7 @@ export const ZOOM_CONFIG = {
 } as const;
 
 export const BASE_LAYER_CONFIG = {
-  /** Vectorのベースレイヤー */
+  /** Vectorのベースレイヤ */
   VECTOR_LAYERS: [
     {
       ID: "std-vector",
@@ -81,7 +81,7 @@ export const BASE_LAYER_CONFIG = {
     },
   ],
 
-  /** Rasterのベースレイヤー */
+  /** Rasterのベースレイヤ */
   RASTER_LAYERS: [
     {
       ID: "std-raster",
@@ -140,16 +140,22 @@ export const BASE_LAYER_CONFIG = {
   ],
 } as const;
 
+export const NONE_LAYER_CONFIG = {
+  /** ベースマップなし */
+  ID: "none",
+  LABEL: "なし（白）",
+} as const;
+
 export const OPTIONAL_LAYER_CONFIG = {
-  /** レイヤー一覧が存在するルートURL */
+  /** レイヤ一覧が存在するルートURL */
   BASE_LAYER_URL:
     "https://raw.githubusercontent.com/gsi-cyberjapan/gsimaps/refs/heads/gh-pages/layers_txt",
   /** 画像が存在するルートURL */
   BASE_IMAGE_URL:
     "https://raw.githubusercontent.com/gsi-cyberjapan/gsimaps/refs/heads/gh-pages",
-  /** レイヤー一覧の定義ファイル */
+  /** レイヤ一覧の定義ファイル */
   LAYERS_DEFINITION_FILE_PATH: "/layers.txt",
-  /** 未実装のため選択不可にするレイヤーID */
+  /** 未実装のため選択不可にするレイヤID */
   DISABLED_LAYER_IDS: ["gsi-compare-photo"] as readonly string[],
 } as const;
 

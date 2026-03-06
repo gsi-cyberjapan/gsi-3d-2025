@@ -25,7 +25,7 @@ export const Sidebar = () => {
       <SidebarContent>
         <SidebarGroup>
           <div className="flex flex-col gap-1">
-            <span className="text-xs text-muted-foreground">地図</span>
+            <span className="text-xs text-muted-foreground">ベースマップ</span>
             <BaseLayerSelector />
           </div>
         </SidebarGroup>
