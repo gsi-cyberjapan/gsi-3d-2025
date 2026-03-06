@@ -140,7 +140,10 @@ export const CustomLayerDialog = ({
           label: name.trim(),
           sourceType: result.format,
           source: "url",
-          data: url.trim(),
+          data:
+            result.format === "tilejson"
+              ? JSON.stringify(result.data)
+              : url.trim(),
           minZoom: zoomRange.minZoom,
           maxZoom: zoomRange.maxZoom,
         });
@@ -242,7 +245,8 @@ export const CustomLayerDialog = ({
                   disabled={isLoading}
                 />
                 <p className="text-muted-foreground text-xs">
-                  TileJSON または MapLibre Style Specification 形式の URL
+                  TileJSON（ラスタータイルのみ）または MapLibre Style
+                  Specification 形式の URL
                 </p>
               </div>
             </TabsContent>
@@ -269,8 +273,8 @@ export const CustomLayerDialog = ({
                 )}
                 {!selectedFile && (
                   <p className="text-muted-foreground text-xs">
-                    TileJSON または MapLibre Style Specification 形式の JSON
-                    ファイル
+                    TileJSON（ラスタータイルのみ）または MapLibre Style
+                    Specification 形式の JSON ファイル
                   </p>
                 )}
               </div>
