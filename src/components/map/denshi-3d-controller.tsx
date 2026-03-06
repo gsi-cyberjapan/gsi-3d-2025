@@ -188,6 +188,9 @@ export const Denshi3dController = ({ mapId }: Props) => {
   const isDenshi3dEnabled = useStore(
     (state) => state.maps[mapId].isDenshi3dEnabled,
   );
+  const roofElevationType = useStore(
+    (state) => state.maps[mapId].roofElevationType,
+  );
   const mapInstance = useMap()[mapId]?.getMap();
   const overlayRef = useRef<IControl | null>(null);
 
@@ -271,8 +274,15 @@ export const Denshi3dController = ({ mapId }: Props) => {
           maxZoom: DENSHI_KOKUDO_3D_CONFIG.MAX_ZOOM,
           getFillColor: getBuildingColor,
           getElevation: (f: { properties: Record<string, unknown> }) => {
-            const repElv = f.properties.repElv;
-            return repElv != null ? Number(repElv) : 0;
+            const roofElv = f.properties[roofElevationType];
+            const grElv = f.properties.grElv;
+            const roof =
+              roofElv != null && Number(roofElv) !== -9999
+                ? Number(roofElv)
+                : 0;
+            const ground =
+              grElv != null && Number(grElv) !== -9999 ? Number(grElv) : 0;
+            return Math.max(0, roof - ground);
           },
           extruded: true,
           wireframe: false,
@@ -301,7 +311,7 @@ export const Denshi3dController = ({ mapId }: Props) => {
         overlayRef.current = null;
       }
     };
-  }, [mapInstance, isDenshi3dEnabled, mapId]);
+  }, [mapInstance, isDenshi3dEnabled, roofElevationType, mapId]);
 
   return null;
 };

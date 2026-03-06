@@ -249,6 +249,28 @@ export const POINT_CLOUD_CONFIG = {
   MIN_ZOOM: 12,
 } as const;
 
+export type RoofElevationType =
+  | "medElv"
+  | "outElv"
+  | "maxElv"
+  | "upQrtElv"
+  | "loQrtElv";
+
+export interface RoofElevationOption {
+  id: RoofElevationType;
+  name: string;
+}
+
+export const DEFAULT_ROOF_ELEVATION_TYPE: RoofElevationType = "medElv";
+
+export const ROOF_ELEVATION_OPTIONS: RoofElevationOption[] = [
+  { id: "outElv", name: "極大標高" },
+  { id: "maxElv", name: "最大標高" },
+  { id: "upQrtElv", name: "75%標高" },
+  { id: "medElv", name: "中央値標高" },
+  { id: "loQrtElv", name: "25%標高" },
+];
+
 export const DENSHI_KOKUDO_3D_CONFIG = {
   RAILS_URL:
     "https://geolonia.github.io/gsi-3d-2025-demo-3dgeojson/rails.geojson",
