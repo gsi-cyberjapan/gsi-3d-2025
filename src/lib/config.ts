@@ -257,8 +257,7 @@ export const ROOF_ELEVATION_OPTIONS = [
   { id: "loQrtElv", name: "25%標高" },
 ] as const;
 
-export type RoofElevationType =
-  (typeof ROOF_ELEVATION_OPTIONS)[number]["id"];
+export type RoofElevationType = (typeof ROOF_ELEVATION_OPTIONS)[number]["id"];
 export type RoofElevationOption = (typeof ROOF_ELEVATION_OPTIONS)[number];
 export const DEFAULT_ROOF_ELEVATION_TYPE: RoofElevationType = "medElv";
 
