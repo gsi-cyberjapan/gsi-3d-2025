@@ -153,6 +153,7 @@ export const BaseLayerSelector = () => {
               ))}
           </SelectGroup>
           <SelectGroup>
+            <SelectLabel>なし</SelectLabel>
             {baseLayers
               .filter((l) => l.type === "none")
               .map((layer) => (

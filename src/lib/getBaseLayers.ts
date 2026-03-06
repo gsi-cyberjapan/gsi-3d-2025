@@ -73,7 +73,7 @@ export const getBaseLayers = (): BaseLayer[] => {
     });
   });
 
-  baseLayers.push({ id: "none", type: "none", label: "なし" });
+  baseLayers.push({ id: "none", type: "none", label: "なし（白）" });
 
   return baseLayers;
 };
