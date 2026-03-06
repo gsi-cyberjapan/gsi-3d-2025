@@ -125,7 +125,7 @@ export const BaseLayerSelector = () => {
         </SelectTrigger>
         <SelectContent align="start">
           <SelectGroup>
-            <SelectLabel>Vector</SelectLabel>
+            <SelectLabel>ベクトル形式</SelectLabel>
             {baseLayers
               .filter((l) => l.type === "vector")
               .map((layer) => (
@@ -139,7 +139,7 @@ export const BaseLayerSelector = () => {
               ))}
           </SelectGroup>
           <SelectGroup>
-            <SelectLabel>Raster</SelectLabel>
+            <SelectLabel>画像形式</SelectLabel>
             {baseLayers
               .filter((l) => l.type === "raster")
               .map((layer) => (
@@ -152,9 +152,20 @@ export const BaseLayerSelector = () => {
                 </SelectItem>
               ))}
           </SelectGroup>
+          {baseLayers
+            .filter((l) => l.type === "none")
+            .map((layer) => (
+              <SelectItem
+                key={layer.id}
+                value={layer.id}
+                className="cursor-pointer"
+              >
+                <BaseLayerSelectItem baseLayer={layer} />
+              </SelectItem>
+            ))}
           <div className="px-1 py-1">
             <div className="text-xs text-muted-foreground py-1">
-              Custom ({customLayers.length}/{MAX_CUSTOM_LAYERS})
+              カスタム ({customLayers.length}/{MAX_CUSTOM_LAYERS})
             </div>
           </div>
           {customLayers.map((layer) => (
@@ -223,18 +234,22 @@ const BaseLayerSelectItem = ({
   const getTypeLabel = (type: BaseLayer["type"]) => {
     switch (type) {
       case "raster":
-        return "Raster";
+        return "画像形式";
       case "vector":
-        return "Vector";
+        return "ベクトル形式";
       case "custom":
-        return "Custom";
+        return "カスタム";
+      case "none":
+        return "";
     }
   };
 
   return (
     <div className="h-8 flex gap-2 items-center">
       <div className="rounded-sm overflow-hidden size-8 relative">
-        {baseLayer.type === "custom" ? (
+        {baseLayer.type === "none" ? (
+          <div className="size-8 bg-white border border-muted" />
+        ) : baseLayer.type === "custom" ? (
           <div className="size-8 bg-muted flex items-center justify-center">
             <LayersIcon className="size-4 text-muted-foreground" />
           </div>

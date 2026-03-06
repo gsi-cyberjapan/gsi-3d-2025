@@ -33,10 +33,20 @@ export interface CustomBaseLayer {
   maxZoom: number;
 }
 
-export type BaseLayer = RasterBaseLayer | VectorBaseLayer | CustomBaseLayer;
+interface NoneBaseLayer {
+  id: string;
+  type: "none";
+  label: string;
+}
+
+export type BaseLayer =
+  | RasterBaseLayer
+  | VectorBaseLayer
+  | CustomBaseLayer
+  | NoneBaseLayer;
 
 export const getBaseLayers = (): BaseLayer[] => {
-  const baseLayers: BaseLayer[] = [];
+  const baseLayers: BaseLayer[] = [{ id: "none", type: "none", label: "なし" }];
 
   BASE_LAYER_CONFIG.VECTOR_LAYERS.forEach((layer) => {
     baseLayers.push({

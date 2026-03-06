@@ -91,14 +91,14 @@ describe("BaseLayerSelector", () => {
 
   it("Vector タイプラベルが表示される", () => {
     render(<BaseLayerSelector />);
-    expect(screen.getByText("Vector")).toBeInTheDocument();
+    expect(screen.getByText("ベクトル形式")).toBeInTheDocument();
   });
 
   it("Raster レイヤーが選択されている場合に Raster ラベルが表示される", () => {
     setupMock(MOCK_LAYERS[2]);
     render(<BaseLayerSelector />);
     expect(screen.getByText("写真")).toBeInTheDocument();
-    expect(screen.getByText("Raster")).toBeInTheDocument();
+    expect(screen.getByText("画像形式")).toBeInTheDocument();
   });
 
   it("ベースレイヤーの画像が表示される", () => {

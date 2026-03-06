@@ -4,7 +4,19 @@ import { type StyleSpecification } from "maplibre-gl";
 export const buildStyleFromBaseLayer = (
   baseLayer: BaseLayer,
 ): string | StyleSpecification => {
-  if (baseLayer.type === "raster") {
+  if (baseLayer.type === "none") {
+    return {
+      version: 8,
+      sources: {},
+      layers: [
+        {
+          id: "background",
+          type: "background",
+          paint: { "background-color": "#ffffff" },
+        },
+      ],
+    };
+  } else if (baseLayer.type === "raster") {
     return {
       version: 8,
       sources: {

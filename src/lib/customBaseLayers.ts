@@ -85,7 +85,10 @@ export const validateTileJSON = (
   data: unknown,
 ): { valid: true; data: TileJSON } | { valid: false; error: string } => {
   if (typeof data !== "object" || data === null) {
-    return { valid: false, error: "Invalid JSON: must be an object" };
+    return {
+      valid: false,
+      error: "不正なJSON: オブジェクト形式である必要があります",
+    };
   }
 
   const obj = data as Record<string, unknown>;
@@ -93,14 +96,14 @@ export const validateTileJSON = (
   if (!Array.isArray(obj.tiles) || obj.tiles.length === 0) {
     return {
       valid: false,
-      error: "Invalid TileJSON: 'tiles' array is required",
+      error: "不正なTileJSON: 'tiles' 配列が必要です",
     };
   }
 
   if (!obj.tiles.every((t: unknown) => typeof t === "string")) {
     return {
       valid: false,
-      error: "Invalid TileJSON: 'tiles' must be an array of strings",
+      error: "不正なTileJSON: 'tiles' は文字列の配列である必要があります",
     };
   }
 
@@ -133,7 +136,10 @@ export const validateStyleSpec = (
   | { valid: true; data: StyleSpecification }
   | { valid: false; error: string } => {
   if (typeof data !== "object" || data === null) {
-    return { valid: false, error: "Invalid JSON: must be an object" };
+    return {
+      valid: false,
+      error: "不正なJSON: オブジェクト形式である必要があります",
+    };
   }
 
   const obj = data as Record<string, unknown>;
@@ -141,21 +147,21 @@ export const validateStyleSpec = (
   if (obj.version !== 8) {
     return {
       valid: false,
-      error: "Invalid Style Spec: 'version' must be 8",
+      error: "不正なStyle Spec: 'version' は 8 である必要があります",
     };
   }
 
   if (typeof obj.sources !== "object" || obj.sources === null) {
     return {
       valid: false,
-      error: "Invalid Style Spec: 'sources' object is required",
+      error: "不正なStyle Spec: 'sources' オブジェクトが必要です",
     };
   }
 
   if (!Array.isArray(obj.layers)) {
     return {
       valid: false,
-      error: "Invalid Style Spec: 'layers' array is required",
+      error: "不正なStyle Spec: 'layers' 配列が必要です",
     };
   }
 
@@ -189,7 +195,7 @@ export const detectFormat = (
   return {
     format: null,
     error:
-      "Could not detect format. Data must be either TileJSON (with 'tiles' array) or MapLibre Style Spec (with version: 8, sources, and layers).",
+      "形式を検出できませんでした。TileJSON（'tiles' 配列を含む）または MapLibre Style Spec（version: 8, sources, layers を含む）のいずれかである必要があります。",
   };
 };
 
@@ -211,7 +217,7 @@ export const fetchAndValidate = async (
     if (!response.ok) {
       return {
         success: false,
-        error: `Failed to fetch URL: ${String(response.status)} ${response.statusText}`,
+        error: `URLの取得に失敗しました: ${String(response.status)} ${response.statusText}`,
       };
     }
 
@@ -229,7 +235,10 @@ export const fetchAndValidate = async (
     try {
       data = JSON.parse(text);
     } catch {
-      return { success: false, error: "Invalid JSON response from URL" };
+      return {
+        success: false,
+        error: "URLから取得したレスポンスが不正なJSONです",
+      };
     }
 
     const detected = detectFormat(data);
@@ -240,7 +249,7 @@ export const fetchAndValidate = async (
     return { success: true, format: detected.format, data: detected.data };
   } catch (e) {
     const message = e instanceof Error ? e.message : "Unknown error";
-    return { success: false, error: `Failed to fetch URL: ${message}` };
+    return { success: false, error: `URLの取得に失敗しました: ${message}` };
   }
 };
 
@@ -260,7 +269,7 @@ export const parseAndValidate = (
   try {
     data = JSON.parse(content);
   } catch {
-    return { success: false, error: "Invalid JSON content" };
+    return { success: false, error: "不正なJSONコンテンツです" };
   }
 
   const detected = detectFormat(data);

@@ -52,7 +52,7 @@ interface OptionalLayerTreeProps {
 export const OptionalLayerTree = ({ entries }: OptionalLayerTreeProps) => {
   const availableEntries = filterAvailableEntries(entries);
   return (
-    <nav aria-label="オプションレイヤー" className="flex flex-col gap-2">
+    <nav aria-label="オプションレイヤ" className="flex flex-col gap-2">
       <OptionalLayerBranch entries={availableEntries} path="root" depth={0} />
     </nav>
   );

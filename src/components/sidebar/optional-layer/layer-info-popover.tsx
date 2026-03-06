@@ -57,7 +57,7 @@ export const LayerInfoPopover = ({ layerId }: LayerInfoPopoverProps) => {
         <button
           type="button"
           className="cursor-pointer text-muted-foreground border rounded-sm p-0.5"
-          aria-label="レイヤー情報を表示"
+          aria-label="レイヤ情報を表示"
         >
           <Info className="size-4" />
         </button>
