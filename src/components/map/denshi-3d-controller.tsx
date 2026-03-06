@@ -227,6 +227,12 @@ export const Denshi3dController = ({ mapId }: Props) => {
 
       if (cancelled) return;
 
+      // roofElevationType変更時のレースコンディション対策
+      if (overlayRef.current) {
+        mapInstance.removeControl(overlayRef.current);
+        overlayRef.current = null;
+      }
+
       const railsWithHeight = addHeightToCoordinates(
         rails,
         DENSHI_KOKUDO_3D_CONFIG.ADD_HEIGHT,

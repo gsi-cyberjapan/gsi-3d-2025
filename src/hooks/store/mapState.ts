@@ -266,7 +266,7 @@ export const createMapSlice: StateCreator<
         partial.mainTerrain !== undefined ||
         partial.mainPointCloud !== undefined ||
         partial.mainDenshi3d !== undefined ||
-        partial.mainRoofElevationType
+        partial.mainRoofElevationType !== undefined
       ) {
         maps.main = {
           ...maps.main,
@@ -287,7 +287,7 @@ export const createMapSlice: StateCreator<
           ...(partial.mainDenshi3d !== undefined && {
             isDenshi3dEnabled: partial.mainDenshi3d,
           }),
-          ...(partial.mainRoofElevationType && {
+          ...(partial.mainRoofElevationType !== undefined && {
             roofElevationType: partial.mainRoofElevationType,
           }),
         };
@@ -300,7 +300,7 @@ export const createMapSlice: StateCreator<
         partial.subTerrain !== undefined ||
         partial.subPointCloud !== undefined ||
         partial.subDenshi3d !== undefined ||
-        partial.subRoofElevationType
+        partial.subRoofElevationType !== undefined
       ) {
         maps.sub = {
           ...maps.sub,
@@ -321,7 +321,7 @@ export const createMapSlice: StateCreator<
           ...(partial.subDenshi3d !== undefined && {
             isDenshi3dEnabled: partial.subDenshi3d,
           }),
-          ...(partial.subRoofElevationType && {
+          ...(partial.subRoofElevationType !== undefined && {
             roofElevationType: partial.subRoofElevationType,
           }),
         };
