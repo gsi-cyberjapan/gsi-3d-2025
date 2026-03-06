@@ -21,6 +21,8 @@ export const ReliefControls = () => {
   const setIsHillshadeEnabled = useStore(
     (state) => state.setIsHillshadeEnabled,
   );
+  const isGradientEnabled = useStore((state) => state.isGradientEnabled);
+  const setIsGradientEnabled = useStore((state) => state.setIsGradientEnabled);
   const addElevationRange = useStore((state) => state.addElevationRange);
   const resetToDefaults = useStore((state) => state.resetToDefaults);
 
@@ -44,7 +46,7 @@ export const ReliefControls = () => {
       </div>
 
       {/* Hillshade Toggle */}
-      <div className="flex items-center gap-1.5">
+      <div className="flex flex-wrap items-center gap-1.5">
         <Label className="hover:bg-accent/50 flex px-2 gap-2 rounded-md border h-7 items-center has-aria-checked:border-blue-600 has-aria-checked:bg-blue-50 dark:has-aria-checked:border-blue-900 dark:has-aria-checked:bg-blue-950 dark:bg-input/30 cursor-pointer">
           <Checkbox
             id="hillshade"
@@ -53,6 +55,15 @@ export const ReliefControls = () => {
             className="data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600 data-[state=checked]:text-white dark:data-[state=checked]:border-blue-700 dark:data-[state=checked]:bg-blue-700"
           />
           <p className="text-sm leading-none">陰影</p>
+        </Label>
+        <Label className="hover:bg-accent/50 flex px-2 gap-2 rounded-md border h-7 items-center has-aria-checked:border-blue-600 has-aria-checked:bg-blue-50 dark:has-aria-checked:border-blue-900 dark:has-aria-checked:bg-blue-950 dark:bg-input/30 cursor-pointer">
+          <Checkbox
+            id="gradient"
+            checked={isGradientEnabled}
+            onCheckedChange={setIsGradientEnabled}
+            className="data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600 data-[state=checked]:text-white dark:data-[state=checked]:border-blue-700 dark:data-[state=checked]:bg-blue-700"
+          />
+          <p className="text-sm leading-none">グラデーション</p>
         </Label>
         <Button variant="outline" size="xs" onClick={addElevationRange}>
           <Plus className="size-3.5" />

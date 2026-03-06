@@ -102,15 +102,31 @@ describe("reliefState", () => {
     });
   });
 
+  describe("isGradientEnabled", () => {
+    it("デフォルト値はtrue", () => {
+      expect(store.getState().isGradientEnabled).toBe(true);
+    });
+
+    it("setIsGradientEnabledで変更できる", () => {
+      store.getState().setIsGradientEnabled(false);
+      expect(store.getState().isGradientEnabled).toBe(false);
+
+      store.getState().setIsGradientEnabled(true);
+      expect(store.getState().isGradientEnabled).toBe(true);
+    });
+  });
+
   describe("resetToDefaults", () => {
     it("デフォルト値にリセットされる", () => {
       store.getState().applyColorPattern("topographic");
       store.getState().setIsHillshadeEnabled(true);
+      store.getState().setIsGradientEnabled(false);
 
       store.getState().resetToDefaults();
       const s = store.getState();
       expect(s.selectedPatternId).toBe(DEFAULT_PATTERN_ID);
       expect(s.isHillshadeEnabled).toBe(false);
+      expect(s.isGradientEnabled).toBe(true);
       expect(s.elevationRanges.length).toBe(7);
     });
   });
@@ -126,6 +142,13 @@ describe("reliefState", () => {
       expect(s.isReliefWindowOpen).toBe(true);
       expect(s.isHillshadeEnabled).toBe(true);
       expect(s.selectedPatternId).toBe("elevation");
+    });
+
+    it("isGradientEnabledを復元できる", () => {
+      store.getState().hydrateReliefState({
+        isGradientEnabled: false,
+      });
+      expect(store.getState().isGradientEnabled).toBe(false);
     });
   });
 });

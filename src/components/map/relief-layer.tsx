@@ -5,7 +5,10 @@ import { Source, Layer } from "react-map-gl/maplibre";
 import type { RasterDEMSourceSpecification } from "maplibre-gl";
 import { MapId } from "@/hooks/store/mapManagerState";
 import { useStore } from "@/hooks/store/useStore";
-import { buildColorInterpolation } from "@/lib/relief/buildColorInterpolation";
+import {
+  buildColorInterpolation,
+  buildColorStep,
+} from "@/lib/relief/buildColorInterpolation";
 import { TERRAIN_CONFIG, getDemSourceById } from "@/lib/config";
 
 interface Props {
@@ -18,6 +21,7 @@ export const ReliefLayer = ({ mapId }: Props) => {
   const optionalLayers = useStore((state) => state.maps[mapId].optionalLayers);
   const elevationRanges = useStore((state) => state.elevationRanges);
   const isHillshadeEnabled = useStore((state) => state.isHillshadeEnabled);
+  const isGradientEnabled = useStore((state) => state.isGradientEnabled);
   const selectedDemSourceId = useStore((state) => state.selectedDemSourceId);
 
   const demSourceConfig = useMemo((): Omit<
@@ -39,8 +43,11 @@ export const ReliefLayer = ({ mapId }: Props) => {
   );
 
   const colorExpression = useMemo(
-    () => buildColorInterpolation(elevationRanges),
-    [elevationRanges],
+    () =>
+      isGradientEnabled
+        ? buildColorInterpolation(elevationRanges)
+        : buildColorStep(elevationRanges),
+    [elevationRanges, isGradientEnabled],
   );
 
   if (!reliefLayerEntry) {

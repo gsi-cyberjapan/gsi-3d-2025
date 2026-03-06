@@ -31,6 +31,10 @@ export interface ReliefState {
   isHillshadeEnabled: boolean;
   /** 陰影を設定 */
   setIsHillshadeEnabled: (value: boolean) => void;
+  /** グラデーションの有効状態 */
+  isGradientEnabled: boolean;
+  /** グラデーションを設定 */
+  setIsGradientEnabled: (value: boolean) => void;
   /** 選択中のカラーパターンID */
   selectedPatternId: string;
   /** カラーパターンを適用 */
@@ -45,6 +49,7 @@ export interface ReliefState {
   hydrateReliefState: (partial: {
     isReliefWindowOpen?: boolean;
     isHillshadeEnabled?: boolean;
+    isGradientEnabled?: boolean;
     selectedPatternId?: string;
     elevationRanges?: ElevationRange[];
     selectedDemSourceId?: DemSourceId;
@@ -131,6 +136,13 @@ export const createReliefSlice: StateCreator<
     }));
   },
 
+  isGradientEnabled: true,
+  setIsGradientEnabled: (value) => {
+    set(() => ({
+      isGradientEnabled: value,
+    }));
+  },
+
   selectedPatternId: DEFAULT_PATTERN_ID,
   applyColorPattern: (patternId) => {
     set(() => {
@@ -163,6 +175,7 @@ export const createReliefSlice: StateCreator<
       elevationRanges: getDefaultRanges(),
       selectedPatternId: DEFAULT_PATTERN_ID,
       isHillshadeEnabled: false,
+      isGradientEnabled: true,
     }));
   },
   hydrateReliefState: (partial) => {
@@ -172,6 +185,8 @@ export const createReliefSlice: StateCreator<
         updates.isReliefWindowOpen = partial.isReliefWindowOpen;
       if (partial.isHillshadeEnabled !== undefined)
         updates.isHillshadeEnabled = partial.isHillshadeEnabled;
+      if (partial.isGradientEnabled !== undefined)
+        updates.isGradientEnabled = partial.isGradientEnabled;
       if (partial.selectedPatternId !== undefined)
         updates.selectedPatternId = partial.selectedPatternId;
       if (partial.elevationRanges !== undefined)

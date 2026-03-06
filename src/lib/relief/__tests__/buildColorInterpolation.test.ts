@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { buildColorInterpolation } from "@/lib/relief/buildColorInterpolation";
+import {
+  buildColorInterpolation,
+  buildColorStep,
+} from "@/lib/relief/buildColorInterpolation";
 import type { ElevationRange } from "@/lib/relief/colorPatterns";
 
 describe("buildColorInterpolation", () => {
@@ -59,5 +62,97 @@ describe("buildColorInterpolation", () => {
 
     expect(result[0]).toBe("interpolate");
     expect(result.length).toBe(5); // header(3) + 1 stop * 2
+  });
+});
+
+describe("buildColorStep", () => {
+  it("interpolate式で離散的な色境界を生成する", () => {
+    const ranges: ElevationRange[] = [
+      { id: "1", minElevation: 0, color: "#87CEEB" },
+      { id: "2", minElevation: 100, color: "#FFFF00" },
+      { id: "3", minElevation: 500, color: "#FF8C00" },
+    ];
+    const result = buildColorStep(ranges);
+
+    // Uses interpolate (not step) because color-relief only supports interpolate
+    expect(result[0]).toBe("interpolate");
+    expect(result[1]).toEqual(["linear"]);
+    expect(result[2]).toEqual(["elevation"]);
+
+    // First stop: 0, "#87CEEB"
+    expect(result[3]).toBe(0);
+    expect(result[4]).toBe("#87CEEB");
+    // Transition stop just before 100: 99.99, "#87CEEB"
+    expect(result[5]).toBe(99.99);
+    expect(result[6]).toBe("#87CEEB");
+    // Second stop: 100, "#FFFF00"
+    expect(result[7]).toBe(100);
+    expect(result[8]).toBe("#FFFF00");
+    // Transition stop just before 500: 499.99, "#FFFF00"
+    expect(result[9]).toBe(499.99);
+    expect(result[10]).toBe("#FFFF00");
+    // Third stop: 500, "#FF8C00"
+    expect(result[11]).toBe(500);
+    expect(result[12]).toBe("#FF8C00");
+  });
+
+  it("未ソートの入力を正しくソートする", () => {
+    const ranges: ElevationRange[] = [
+      { id: "1", minElevation: 500, color: "#FF8C00" },
+      { id: "2", minElevation: 0, color: "#87CEEB" },
+      { id: "3", minElevation: 100, color: "#FFFF00" },
+    ];
+    const result = buildColorStep(ranges);
+
+    // First stop is 0 (sorted)
+    expect(result[3]).toBe(0);
+    expect(result[4]).toBe("#87CEEB");
+  });
+
+  it("同一標高の重複は後勝ちで排除する", () => {
+    const ranges: ElevationRange[] = [
+      { id: "1", minElevation: 0, color: "#000000" },
+      { id: "2", minElevation: 100, color: "#FF0000" },
+      { id: "3", minElevation: 100, color: "#00FF00" },
+    ];
+    const result = buildColorStep(ranges);
+
+    // Deduped to 2 ranges: 0 and 100
+    // Stops: 0, "#000000", 99.99, "#000000", 100, "#00FF00"
+    expect(result[3]).toBe(0);
+    expect(result[4]).toBe("#000000");
+    expect(result[5]).toBe(99.99);
+    expect(result[6]).toBe("#000000");
+    expect(result[7]).toBe(100);
+    expect(result[8]).toBe("#00FF00"); // 後勝ち
+  });
+
+  it("1つのrangeでも動作する", () => {
+    const ranges: ElevationRange[] = [
+      { id: "1", minElevation: 0, color: "#87CEEB" },
+    ];
+    const result = buildColorStep(ranges);
+
+    expect(result[0]).toBe("interpolate");
+    // header(3) + 1 stop * 2
+    expect(result.length).toBe(5);
+    expect(result[3]).toBe(0);
+    expect(result[4]).toBe("#87CEEB");
+  });
+
+  it("近接する標高ではepsilonストップを省略する", () => {
+    const ranges: ElevationRange[] = [
+      { id: "1", minElevation: 0, color: "#000000" },
+      { id: "2", minElevation: 0.005, color: "#FFFFFF" },
+    ];
+    const result = buildColorStep(ranges);
+
+    // 0.005 - 0.01 = -0.005 which is < 0 (previous stop), so epsilon stop is skipped
+    // Stops: 0, "#000000", 0.005, "#FFFFFF"
+    expect(result[3]).toBe(0);
+    expect(result[4]).toBe("#000000");
+    expect(result[5]).toBe(0.005);
+    expect(result[6]).toBe("#FFFFFF");
+    expect(result.length).toBe(7); // header(3) + 2 stops * 2
   });
 });
