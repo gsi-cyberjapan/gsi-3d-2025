@@ -1,24 +1,24 @@
 /**
  * 経緯度グリッドの間隔を秒単位で返す
- * GSI旧システムの設定に準拠
+ * GSI旧システムの設定を2倍密にしたもの
  */
 export const getLatLngGridIntervalSeconds = (zoom: number): number => {
-  if (zoom <= 3) return 144000; // 40°
-  if (zoom === 4) return 72000; // 20°
-  if (zoom === 5) return 36000; // 10°
-  if (zoom === 6) return 18000; // 5°
-  if (zoom === 7) return 10800; // 3°
-  if (zoom === 8) return 7200; // 2°
-  if (zoom === 9) return 3600; // 1°
-  if (zoom === 10) return 1800; // 30'
-  if (zoom === 11) return 1200; // 20'
-  if (zoom === 12) return 600; // 10'
-  if (zoom === 13) return 180; // 3'
-  if (zoom === 14) return 120; // 2'
-  if (zoom === 15) return 60; // 1'
-  if (zoom === 16) return 30; // 30"
-  if (zoom === 17) return 20; // 20"
-  return 10; // 10"
+  if (zoom <= 3) return 72000; // 20°
+  if (zoom === 4) return 36000; // 10°
+  if (zoom === 5) return 18000; // 5°
+  if (zoom === 6) return 9000; // 2°30'
+  if (zoom === 7) return 5400; // 1°30'
+  if (zoom === 8) return 3600; // 1°
+  if (zoom === 9) return 1800; // 30'
+  if (zoom === 10) return 900; // 15'
+  if (zoom === 11) return 600; // 10'
+  if (zoom === 12) return 300; // 5'
+  if (zoom === 13) return 90; // 1'30"
+  if (zoom === 14) return 60; // 1'
+  if (zoom === 15) return 30; // 30"
+  if (zoom === 16) return 15; // 15"
+  if (zoom === 17) return 10; // 10"
+  return 5; // 5"
 };
 
 /**
