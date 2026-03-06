@@ -2,23 +2,26 @@
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useStore } from "@/hooks/store/useStore";
 import { type SaveImageBBox } from "@/lib/saveImage";
+import { useCallback } from "react";
 
-interface SaveImageBBoxInputsProps {
-  bbox: SaveImageBBox;
-  onChange: (bbox: SaveImageBBox) => void;
-}
+export const SaveImageBBoxInputs = () => {
+  const bbox = useStore((state) => state.saveImageBBox);
+  const setSaveImageBBox = useStore((state) => state.setSaveImageBBox);
 
-export const SaveImageBBoxInputs = ({
-  bbox,
-  onChange,
-}: SaveImageBBoxInputsProps) => {
-  const handleChange = (key: keyof SaveImageBBox, value: string) => {
-    const num = parseFloat(value);
-    if (!isNaN(num)) {
-      onChange({ ...bbox, [key]: num });
-    }
-  };
+  const handleChange = useCallback(
+    (key: keyof SaveImageBBox, value: string) => {
+      if (!bbox) return;
+      const num = parseFloat(value);
+      if (!isNaN(num)) {
+        setSaveImageBBox({ ...bbox, [key]: num });
+      }
+    },
+    [bbox, setSaveImageBBox],
+  );
+
+  if (!bbox) return null;
 
   return (
     <div className="grid grid-cols-2 gap-2">

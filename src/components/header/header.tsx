@@ -35,8 +35,8 @@ export const Header = () => {
   const setIsMeasureWindowOpen = useStore(
     (state) => state.setIsMeasureWindowOpen,
   );
-  const setIsSaveImageDialogOpen = useStore(
-    (state) => state.setIsSaveImageDialogOpen,
+  const setIsSaveImageWindowOpen = useStore(
+    (state) => state.setIsSaveImageWindowOpen,
   );
   const setIsPrintDialogOpen = useStore((state) => state.setIsPrintDialogOpen);
   const setIsShareDialogOpen = useStore((state) => state.setIsShareDialogOpen);
@@ -77,7 +77,7 @@ export const Header = () => {
               <DropdownMenuGroup>
                 <DropdownMenuItem
                   onClick={() => {
-                    setIsSaveImageDialogOpen(true);
+                    setIsSaveImageWindowOpen(true);
                   }}
                 >
                   <ImageIcon /> 画像
@@ -152,7 +152,7 @@ export const Header = () => {
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => {
-                setIsSaveImageDialogOpen(true);
+                setIsSaveImageWindowOpen(true);
               }}
             >
               <div className="flex gap-2 items-center">
