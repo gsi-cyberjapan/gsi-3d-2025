@@ -104,6 +104,14 @@ export const validateTileJSON = (
     };
   }
 
+  if (Array.isArray(obj.vector_layers) && obj.vector_layers.length > 0) {
+    return {
+      valid: false,
+      error:
+        "ベクタータイルの TileJSON には対応していません。Style Specification 形式の URL を使用してください。",
+    };
+  }
+
   return {
     valid: true,
     data: {
