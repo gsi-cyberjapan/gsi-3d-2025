@@ -9,7 +9,7 @@ export const MapCenterLine = () => {
 
   return (
     <Activity mode={isDiplayCenterLine ? "visible" : "hidden"}>
-      <Plus className="text-black" />
+      <Plus className="text-black size-9" strokeWidth={1.5} />
     </Activity>
   );
 };
