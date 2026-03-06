@@ -3,6 +3,7 @@ import { GlobalState } from "./useStore";
 import { MapId } from "./mapManagerState";
 import { BaseLayer, getBaseLayers } from "@/lib/getBaseLayers";
 import { TerraDraw } from "terra-draw";
+import { DEFAULT_ROOF_ELEVATION_TYPE, RoofElevationType } from "@/lib/config";
 
 export interface OptionalLayerEntry {
   layerId: string;
@@ -33,6 +34,8 @@ export interface MapState {
   isPointCloudEnabled: boolean;
   /** 3次元基本図表示 */
   isDenshi3dEnabled: boolean;
+  /** 建物の屋根面標高 */
+  roofElevationType: RoofElevationType;
 }
 
 export const MAP_INITIAL_STATE: MapState = {
@@ -44,6 +47,7 @@ export const MAP_INITIAL_STATE: MapState = {
   isTerrainEnabled: false,
   isPointCloudEnabled: false,
   isDenshi3dEnabled: false,
+  roofElevationType: DEFAULT_ROOF_ELEVATION_TYPE,
 };
 
 export interface MapStateWrapper {
@@ -101,6 +105,14 @@ export interface MapStateWrapper {
     mapId: MapId;
     enabled: boolean;
   }) => void;
+  /** 建物の屋根面標高の切り替え */
+  setRoofElevationType: ({
+    mapId,
+    roofElevationType,
+  }: {
+    mapId: MapId;
+    roofElevationType: RoofElevationType;
+  }) => void;
   /** ハイドレーション */
   hydrateMapState: (partial: {
     mainBaseLayer?: BaseLayer;
@@ -117,6 +129,8 @@ export interface MapStateWrapper {
     subPointCloud?: boolean;
     mainDenshi3d?: boolean;
     subDenshi3d?: boolean;
+    mainRoofElevationType?: RoofElevationType;
+    subRoofElevationType?: RoofElevationType;
   }) => void;
 }
 
@@ -230,6 +244,17 @@ export const createMapSlice: StateCreator<
       },
     }));
   },
+  setRoofElevationType: ({ mapId, roofElevationType }) => {
+    set((state) => ({
+      maps: {
+        ...state.maps,
+        [mapId]: {
+          ...state.maps[mapId],
+          roofElevationType,
+        },
+      },
+    }));
+  },
   hydrateMapState: (partial) => {
     set((state) => {
       const maps = { ...state.maps };
@@ -240,7 +265,8 @@ export const createMapSlice: StateCreator<
         partial.mainHillshade !== undefined ||
         partial.mainTerrain !== undefined ||
         partial.mainPointCloud !== undefined ||
-        partial.mainDenshi3d !== undefined
+        partial.mainDenshi3d !== undefined ||
+        partial.mainRoofElevationType !== undefined
       ) {
         maps.main = {
           ...maps.main,
@@ -261,6 +287,9 @@ export const createMapSlice: StateCreator<
           ...(partial.mainDenshi3d !== undefined && {
             isDenshi3dEnabled: partial.mainDenshi3d,
           }),
+          ...(partial.mainRoofElevationType !== undefined && {
+            roofElevationType: partial.mainRoofElevationType,
+          }),
         };
       }
       if (
@@ -270,7 +299,8 @@ export const createMapSlice: StateCreator<
         partial.subHillshade !== undefined ||
         partial.subTerrain !== undefined ||
         partial.subPointCloud !== undefined ||
-        partial.subDenshi3d !== undefined
+        partial.subDenshi3d !== undefined ||
+        partial.subRoofElevationType !== undefined
       ) {
         maps.sub = {
           ...maps.sub,
@@ -290,6 +320,9 @@ export const createMapSlice: StateCreator<
           }),
           ...(partial.subDenshi3d !== undefined && {
             isDenshi3dEnabled: partial.subDenshi3d,
+          }),
+          ...(partial.subRoofElevationType !== undefined && {
+            roofElevationType: partial.subRoofElevationType,
           }),
         };
       }

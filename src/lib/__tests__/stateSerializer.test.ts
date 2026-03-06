@@ -43,6 +43,7 @@ const makeBaseState = (
       isTerrainEnabled: false,
       isPointCloudEnabled: false,
       isDenshi3dEnabled: false,
+      roofElevationType: "medElv",
     },
     sub: {
       baseLayer: { id: "std" },
@@ -52,6 +53,7 @@ const makeBaseState = (
       isTerrainEnabled: false,
       isPointCloudEnabled: false,
       isDenshi3dEnabled: false,
+      roofElevationType: "medElv",
     },
   },
   isDisplayLatLngGrid: false,
@@ -89,6 +91,7 @@ describe("serializeState / deserializeState", () => {
             isTerrainEnabled: false,
             isPointCloudEnabled: false,
             isDenshi3dEnabled: false,
+            roofElevationType: "medElv",
           },
           sub: {
             baseLayer: { id: "std" },
@@ -98,6 +101,7 @@ describe("serializeState / deserializeState", () => {
             isTerrainEnabled: false,
             isPointCloudEnabled: false,
             isDenshi3dEnabled: false,
+            roofElevationType: "medElv",
           },
         },
       });
@@ -136,6 +140,7 @@ describe("serializeState / deserializeState", () => {
             isTerrainEnabled: false,
             isPointCloudEnabled: false,
             isDenshi3dEnabled: false,
+            roofElevationType: "medElv",
           },
           sub: {
             baseLayer: { id: "std" },
@@ -145,6 +150,7 @@ describe("serializeState / deserializeState", () => {
             isTerrainEnabled: false,
             isPointCloudEnabled: false,
             isDenshi3dEnabled: false,
+            roofElevationType: "medElv",
           },
         },
       });
@@ -179,6 +185,7 @@ describe("serializeState / deserializeState", () => {
             isTerrainEnabled: false,
             isPointCloudEnabled: false,
             isDenshi3dEnabled: false,
+            roofElevationType: "medElv",
           },
           sub: {
             baseLayer: { id: "std" },
@@ -188,6 +195,7 @@ describe("serializeState / deserializeState", () => {
             isTerrainEnabled: false,
             isPointCloudEnabled: false,
             isDenshi3dEnabled: false,
+            roofElevationType: "medElv",
           },
         },
       });
@@ -258,6 +266,52 @@ describe("serializeState / deserializeState", () => {
         minZoom: 2,
         maxZoom: 18,
       });
+    });
+  });
+
+  describe("roofElevationType round-trip", () => {
+    it("デフォルト値 medElv はURLに含まれない", () => {
+      const state = makeBaseState();
+      const serialized = serializeState(state);
+      expect(serialized).not.toContain("ret=");
+    });
+
+    it("非デフォルト値を正しくシリアライズ・デシリアライズする", () => {
+      const state = makeBaseState({
+        maps: {
+          main: {
+            baseLayer: { id: "std" },
+            optionalLayers: [],
+            projection: "mercator",
+            isHillshadeEnabled: false,
+            isTerrainEnabled: false,
+            isPointCloudEnabled: false,
+            isDenshi3dEnabled: false,
+            roofElevationType: "maxElv",
+          },
+          sub: {
+            baseLayer: { id: "std" },
+            optionalLayers: [],
+            projection: "mercator",
+            isHillshadeEnabled: false,
+            isTerrainEnabled: false,
+            isPointCloudEnabled: false,
+            isDenshi3dEnabled: false,
+            roofElevationType: "medElv",
+          },
+        },
+      });
+      const serialized = serializeState(state);
+      expect(serialized).toContain("ret=maxElv");
+
+      const deserialized = deserializeState(serialized);
+      expect(deserialized.mainRoofElevationType).toBe("maxElv");
+    });
+
+    it("不正な値はデシリアライズ時に無視される", () => {
+      const hash = "4.000/36.104611/140.084556/&ls=std,1.00&disp=1&ret=invalid";
+      const deserialized = deserializeState(hash);
+      expect(deserialized.mainRoofElevationType).toBeUndefined();
     });
   });
 });

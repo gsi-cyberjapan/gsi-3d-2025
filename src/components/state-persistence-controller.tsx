@@ -38,6 +38,7 @@ export const StatePersistenceController = () => {
               isTerrainEnabled: state.maps.main.isTerrainEnabled,
               isPointCloudEnabled: state.maps.main.isPointCloudEnabled,
               isDenshi3dEnabled: state.maps.main.isDenshi3dEnabled,
+              roofElevationType: state.maps.main.roofElevationType,
             },
             sub: {
               baseLayer: { id: state.maps.sub.baseLayer.id },
@@ -47,6 +48,7 @@ export const StatePersistenceController = () => {
               isTerrainEnabled: state.maps.sub.isTerrainEnabled,
               isPointCloudEnabled: state.maps.sub.isPointCloudEnabled,
               isDenshi3dEnabled: state.maps.sub.isDenshi3dEnabled,
+              roofElevationType: state.maps.sub.roofElevationType,
             },
           },
           isDisplayLatLngGrid: state.isDisplayLatLngGrid,

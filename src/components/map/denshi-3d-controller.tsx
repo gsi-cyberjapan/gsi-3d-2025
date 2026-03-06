@@ -188,6 +188,9 @@ export const Denshi3dController = ({ mapId }: Props) => {
   const isDenshi3dEnabled = useStore(
     (state) => state.maps[mapId].isDenshi3dEnabled,
   );
+  const roofElevationType = useStore(
+    (state) => state.maps[mapId].roofElevationType,
+  );
   const mapInstance = useMap()[mapId]?.getMap();
   const overlayRef = useRef<IControl | null>(null);
 
@@ -223,6 +226,12 @@ export const Denshi3dController = ({ mapId }: Props) => {
         ]);
 
       if (cancelled) return;
+
+      // roofElevationType変更時のレースコンディション対策
+      if (overlayRef.current) {
+        mapInstance.removeControl(overlayRef.current);
+        overlayRef.current = null;
+      }
 
       const railsWithHeight = addHeightToCoordinates(
         rails,
@@ -271,8 +280,10 @@ export const Denshi3dController = ({ mapId }: Props) => {
           maxZoom: DENSHI_KOKUDO_3D_CONFIG.MAX_ZOOM,
           getFillColor: getBuildingColor,
           getElevation: (f: { properties: Record<string, unknown> }) => {
-            const repElv = f.properties.repElv;
-            return repElv != null ? Number(repElv) : 0;
+            const rawRoofElv = f.properties[roofElevationType];
+            const roofElv = Number(rawRoofElv);
+            if (!Number.isFinite(roofElv) || roofElv === -9999) return 0;
+            return Math.max(0, roofElv);
           },
           extruded: true,
           wireframe: false,
@@ -301,7 +312,7 @@ export const Denshi3dController = ({ mapId }: Props) => {
         overlayRef.current = null;
       }
     };
-  }, [mapInstance, isDenshi3dEnabled, mapId]);
+  }, [mapInstance, isDenshi3dEnabled, roofElevationType, mapId]);
 
   return null;
 };

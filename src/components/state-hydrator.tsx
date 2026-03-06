@@ -71,6 +71,8 @@ const hydrateStore = () => {
     subPointCloud: state.subPointCloud,
     mainDenshi3d: state.mainDenshi3d,
     subDenshi3d: state.subDenshi3d,
+    mainRoofElevationType: state.mainRoofElevationType,
+    subRoofElevationType: state.subRoofElevationType,
   });
 
   // Hydrate grid state

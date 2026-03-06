@@ -3,6 +3,9 @@ import {
   DemSourceId,
   DEFAULT_DEM_SOURCE_ID,
   DEM_SOURCES,
+  RoofElevationType,
+  DEFAULT_ROOF_ELEVATION_TYPE,
+  ROOF_ELEVATION_OPTIONS,
 } from "@/lib/config";
 import { LayoutMode, MapId, ViewState } from "@/hooks/store/mapManagerState";
 import { getBaseLayers, BaseLayer } from "@/lib/getBaseLayers";
@@ -55,6 +58,8 @@ export interface DeserializedState {
   subPointCloud?: boolean;
   mainDenshi3d?: boolean;
   subDenshi3d?: boolean;
+  mainRoofElevationType?: RoofElevationType;
+  subRoofElevationType?: RoofElevationType;
   // Grid
   isDisplayLatLngGrid?: boolean;
   isDisplayUtmGrid?: boolean;
@@ -250,6 +255,7 @@ export interface SerializableStoreState {
       isTerrainEnabled: boolean;
       isPointCloudEnabled: boolean;
       isDenshi3dEnabled: boolean;
+      roofElevationType: RoofElevationType;
     }
   >;
   isDisplayLatLngGrid: boolean;
@@ -329,6 +335,7 @@ export const serializeState = (state: SerializableStoreState): string => {
   push("ter", fmtBool(state.maps.main.isTerrainEnabled), fmtBool(false));
   push("pc", fmtBool(state.maps.main.isPointCloudEnabled), fmtBool(false));
   push("d3d", fmtBool(state.maps.main.isDenshi3dEnabled), fmtBool(false));
+  push("ret", state.maps.main.roofElevationType, DEFAULT_ROOF_ELEVATION_TYPE);
 
   // Sub map (only when not single)
   if (state.layoutMode !== "single") {
@@ -364,6 +371,7 @@ export const serializeState = (state: SerializableStoreState): string => {
     push("ster", fmtBool(state.maps.sub.isTerrainEnabled), fmtBool(false));
     push("spc", fmtBool(state.maps.sub.isPointCloudEnabled), fmtBool(false));
     push("sd3d", fmtBool(state.maps.sub.isDenshi3dEnabled), fmtBool(false));
+    push("sret", state.maps.sub.roofElevationType, DEFAULT_ROOF_ELEVATION_TYPE);
   }
 
   // UI toggles
@@ -590,6 +598,17 @@ export const deserializeState = (paramString: string): DeserializedState => {
 
   const sd3d = getBool("sd3d");
   if (sd3d !== undefined) result.subDenshi3d = sd3d;
+
+  // Roof elevation type
+  const ret = getString("ret");
+  if (ret !== undefined && ROOF_ELEVATION_OPTIONS.some((o) => o.id === ret)) {
+    result.mainRoofElevationType = ret as RoofElevationType;
+  }
+
+  const sret = getString("sret");
+  if (sret !== undefined && ROOF_ELEVATION_OPTIONS.some((o) => o.id === sret)) {
+    result.subRoofElevationType = sret as RoofElevationType;
+  }
 
   // Grid
   const llg = getBool("llg");
