@@ -5,7 +5,7 @@ import { useStore } from "@/hooks/store/useStore";
 import { Map } from "./map";
 import { cn } from "@/lib/utils";
 import { ViewFooter } from "./view-footer";
-import { SaveImageDialog } from "../save-image/save-image-dialog";
+import { SaveImageWindow } from "../save-image/save-image-window";
 import { PrintDialog } from "../print/print-dialog";
 import { OverlaySliderHandle } from "./overlay-slider-handle";
 
@@ -38,7 +38,7 @@ export const MapsView = () => {
         {layoutMode === "overlay" && <OverlaySliderHandle />}
         <ViewFooter />
       </div>
-      <SaveImageDialog />
+      <SaveImageWindow />
       <PrintDialog />
     </MapProvider>
   );

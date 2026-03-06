@@ -47,7 +47,7 @@ vi.mock("next/link", () => ({
 
 const mockSetIsDrawWindowOpen = vi.fn();
 const mockSetIsMeasureWindowOpen = vi.fn();
-const mockSetIsSaveImageDialogOpen = vi.fn();
+const mockSetIsSaveImageWindowOpen = vi.fn();
 const mockSetIsPrintDialogOpen = vi.fn();
 const mockSetIsShareDialogOpen = vi.fn();
 const mockedUseStore = vi.mocked(useStore);
@@ -58,7 +58,7 @@ const setupMock = () => {
       selector({
         setIsDrawWindowOpen: mockSetIsDrawWindowOpen,
         setIsMeasureWindowOpen: mockSetIsMeasureWindowOpen,
-        setIsSaveImageDialogOpen: mockSetIsSaveImageDialogOpen,
+        setIsSaveImageWindowOpen: mockSetIsSaveImageWindowOpen,
         setIsPrintDialogOpen: mockSetIsPrintDialogOpen,
         setIsShareDialogOpen: mockSetIsShareDialogOpen,
       }),
