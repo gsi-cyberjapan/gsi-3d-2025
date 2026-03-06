@@ -90,6 +90,72 @@ describe("getOptionalLayers", () => {
     }
   });
 
+  it("正常系: Layer の title から <br> が改行に変換される", async () => {
+    const rootDefinition = [{ url: "/layers/layer1.json" }];
+    const layerData = {
+      layers: [
+        {
+          type: "Layer",
+          id: "br-layer",
+          title: "地すべり地形分布図<br>日本全国版",
+          url: "https://example.com/{z}/{x}/{y}.png",
+        },
+      ],
+    };
+
+    vi.mocked(fetch)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(rootDefinition),
+      } as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(layerData),
+      } as Response);
+
+    const result = await getOptionalLayers();
+    expect(result).toHaveLength(1);
+    if (result[0].type === "layer") {
+      expect(result[0].title).toBe("地すべり地形分布図\n日本全国版");
+    }
+  });
+
+  it("正常系: LayerGroup の title から <br /> バリエーションが改行に変換される", async () => {
+    const rootDefinition = [{ url: "/layers/group.json" }];
+    const groupData = {
+      layers: [
+        {
+          type: "LayerGroup",
+          title: "グループ名<br />改行後",
+          entries: [
+            {
+              type: "Layer",
+              id: "child",
+              title: "子レイヤー",
+              url: "https://example.com/{z}/{x}/{y}.png",
+            },
+          ],
+        },
+      ],
+    };
+
+    vi.mocked(fetch)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(rootDefinition),
+      } as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(groupData),
+      } as Response);
+
+    const result = await getOptionalLayers();
+    expect(result).toHaveLength(1);
+    if (result[0].type === "layer-group") {
+      expect(result[0].title).toBe("グループ名\n改行後");
+    }
+  });
+
   it("エラー系: ルート定義の fetch 失敗", async () => {
     vi.mocked(fetch).mockResolvedValueOnce({
       ok: false,

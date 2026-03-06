@@ -90,6 +90,9 @@ const buildLegendImageUrl = (iconUrl?: string): string | undefined => {
   return `${OPTIONAL_LAYER_CONFIG.BASE_IMAGE_URL}${iconUrl.slice(1)}`;
 };
 
+const sanitizeTitle = (text: string): string =>
+  text.replace(/<br\s*\/?>/gi, "\n").trim();
+
 /* ----------------------------------------------------------------------------
  * Raw loader & converters
  * ------------------------------------------------------------------------- */
@@ -117,7 +120,7 @@ const fetchRawRoot: RawRootLoader = async (urlOrPath) => {
 const toLayer = (raw: RawLayer): Layer => ({
   type: "layer",
   id: raw.id,
-  title: raw.title,
+  title: sanitizeTitle(raw.title),
   tileUrl: raw.url,
   minZoom: raw.minZoom,
   maxZoom: raw.maxZoom,
@@ -130,7 +133,7 @@ const toLayerGroup = (
   children: OptionalLayerEntry[],
 ): LayerGroup => ({
   type: "layer-group",
-  title: raw.title,
+  title: sanitizeTitle(raw.title),
   legendImageUrl: buildLegendImageUrl(raw.iconUrl),
   entries: children,
 });
