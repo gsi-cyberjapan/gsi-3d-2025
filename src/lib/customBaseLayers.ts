@@ -55,7 +55,7 @@ export const addCustomLayer = (
   const layers = getCustomLayers();
   if (layers.length >= MAX_CUSTOM_LAYERS) {
     throw new Error(
-      `Maximum ${String(MAX_CUSTOM_LAYERS)} custom layers allowed. Please delete an existing layer first.`,
+      `カスタムレイヤは最大${String(MAX_CUSTOM_LAYERS)}件までです。既存のレイヤを削除してから追加してください。`,
     );
   }
 

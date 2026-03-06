@@ -46,7 +46,7 @@ export type BaseLayer =
   | NoneBaseLayer;
 
 export const getBaseLayers = (): BaseLayer[] => {
-  const baseLayers: BaseLayer[] = [{ id: "none", type: "none", label: "なし" }];
+  const baseLayers: BaseLayer[] = [];
 
   BASE_LAYER_CONFIG.VECTOR_LAYERS.forEach((layer) => {
     baseLayers.push({
@@ -72,6 +72,8 @@ export const getBaseLayers = (): BaseLayer[] => {
       maxZoom: layer.MAX_ZOOM,
     });
   });
+
+  baseLayers.push({ id: "none", type: "none", label: "なし" });
 
   return baseLayers;
 };
