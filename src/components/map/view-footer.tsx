@@ -1,16 +1,26 @@
 "use client";
 
 import { useStore } from "@/hooks/store/useStore";
-import { CenterInfo } from "@/components/map/center-info";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { CenterInfo, InfoMode } from "@/components/map/center-info";
+import { ChevronDown, ChevronUp, Locate, Pointer } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ResetViewButton } from "./reset-view-button";
 
 export const ViewFooter = () => {
   const activeMapIds = useStore((state) => state.activeMapIds);
   const layoutMode = useStore((state) => state.layoutMode);
   const footerDisplayMode = useStore((state) => state.footerDisplayMode);
   const setFooterDisplayMode = useStore((state) => state.setFooterDisplayMode);
+
+  const [addressViewMode, setAddressViewMode] = useState("kanji");
+  const [infoMode, setInfoMode] = useState<InfoMode>("center");
+  const handleInfoModeChange = useCallback((value: string) => {
+    if (value === "center" || value === "click") {
+      setInfoMode(value);
+    }
+  }, []);
 
   const isOpen = footerDisplayMode === "full";
   const rootRef = useRef<HTMLDivElement>(null);
@@ -70,6 +80,49 @@ export const ViewFooter = () => {
       ref={rootRef}
       className="absolute bottom-0 left-0 right-0 z-10 bg-background"
     >
+      <div
+        className="absolute left-2 z-10 flex gap-1"
+        style={{ bottom: "calc(100% + 42px)" }}
+      >
+        <Tabs value={addressViewMode} onValueChange={setAddressViewMode}>
+          <TabsList className="h-6 rounded-sm">
+            <TabsTrigger
+              className="text-xs size-5 rounded-sm dark:data-[state=active]:bg-blue-600 dark:hover:text-foreground"
+              value="kanji"
+            >
+              漢
+            </TabsTrigger>
+            <TabsTrigger
+              className="text-xs size-5 rounded-sm dark:data-[state=active]:bg-blue-600 dark:hover:text-foreground"
+              value="kana"
+            >
+              あ
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+        <Tabs value={infoMode} onValueChange={handleInfoModeChange}>
+          <TabsList className="h-6 rounded-sm">
+            <TabsTrigger
+              className="text-xs px-2 size-5 rounded-sm dark:data-[state=active]:bg-blue-600 dark:hover:text-foreground"
+              value="center"
+            >
+              <Locate />
+            </TabsTrigger>
+            <TabsTrigger
+              className="text-xs px-2 size-5 rounded-sm dark:data-[state=active]:bg-blue-600 dark:hover:text-foreground"
+              value="click"
+            >
+              <Pointer />
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
+      <div
+        className="absolute right-2 z-10"
+        style={{ bottom: "calc(100% + 42px)" }}
+      >
+        <ResetViewButton mapId={activeMapIds[0]} />
+      </div>
       <button
         type="button"
         onClick={handleToggle}
@@ -97,11 +150,21 @@ export const ViewFooter = () => {
               if (layoutMode === "split") {
                 return activeMapIds.map((id) => (
                   <div key={id} className="w-full">
-                    <CenterInfo mapId={id} />
+                    <CenterInfo
+                      mapId={id}
+                      addressViewMode={addressViewMode}
+                      infoMode={infoMode}
+                    />
                   </div>
                 ));
               }
-              return <CenterInfo mapId={activeMapIds[0]} />;
+              return (
+                <CenterInfo
+                  mapId={activeMapIds[0]}
+                  addressViewMode={addressViewMode}
+                  infoMode={infoMode}
+                />
+              );
             })()}
           </div>
         </div>

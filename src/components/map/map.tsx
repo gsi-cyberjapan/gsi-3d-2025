@@ -207,13 +207,17 @@ export const Map = ({ mapId, className, clipPath }: Props) => {
       {/* OverviewMap、ZoomGuide、Compassはopacityの影響を受けない外側に配置 */}
       {isMapLoaded && <Compass mapId={mapId} />}
       {isMapLoaded && (
+        <div className="absolute top-14 right-2 z-10">
+          <ResetViewButton mapId={mapId} />
+        </div>
+      )}
+      {isMapLoaded && (
         <div
           className="absolute right-2 z-10 flex flex-col gap-2 items-end transition-[bottom] duration-300"
           style={{ bottom: "calc(0.5rem + var(--footer-height, 0px))" }}
         >
           <OverviewMap mapId={mapId} />
           <ZoomGuide mapId={mapId} />
-          <ResetViewButton mapId={mapId} />
         </div>
       )}
     </div>
