@@ -82,7 +82,7 @@ export const ViewFooter = () => {
     >
       <div
         className="absolute left-2 z-10 flex gap-1"
-        style={{ bottom: "calc(100% + 16px)" }}
+        style={{ bottom: "calc(100% + 32px)" }}
       >
         <ResetViewButton mapId={activeMapIds[0]} />
         <Tabs value={addressViewMode} onValueChange={setAddressViewMode}>
