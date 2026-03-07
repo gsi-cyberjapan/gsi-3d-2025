@@ -82,9 +82,8 @@ export const ViewFooter = () => {
     >
       <div
         className="absolute left-2 z-10 flex gap-1"
-        style={{ bottom: "calc(100% + 32px)" }}
+        style={{ bottom: "calc(100% + 42px)" }}
       >
-        <ResetViewButton mapId={activeMapIds[0]} />
         <Tabs value={addressViewMode} onValueChange={setAddressViewMode}>
           <TabsList className="h-6 rounded-sm">
             <TabsTrigger
@@ -117,6 +116,7 @@ export const ViewFooter = () => {
             </TabsTrigger>
           </TabsList>
         </Tabs>
+        <ResetViewButton mapId={activeMapIds[0]} />
       </div>
       <button
         type="button"
