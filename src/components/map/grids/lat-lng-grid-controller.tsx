@@ -50,7 +50,7 @@ const buildLatLngGridData = (map: maplibregl.Map) => {
     });
     labelFeatures.push({
       type: "Feature" as const,
-      properties: { label: secondsToDms(y, true) },
+      properties: { label: secondsToDms(y, true), type: "lat" },
       geometry: {
         type: "Point" as const,
         coordinates: [west + (east - west) * 0.02, lat] as [number, number],
@@ -75,10 +75,10 @@ const buildLatLngGridData = (map: maplibregl.Map) => {
     });
     labelFeatures.push({
       type: "Feature" as const,
-      properties: { label: secondsToDms(x, false) },
+      properties: { label: secondsToDms(x, false), type: "lng" },
       geometry: {
         type: "Point" as const,
-        coordinates: [lng, south + (north - south) * 0.02] as [number, number],
+        coordinates: [lng, north - (north - south) * 0.02] as [number, number],
       },
     });
   }
@@ -122,7 +122,13 @@ export const LatLngGridController = ({ mapId }: Props) => {
           "text-field": ["get", "label"],
           "text-size": 12,
           "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
-          "text-anchor": "bottom-left",
+          "text-anchor": [
+            "match",
+            ["get", "type"],
+            "lng",
+            "top-left",
+            "bottom-left",
+          ],
           "text-allow-overlap": true,
         }}
         paint={{
