@@ -10,14 +10,12 @@ import { getUTMFromLatLng } from "@/lib/map-utils/geUTMFromLatLng";
 import { getElevationFromLatLng } from "@/lib/map-utils/getElevationFromLatLng";
 import { latLngToDMS } from "@/lib/map-utils/latLngToDMS";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Info, Locate, Pointer } from "lucide-react";
-import { ResetViewButton } from "@/components/map/reset-view-button";
+import { Info } from "lucide-react";
 
 interface ViewState {
   latitude: number;
@@ -25,20 +23,20 @@ interface ViewState {
   zoom: number;
 }
 
+export type InfoMode = "center" | "click";
+
 interface Props {
   mapId: MapId;
+  addressViewMode: string;
+  infoMode: InfoMode;
 }
 
-type InfoMode = "center" | "click";
-
-export const CenterInfo = ({ mapId }: Props) => {
+export const CenterInfo = ({ mapId, addressViewMode, infoMode }: Props) => {
   const map = useMap()[mapId]?.getMap();
   const [viewState, setViewState] = useState<ViewState | null>(null);
   const [clickedViewState, setClickedViewState] = useState<ViewState | null>(
     null,
   );
-  const [addressViewMode, setAddressViewMode] = useState("kanji");
-  const [infoMode, setInfoMode] = useState<InfoMode>("center");
   const [stableViewState, setStableViewState] = useState<ViewState | null>(
     null,
   );
@@ -86,11 +84,6 @@ export const CenterInfo = ({ mapId }: Props) => {
     return latLngToDMS(displayViewState.latitude, displayViewState.longitude);
   }, [displayViewState]);
   const isAddressReady = !isAddressPending && (isCenterMode ? !isMoving : true);
-  const handleInfoModeChange = useCallback((value: string) => {
-    if (value === "center" || value === "click") {
-      setInfoMode(value);
-    }
-  }, []);
 
   const commitStableViewState = useCallback(() => {
     if (!map) return;
@@ -248,43 +241,6 @@ export const CenterInfo = ({ mapId }: Props) => {
           </tr>
         </tbody>
       </table>
-      <div className="flex flex-col gap-1 absolute z-10 -top-16">
-        <ResetViewButton mapId={mapId} />
-        <div className="flex justify-between">
-          <Tabs value={addressViewMode} onValueChange={setAddressViewMode}>
-            <TabsList className="h-6 rounded-sm">
-              <TabsTrigger
-                className="text-xs size-5 rounded-sm dark:data-[state=active]:bg-blue-600 dark:hover:text-foreground"
-                value="kanji"
-              >
-                漢
-              </TabsTrigger>
-              <TabsTrigger
-                className="text-xs size-5 rounded-sm dark:data-[state=active]:bg-blue-600 dark:hover:text-foreground"
-                value="kana"
-              >
-                あ
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-          <Tabs value={infoMode} onValueChange={handleInfoModeChange}>
-            <TabsList className="h-6 rounded-sm">
-              <TabsTrigger
-                className="text-xs px-2 size-5 rounded-sm dark:data-[state=active]:bg-blue-600 dark:hover:text-foreground"
-                value="center"
-              >
-                <Locate />
-              </TabsTrigger>
-              <TabsTrigger
-                className="text-xs px-2 size-5 rounded-sm dark:data-[state=active]:bg-blue-600 dark:hover:text-foreground"
-                value="click"
-              >
-                <Pointer />
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
-      </div>
     </div>
   );
 };
