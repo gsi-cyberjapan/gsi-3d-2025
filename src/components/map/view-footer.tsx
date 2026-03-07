@@ -116,6 +116,11 @@ export const ViewFooter = () => {
             </TabsTrigger>
           </TabsList>
         </Tabs>
+      </div>
+      <div
+        className="absolute right-2 z-10"
+        style={{ bottom: "calc(100% + 42px)" }}
+      >
         <ResetViewButton mapId={activeMapIds[0]} />
       </div>
       <button
