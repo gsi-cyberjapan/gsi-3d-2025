@@ -6,6 +6,7 @@ import { ChevronDown, ChevronUp, Locate, Pointer } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ResetViewButton } from "./reset-view-button";
 
 export const ViewFooter = () => {
   const activeMapIds = useStore((state) => state.activeMapIds);
@@ -79,42 +80,44 @@ export const ViewFooter = () => {
       ref={rootRef}
       className="absolute bottom-0 left-0 right-0 z-10 bg-background"
     >
-      {isOpen && (
-        <div className="absolute -top-7 left-2 z-10 flex gap-1">
-          <Tabs value={addressViewMode} onValueChange={setAddressViewMode}>
-            <TabsList className="h-6 rounded-sm">
-              <TabsTrigger
-                className="text-xs size-5 rounded-sm dark:data-[state=active]:bg-blue-600 dark:hover:text-foreground"
-                value="kanji"
-              >
-                漢
-              </TabsTrigger>
-              <TabsTrigger
-                className="text-xs size-5 rounded-sm dark:data-[state=active]:bg-blue-600 dark:hover:text-foreground"
-                value="kana"
-              >
-                あ
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-          <Tabs value={infoMode} onValueChange={handleInfoModeChange}>
-            <TabsList className="h-6 rounded-sm">
-              <TabsTrigger
-                className="text-xs px-2 size-5 rounded-sm dark:data-[state=active]:bg-blue-600 dark:hover:text-foreground"
-                value="center"
-              >
-                <Locate />
-              </TabsTrigger>
-              <TabsTrigger
-                className="text-xs px-2 size-5 rounded-sm dark:data-[state=active]:bg-blue-600 dark:hover:text-foreground"
-                value="click"
-              >
-                <Pointer />
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
-      )}
+      <div
+        className="absolute left-2 z-10 flex gap-1"
+        style={{ bottom: "calc(100% + 16px)" }}
+      >
+        <ResetViewButton mapId={activeMapIds[0]} />
+        <Tabs value={addressViewMode} onValueChange={setAddressViewMode}>
+          <TabsList className="h-6 rounded-sm">
+            <TabsTrigger
+              className="text-xs size-5 rounded-sm dark:data-[state=active]:bg-blue-600 dark:hover:text-foreground"
+              value="kanji"
+            >
+              漢
+            </TabsTrigger>
+            <TabsTrigger
+              className="text-xs size-5 rounded-sm dark:data-[state=active]:bg-blue-600 dark:hover:text-foreground"
+              value="kana"
+            >
+              あ
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+        <Tabs value={infoMode} onValueChange={handleInfoModeChange}>
+          <TabsList className="h-6 rounded-sm">
+            <TabsTrigger
+              className="text-xs px-2 size-5 rounded-sm dark:data-[state=active]:bg-blue-600 dark:hover:text-foreground"
+              value="center"
+            >
+              <Locate />
+            </TabsTrigger>
+            <TabsTrigger
+              className="text-xs px-2 size-5 rounded-sm dark:data-[state=active]:bg-blue-600 dark:hover:text-foreground"
+              value="click"
+            >
+              <Pointer />
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
       <button
         type="button"
         onClick={handleToggle}
