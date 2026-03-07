@@ -50,9 +50,8 @@ export const TerrainController = ({ mapId }: Props) => {
 
     if (mapInstance.isStyleLoaded()) {
       apply();
-    } else {
-      void mapInstance.once("style.load", apply);
     }
+    mapInstance.on("style.load", apply);
 
     return () => {
       mapInstance.off("style.load", apply);
