@@ -1,5 +1,6 @@
 import type { ElevationRange } from "./colorPatterns";
 import type { ExpressionSpecification } from "maplibre-gl";
+import { NODATA_ELEVATION } from "@/lib/gsiDemReliefProtocol";
 
 /**
  * Build a MapLibre GL color interpolation expression for color-relief layer
@@ -30,7 +31,12 @@ export const buildColorInterpolation = (
   }, []);
 
   // Linear interpolation - gradient between elevation stops
-  const stops: (number | string)[] = [];
+  const stops: (number | string)[] = [
+    NODATA_ELEVATION,
+    "rgba(0,0,0,0)",
+    NODATA_ELEVATION + 1,
+    deduped[0].color,
+  ];
   for (const range of deduped) {
     stops.push(range.minElevation, range.color);
   }
@@ -71,7 +77,12 @@ export const buildColorStep = (
 
   // Simulate step using interpolate with very close stops
   // For each boundary after the first, insert a stop just before it with the previous color
-  const stops: (number | string)[] = [];
+  const stops: (number | string)[] = [
+    NODATA_ELEVATION,
+    "rgba(0,0,0,0)",
+    NODATA_ELEVATION + 1,
+    deduped[0].color,
+  ];
   for (let i = 0; i < deduped.length; i++) {
     if (i > 0) {
       const transitionElevation = deduped[i].minElevation - STEP_EPSILON;

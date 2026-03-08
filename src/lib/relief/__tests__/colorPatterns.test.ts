@@ -14,10 +14,10 @@ describe("getPatternById", () => {
     expect(pattern?.ranges.length).toBeGreaterThan(0);
   });
 
-  it("topographicパターンを取得する", () => {
-    const pattern = getPatternById("topographic");
+  it("grayscaleパターンを取得する", () => {
+    const pattern = getPatternById("grayscale");
     expect(pattern).toBeDefined();
-    expect(pattern?.id).toBe("topographic");
+    expect(pattern?.id).toBe("grayscale");
   });
 
   it("存在しないIDはundefinedを返す", () => {

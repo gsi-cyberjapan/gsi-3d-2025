@@ -23,6 +23,14 @@ export function getMaplibreWithProtocol(): Promise<MapLibreType> {
       );
       maplibre.addProtocol("gsidem", getGsiDemProtocolAction("gsidem"));
 
+      const { getGsiDemReliefProtocolAction } = await import(
+        "./gsiDemReliefProtocol"
+      );
+      maplibre.addProtocol(
+        "gsidem-relief",
+        getGsiDemReliefProtocolAction("gsidem-relief"),
+      );
+
       return maplibre;
     })();
   }

@@ -10,48 +10,48 @@ export interface ColorPattern {
   ranges: Omit<ElevationRange, "id">[];
 }
 
-// Default color pattern - standard elevation visualization
+// Default color pattern (GSI Maps standard)
 const DEFAULT_RANGES: Omit<ElevationRange, "id">[] = [
-  { minElevation: 1500, color: "#8B4513" }, // Brown - high mountains
-  { minElevation: 500, color: "#FF8C00" }, // Orange - mountains
-  { minElevation: 100, color: "#FFFF00" }, // Yellow - hills
-  { minElevation: 50, color: "#90EE90" }, // Light green - low hills
-  { minElevation: 10, color: "#98FB98" }, // Pale green - plains
-  { minElevation: 5, color: "#ADD8E6" }, // Light blue - low areas
-  { minElevation: 0, color: "#87CEEB" }, // Sky blue - near sea level
+  { minElevation: 1500, color: "#FF4400" },
+  { minElevation: 500, color: "#FF8C00" },
+  { minElevation: 100, color: "#FFFF00" },
+  { minElevation: 50, color: "#91FF00" },
+  { minElevation: 10, color: "#00EEFF" },
+  { minElevation: 5, color: "#0095FF" },
+  { minElevation: 0, color: "#0000FF" },
 ];
 
-// Topographic map style colors
-const TOPOGRAPHIC_RANGES: Omit<ElevationRange, "id">[] = [
-  { minElevation: 2000, color: "#FFFFFF" }, // White - alpine
-  { minElevation: 1500, color: "#D4B896" }, // Tan - high mountains
-  { minElevation: 1000, color: "#C9A87C" }, // Light brown
-  { minElevation: 500, color: "#A8C686" }, // Olive green
-  { minElevation: 200, color: "#8DC784" }, // Medium green
-  { minElevation: 50, color: "#72C472" }, // Green
-  { minElevation: 0, color: "#AEDCC0" }, // Light green - lowlands
+// Grayscale: black to white
+const GRAYSCALE_RANGES: Omit<ElevationRange, "id">[] = [
+  { minElevation: 1500, color: "#FFFFFF" },
+  { minElevation: 500, color: "#E0E0E0" },
+  { minElevation: 100, color: "#C1C1C1" },
+  { minElevation: 50, color: "#A3A3A3" },
+  { minElevation: 10, color: "#848484" },
+  { minElevation: 5, color: "#656565" },
+  { minElevation: 0, color: "#464646" },
 ];
 
-// High contrast for elevation analysis
-const ELEVATION_RANGES: Omit<ElevationRange, "id">[] = [
-  { minElevation: 2000, color: "#FF0000" }, // Red - very high
-  { minElevation: 1000, color: "#FF7F00" }, // Orange - high
-  { minElevation: 500, color: "#FFFF00" }, // Yellow - medium high
-  { minElevation: 200, color: "#00FF00" }, // Green - medium
-  { minElevation: 50, color: "#00FFFF" }, // Cyan - low
-  { minElevation: 10, color: "#0000FF" }, // Blue - very low
-  { minElevation: 0, color: "#7F00FF" }, // Purple - near sea level
+// Blue to white
+const BLUE_RANGES: Omit<ElevationRange, "id">[] = [
+  { minElevation: 1500, color: "#FFFFFF" },
+  { minElevation: 500, color: "#D5D5FF" },
+  { minElevation: 100, color: "#AAAAFF" },
+  { minElevation: 50, color: "#8080FF" },
+  { minElevation: 10, color: "#5555FF" },
+  { minElevation: 5, color: "#2B2BFF" },
+  { minElevation: 0, color: "#0000FF" },
 ];
 
-// Earth tones for land areas
-const LAND_RANGES: Omit<ElevationRange, "id">[] = [
-  { minElevation: 3000, color: "#8B7355" }, // Dark tan - alpine
-  { minElevation: 2000, color: "#A0826D" }, // Medium tan
-  { minElevation: 1000, color: "#B8997A" }, // Light tan
-  { minElevation: 500, color: "#C9B896" }, // Beige
-  { minElevation: 200, color: "#9BB88D" }, // Sage green
-  { minElevation: 50, color: "#7CAC7C" }, // Forest green
-  { minElevation: 0, color: "#8FC58F" }, // Light green
+// Red to white
+const RED_RANGES: Omit<ElevationRange, "id">[] = [
+  { minElevation: 1500, color: "#FFFFFF" },
+  { minElevation: 500, color: "#FFD5D5" },
+  { minElevation: 100, color: "#FFAAAA" },
+  { minElevation: 50, color: "#FF8080" },
+  { minElevation: 10, color: "#FF5555" },
+  { minElevation: 5, color: "#FF2B2B" },
+  { minElevation: 0, color: "#FF0000" },
 ];
 
 export const COLOR_PATTERNS: ColorPattern[] = [
@@ -61,19 +61,19 @@ export const COLOR_PATTERNS: ColorPattern[] = [
     ranges: DEFAULT_RANGES,
   },
   {
-    id: "topographic",
-    title: "地形図風",
-    ranges: TOPOGRAPHIC_RANGES,
+    id: "grayscale",
+    title: "黒→白",
+    ranges: GRAYSCALE_RANGES,
   },
   {
-    id: "elevation",
-    title: "標高強調",
-    ranges: ELEVATION_RANGES,
+    id: "blue",
+    title: "青→白",
+    ranges: BLUE_RANGES,
   },
   {
-    id: "land",
-    title: "陸域",
-    ranges: LAND_RANGES,
+    id: "red",
+    title: "赤→白",
+    ranges: RED_RANGES,
   },
 ];
 
