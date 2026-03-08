@@ -30,7 +30,7 @@ export const ReliefLayer = ({ mapId }: Props) => {
   > => {
     const demSource = getDemSourceById(selectedDemSourceId);
     return {
-      tiles: [demSource.tileUrl],
+      tiles: [demSource.tileUrl.replace("gsidem://", "gsidem-relief://")],
       tileSize: 256,
       encoding: TERRAIN_CONFIG.DEM_ENCODING,
       minzoom: TERRAIN_CONFIG.DEM_MIN_ZOOM,
