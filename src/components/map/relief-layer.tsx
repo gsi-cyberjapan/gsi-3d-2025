@@ -54,11 +54,7 @@ export const ReliefLayer = ({ mapId }: Props) => {
     return null;
   }
 
-  // Apply layer opacity from store, with hillshade reducing it further
   const layerOpacity = reliefLayerEntry.opacity;
-  const colorReliefOpacity = isHillshadeEnabled
-    ? layerOpacity * 0.75
-    : layerOpacity;
 
   return (
     <Source
@@ -67,27 +63,27 @@ export const ReliefLayer = ({ mapId }: Props) => {
       type="raster-dem"
       {...demSourceConfig}
     >
-      {/* Hillshade layer (renders first, below color-relief) */}
-      <Layer
-        id={`${mapId}-hillshade`}
-        type="hillshade"
-        paint={{
-          "hillshade-exaggeration": 0.5,
-          "hillshade-shadow-color": "#000000",
-          "hillshade-highlight-color": "#FFFFFF",
-          "hillshade-illumination-anchor": "viewport",
-        }}
-        layout={{
-          visibility: isHillshadeEnabled ? "visible" : "none",
-        }}
-      />
-      {/* Color relief layer */}
+      {/* Color relief layer (renders first, below hillshade) */}
       <Layer
         id={`${mapId}-color-relief`}
         type="color-relief"
         paint={{
           "color-relief-color": colorExpression,
-          "color-relief-opacity": colorReliefOpacity,
+          "color-relief-opacity": layerOpacity,
+        }}
+      />
+      {/* Hillshade layer (renders on top as semi-transparent overlay) */}
+      <Layer
+        id={`${mapId}-hillshade`}
+        type="hillshade"
+        paint={{
+          "hillshade-exaggeration": 0.5,
+          "hillshade-shadow-color": "rgba(0, 0, 0, 0.3)",
+          "hillshade-highlight-color": "rgba(255, 255, 255, 0.15)",
+          "hillshade-illumination-anchor": "viewport",
+        }}
+        layout={{
+          visibility: isHillshadeEnabled ? "visible" : "none",
         }}
       />
     </Source>
