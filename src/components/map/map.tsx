@@ -45,7 +45,6 @@ import { AzimuthController } from "../azimuth/azimuth-controller";
 import { SaveImageBBoxController } from "../save-image/save-image-bbox-controller";
 import { FeaturePopupController } from "./feature-popup-controller";
 import { ScaleBar } from "./scale-bar";
-import { ResetViewButton } from "./reset-view-button";
 
 const ReactMaplibre = dynamic(
   () => import("react-map-gl/maplibre").then((m) => m.Map),
@@ -206,11 +205,6 @@ export const Map = ({ mapId, className, clipPath }: Props) => {
 
       {/* OverviewMap、ZoomGuide、Compassはopacityの影響を受けない外側に配置 */}
       {isMapLoaded && <Compass mapId={mapId} />}
-      {isMapLoaded && (
-        <div className="absolute top-14 right-2 z-10">
-          <ResetViewButton mapId={mapId} />
-        </div>
-      )}
       {isMapLoaded && (
         <div
           className="absolute right-2 z-10 flex flex-col gap-2 items-end transition-[bottom] duration-300"
