@@ -248,7 +248,7 @@ const collectMetadata = (entries: OptionalLayerEntry[]): void => {
         typeof entry.html === "string" && entry.html.trim().length > 0;
       const hasLegend =
         typeof entry.legendUrl === "string" && entry.legendUrl.length > 0;
-      if (hasHtml || hasLegend) {
+      if ((hasHtml || hasLegend) && !layerMetadataCache.has(entry.id)) {
         layerMetadataCache.set(entry.id, {
           html: entry.html,
           legendUrl: entry.legendUrl,
