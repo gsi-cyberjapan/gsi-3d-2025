@@ -225,6 +225,32 @@ describe("buildLayerMetadataCache / getLayerMetadata", () => {
     expect(meta?.html).toBe("<p>ネスト</p>");
   });
 
+  it("重複IDの場合、先に処理されたメタデータが保持される", () => {
+    const entries: OptionalLayerEntry[] = [
+      {
+        type: "layer",
+        id: "dup-layer",
+        title: "完全版",
+        tileUrl: "https://example.com/{z}/{x}/{y}.png",
+        html: "<p>完全な説明</p>",
+        legendUrl: "https://example.com/legend.png",
+      },
+      {
+        type: "layer",
+        id: "dup-layer",
+        title: "不完全版",
+        tileUrl: "https://example.com/{z}/{x}/{y}.png",
+        html: "<p>不完全</p>",
+      },
+    ];
+
+    buildLayerMetadataCache(entries);
+    const meta = getLayerMetadata("dup-layer");
+    expect(meta).toBeDefined();
+    expect(meta?.html).toBe("<p>完全な説明</p>");
+    expect(meta?.legendUrl).toBe("https://example.com/legend.png");
+  });
+
   it("メタデータのないレイヤーは undefined を返す", () => {
     buildLayerMetadataCache([]);
     expect(getLayerMetadata("non-existent")).toBeUndefined();
