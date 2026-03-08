@@ -88,11 +88,11 @@ describe("reliefState", () => {
 
   describe("applyColorPattern", () => {
     it("パターン適用でレンジが生成される", () => {
-      store.getState().applyColorPattern("topographic");
+      store.getState().applyColorPattern("grayscale");
       const s = store.getState();
-      expect(s.selectedPatternId).toBe("topographic");
+      expect(s.selectedPatternId).toBe("grayscale");
       expect(s.elevationRanges.length).toBeGreaterThan(0);
-      expect(s.elevationRanges[0].id).toContain("pattern-topographic-");
+      expect(s.elevationRanges[0].id).toContain("pattern-grayscale-");
     });
 
     it("存在しないパターンでは何も変わらない", () => {
@@ -118,7 +118,7 @@ describe("reliefState", () => {
 
   describe("resetToDefaults", () => {
     it("デフォルト値にリセットされる", () => {
-      store.getState().applyColorPattern("topographic");
+      store.getState().applyColorPattern("grayscale");
       store.getState().setIsHillshadeEnabled(true);
       store.getState().setIsGradientEnabled(false);
 
@@ -136,12 +136,12 @@ describe("reliefState", () => {
       store.getState().hydrateReliefState({
         isReliefWindowOpen: true,
         isHillshadeEnabled: true,
-        selectedPatternId: "elevation",
+        selectedPatternId: "blue",
       });
       const s = store.getState();
       expect(s.isReliefWindowOpen).toBe(true);
       expect(s.isHillshadeEnabled).toBe(true);
-      expect(s.selectedPatternId).toBe("elevation");
+      expect(s.selectedPatternId).toBe("blue");
     });
 
     it("isGradientEnabledを復元できる", () => {
