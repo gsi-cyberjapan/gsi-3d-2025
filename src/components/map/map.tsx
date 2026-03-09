@@ -210,7 +210,7 @@ export const Map = ({ mapId, className, clipPath }: Props) => {
       {isMapLoaded && (
         <div
           className="absolute right-2 z-10 flex flex-col gap-2 items-end transition-[bottom] duration-300"
-          style={{ bottom: "calc(0.5rem + var(--footer-height, 0px))" }}
+          style={{ bottom: "calc(42px + var(--footer-height, 0px))" }}
         >
           {((mapId === "main" && layoutMode !== "overlay") ||
             (mapId === "sub" && layoutMode === "overlay")) && (
