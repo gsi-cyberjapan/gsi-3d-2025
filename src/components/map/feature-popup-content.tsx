@@ -1,6 +1,7 @@
 "use client";
 
 import { FeaturePopupFeature } from "@/hooks/store/featurePopupState";
+import { getAttributeLabel, getVtCodeName } from "@/lib/vtAttributeNames";
 
 interface Props {
   features: FeaturePopupFeature[];
@@ -31,17 +32,28 @@ export const FeaturePopupContent = ({ features }: Props) => {
               className="w-full border-collapse mb-1 last:mb-0"
             >
               <tbody>
-                {Object.entries(feature.properties).map(([key, value]) => (
-                  <tr
-                    key={key}
-                    className="border-b border-border last:border-0"
-                  >
-                    <td className="px-1 py-0.5 font-medium text-muted-foreground whitespace-nowrap align-top">
-                      {key}
-                    </td>
-                    <td className="px-1 py-0.5 break-all">{String(value)}</td>
-                  </tr>
-                ))}
+                {Object.entries(feature.properties).map(([key, value]) => {
+                  const label = getAttributeLabel(key);
+                  const vtCodeName =
+                    key === "vt_code" && typeof value === "number"
+                      ? getVtCodeName(value)
+                      : undefined;
+                  return (
+                    <tr
+                      key={key}
+                      className="border-b border-border last:border-0"
+                    >
+                      <td className="px-1 py-0.5 font-medium text-muted-foreground whitespace-nowrap align-top">
+                        {label ? `${key}（${label}）` : key}
+                      </td>
+                      <td className="px-1 py-0.5 break-all">
+                        {vtCodeName
+                          ? `${String(value)}（${vtCodeName}）`
+                          : String(value)}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           ))}
