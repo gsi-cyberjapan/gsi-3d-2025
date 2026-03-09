@@ -20,7 +20,7 @@ export const FeaturePopupContent = ({ features }: Props) => {
   }
 
   return (
-    <div className="max-h-64 overflow-y-auto text-xs">
+    <div className="max-h-64 overflow-y-auto scrollbar-transparent-thin text-xs">
       {[...grouped.entries()].map(([sourceLayer, group]) => (
         <div key={sourceLayer} className="mb-2 last:mb-0">
           <div className="font-bold text-muted-foreground mb-1 px-1">
