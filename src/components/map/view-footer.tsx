@@ -6,7 +6,6 @@ import { ChevronDown, ChevronUp, Locate, Pointer } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ResetViewButton } from "./reset-view-button";
 
 export const ViewFooter = () => {
   const activeMapIds = useStore((state) => state.activeMapIds);
@@ -116,12 +115,6 @@ export const ViewFooter = () => {
             </TabsTrigger>
           </TabsList>
         </Tabs>
-      </div>
-      <div
-        className="absolute right-2 z-10"
-        style={{ bottom: "calc(100% + 42px)" }}
-      >
-        <ResetViewButton mapId={activeMapIds[0]} />
       </div>
       <button
         type="button"

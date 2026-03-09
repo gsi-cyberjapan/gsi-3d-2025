@@ -45,6 +45,7 @@ import { AzimuthController } from "../azimuth/azimuth-controller";
 import { SaveImageBBoxController } from "../save-image/save-image-bbox-controller";
 import { FeaturePopupController } from "./feature-popup-controller";
 import { ScaleBar } from "./scale-bar";
+import { ResetViewButton } from "./reset-view-button";
 
 const ReactMaplibre = dynamic(
   () => import("react-map-gl/maplibre").then((m) => m.Map),
@@ -59,6 +60,7 @@ interface Props {
   className?: string;
 }
 export const Map = ({ mapId, className, clipPath }: Props) => {
+  const layoutMode = useStore((state) => state.layoutMode);
   const baseLayer = useStore((state) => state.maps[mapId].baseLayer);
   const [mapLib, setMapLib] = useState<MapLibreType | null>(null);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
@@ -208,8 +210,12 @@ export const Map = ({ mapId, className, clipPath }: Props) => {
       {isMapLoaded && (
         <div
           className="absolute right-2 z-10 flex flex-col gap-2 items-end transition-[bottom] duration-300"
-          style={{ bottom: "calc(0.5rem + var(--footer-height, 0px))" }}
+          style={{ bottom: "calc(42px + var(--footer-height, 0px))" }}
         >
+          {((mapId === "main" && layoutMode !== "overlay") ||
+            (mapId === "sub" && layoutMode === "overlay")) && (
+            <ResetViewButton mapId={mapId} />
+          )}
           <OverviewMap mapId={mapId} />
           <ZoomGuide mapId={mapId} />
         </div>
