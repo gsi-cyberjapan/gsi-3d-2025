@@ -1,6 +1,28 @@
-# gsi-3d-2025（3次元地図可視化サイト）
+# 3次元地図可視化サイト
 
-国土地理院が提供する3次元地図可視化Webアプリケーションのソースコードです。
+国土地理院が提供する3次元地図可視化サイトのソースコードです。
+
+## ⚠️ 公開前の調整事項
+
+以下の設定値は開発・デモ用のURLを指しています。**国土地理院本番環境へ公開する前に、本番URLへの差し替えが必要です。**
+
+### タイルURL変更箇所
+
+**ファイル:** `src/lib/config.ts`
+
+| 設定                                                    | 現在のURL                                                                         | 変更先                    |
+| ------------------------------------------------------- | --------------------------------------------------------------------------------- | ------------------------- |
+| `POINT_CLOUD_CONFIG.TILES_INDEX_URL` (L253)             | `https://d2g57vdz6jjbu8.cloudfront.net/3dtiles.json`                              | 国土地理院本番URL（未定） |
+| `POINT_CLOUD_CONFIG.TILESET_BASE_URL` (L254)            | `https://d2g57vdz6jjbu8.cloudfront.net/3dtiles`                                   | 国土地理院本番URL（未定） |
+| `DENSHI_KOKUDO_3D_CONFIG.RAILS_URL` (L271-272)          | `https://geolonia.github.io/gsi-3d-2025-demo-3dgeojson/rails.geojson`             | 国土地理院本番URL（未定） |
+| `DENSHI_KOKUDO_3D_CONFIG.ROADS_URL` (L273-274)          | `https://geolonia.github.io/gsi-3d-2025-demo-3dgeojson/roads.geojson`             | 国土地理院本番URL（未定） |
+| `DENSHI_KOKUDO_3D_CONFIG.BUILDINGS_TILE_URL` (L275-276) | `https://geolonia.github.io/gsi-3d-2025-demo-3dgeojson/buildings/{z}/{x}/{y}.pbf` | 国土地理院本番URL（未定） |
+
+### ヘルプリンク変更箇所
+
+| ファイル                | 箇所                           | 現在のURL                     | 変更先                |
+| ----------------------- | ------------------------------ | ----------------------------- | --------------------- |
+| `src/lib/config.ts` L22 | `GENERAL_CONFIG.HELP_PAGE_URL` | `http://maps.gsi.go.jp/help/` | マニュアルURL（未定） |
 
 ## 概要
 
