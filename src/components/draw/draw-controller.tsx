@@ -66,6 +66,7 @@ const applyModeOptions = (draw: TerraDraw) => {
 export const DrawController = ({ mapId }: { mapId: MapId }) => {
   const map = useMap()[mapId]?.getMap();
   const drawRef = useRef<TerraDraw | null>(null);
+  const recoveringRef = useRef(false);
   const isDrawWindowOpen = useStore((state) => state.isDrawWindowOpen);
   const setEditingFeature = useStore((state) => state.setEditingFeature);
   const setTerraDraw = useStore((state) => state.setTerraDraw);
@@ -178,48 +179,38 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
     applyModeOptions(drawRef.current);
   }, [hiddenSources, isStart]);
 
-  // TerraDraw レイヤーを常に最上位に維持する
+  // TerraDraw レイヤーの最上位維持 & スタイル変更時の復元
   useEffect(() => {
     if (!map || !isStart) return;
 
-    const moveTdLayersToTop = () => {
-      const allExist = TERRA_DRAW_LAYER_IDS.every(
-        (id) => map.getLayer(id) !== undefined,
-      );
-      if (!allExist) return;
+    const handleStyleData = () => {
+      if (recoveringRef.current) return;
 
-      const layerOrder = map.getLayersOrder();
-      const topLayers = layerOrder.slice(-TERRA_DRAW_LAYER_IDS.length);
-      const alreadyOnTop = TERRA_DRAW_LAYER_IDS.every(
-        (id, i) => topLayers[i] === id,
-      );
-      if (alreadyOnTop) return;
-
-      for (const id of TERRA_DRAW_LAYER_IDS) {
-        map.moveLayer(id);
-      }
-    };
-
-    moveTdLayersToTop();
-    map.on("styledata", moveTdLayersToTop);
-
-    return () => {
-      map.off("styledata", moveTdLayersToTop);
-    };
-  }, [map, isStart]);
-
-  // ベースマップ切替時にTerraDraw レイヤーを復元する
-  useEffect(() => {
-    if (!map || !isStart) return;
-
-    const handleStyleLoad = () => {
       const draw = drawRef.current;
       if (!draw) return;
 
-      // diff ベースのスタイル更新でソースが残っている場合はスキップ
-      if (map.getSource("td-point")) return;
+      const allExist = TERRA_DRAW_LAYER_IDS.every(
+        (id) => map.getLayer(id) !== undefined,
+      );
 
-      // 1. 内部ストアからフィーチャーをスナップショット
+      if (allExist) {
+        // レイヤーが存在する場合は最上位に移動
+        const layerOrder = map.getLayersOrder();
+        const topLayers = layerOrder.slice(-TERRA_DRAW_LAYER_IDS.length);
+        const alreadyOnTop = TERRA_DRAW_LAYER_IDS.every(
+          (id, i) => topLayers[i] === id,
+        );
+        if (!alreadyOnTop) {
+          for (const id of TERRA_DRAW_LAYER_IDS) {
+            map.moveLayer(id);
+          }
+        }
+        return;
+      }
+
+      // レイヤーが消えている場合は TerraDraw を復元
+      recoveringRef.current = true;
+
       const snapshot = draw.getSnapshot();
       const featuresToRestore = snapshot.filter(
         (f) =>
@@ -229,28 +220,20 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
           !f.properties.currentlyDrawing,
       );
 
-      // 2. TerraDraw を停止（レイヤーが既に消えているため例外が出る可能性あり）
       try {
         draw.stop();
       } catch {
-        /* expected */
+        /* レイヤーが既に消えているため例外が出る可能性あり */
       }
-
-      // 3. TerraDraw を再開（adapter.register で新しいレイヤー/ソースを作成）
       draw.start();
-
-      // 4. 内部ストアをクリア（stop 前のフィーチャーが残っている）
       draw.clear();
-
-      // 5. モードスタイルを再適用
       applyModeOptions(draw);
 
-      // 6. フィーチャーを復元
       if (featuresToRestore.length > 0) {
         draw.addFeatures(featuresToRestore);
       }
 
-      // 7. Zustand ストアからモードを復元
+      // Zustand ストアからモードを復元
       const state = useStore.getState();
       if (state.isMeasureWindowOpen) {
         draw.setMode(
@@ -264,13 +247,14 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
         draw.setMode("static");
       }
 
-      // 8. 選択状態をクリア
       setSelectedFeature(null);
+      recoveringRef.current = false;
     };
 
-    map.on("style.load", handleStyleLoad);
+    handleStyleData();
+    map.on("styledata", handleStyleData);
     return () => {
-      map.off("style.load", handleStyleLoad);
+      map.off("styledata", handleStyleData);
     };
   }, [map, isStart, setSelectedFeature]);
 
