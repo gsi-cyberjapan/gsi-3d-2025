@@ -43,6 +43,26 @@ const TERRA_DRAW_LAYER_IDS = [
   "td-point-marker",
 ] as const;
 
+const applyModeOptions = (draw: TerraDraw) => {
+  draw.updateModeOptions("circle", { styles: getCircleModeStyle(draw) });
+  draw.updateModeOptions("linestring", {
+    styles: getLineStringModeStyle(draw),
+  });
+  draw.updateModeOptions("freehand-linestring", {
+    styles: getLineStringModeStyle(draw),
+  });
+  draw.updateModeOptions("polygon", { styles: getPolygonModeStyle(draw) });
+  draw.updateModeOptions("text", { styles: getTextModeStyle() });
+  draw.updateModeOptions("point", { styles: getPointModeStyle() });
+  draw.updateModeOptions("select", { styles: getSelectModeStyle(draw) });
+  draw.updateModeOptions("measure-linestring", {
+    styles: getMeasureLineStringModeStyle(),
+  });
+  draw.updateModeOptions("measure-polygon", {
+    styles: getMeasurePolygonModeStyle(),
+  });
+};
+
 export const DrawController = ({ mapId }: { mapId: MapId }) => {
   const map = useMap()[mapId]?.getMap();
   const drawRef = useRef<TerraDraw | null>(null);
@@ -155,22 +175,7 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
   // hiddenSources 変更時にスタイルを再登録
   useEffect(() => {
     if (!drawRef.current || !isStart) return;
-
-    drawRef.current.updateModeOptions("circle", {
-      styles: getCircleModeStyle(drawRef.current),
-    });
-    drawRef.current.updateModeOptions("linestring", {
-      styles: getLineStringModeStyle(drawRef.current),
-    });
-    drawRef.current.updateModeOptions("freehand-linestring", {
-      styles: getLineStringModeStyle(drawRef.current),
-    });
-    drawRef.current.updateModeOptions("polygon", {
-      styles: getPolygonModeStyle(drawRef.current),
-    });
-    drawRef.current.updateModeOptions("select", {
-      styles: getSelectModeStyle(drawRef.current),
-    });
+    applyModeOptions(drawRef.current);
   }, [hiddenSources, isStart]);
 
   // TerraDraw レイヤーを常に最上位に維持する
@@ -202,6 +207,72 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
       map.off("styledata", moveTdLayersToTop);
     };
   }, [map, isStart]);
+
+  // ベースマップ切替時にTerraDraw レイヤーを復元する
+  useEffect(() => {
+    if (!map || !isStart) return;
+
+    const handleStyleLoad = () => {
+      const draw = drawRef.current;
+      if (!draw) return;
+
+      // diff ベースのスタイル更新でソースが残っている場合はスキップ
+      if (map.getSource("td-point")) return;
+
+      // 1. 内部ストアからフィーチャーをスナップショット
+      const snapshot = draw.getSnapshot();
+      const featuresToRestore = snapshot.filter(
+        (f) =>
+          f.properties.mode !== "select" &&
+          !f.properties.selected &&
+          !f.properties.closingPoint &&
+          !f.properties.currentlyDrawing,
+      );
+
+      // 2. TerraDraw を停止（レイヤーが既に消えているため例外が出る可能性あり）
+      try {
+        draw.stop();
+      } catch {
+        /* expected */
+      }
+
+      // 3. TerraDraw を再開（adapter.register で新しいレイヤー/ソースを作成）
+      draw.start();
+
+      // 4. 内部ストアをクリア（stop 前のフィーチャーが残っている）
+      draw.clear();
+
+      // 5. モードスタイルを再適用
+      applyModeOptions(draw);
+
+      // 6. フィーチャーを復元
+      if (featuresToRestore.length > 0) {
+        draw.addFeatures(featuresToRestore);
+      }
+
+      // 7. Zustand ストアからモードを復元
+      const state = useStore.getState();
+      if (state.isMeasureWindowOpen) {
+        draw.setMode(
+          state.measureMode === "distance"
+            ? "measure-linestring"
+            : "measure-polygon",
+        );
+      } else if (state.isDrawWindowOpen) {
+        draw.setMode(state.drawMode);
+      } else {
+        draw.setMode("static");
+      }
+
+      // 8. 選択状態をクリア
+      setSelectedFeature(null);
+    };
+
+    map.on("style.load", handleStyleLoad);
+    return () => {
+      map.off("style.load", handleStyleLoad);
+    };
+  }, [map, isStart, setSelectedFeature]);
 
   useEffect(() => {
     if (!map) return;
@@ -275,33 +346,7 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
       });
       drawRef.current = draw;
       draw.start();
-      drawRef.current.updateModeOptions("circle", {
-        styles: getCircleModeStyle(draw),
-      });
-      drawRef.current.updateModeOptions("linestring", {
-        styles: getLineStringModeStyle(draw),
-      });
-      drawRef.current.updateModeOptions("freehand-linestring", {
-        styles: getLineStringModeStyle(draw),
-      });
-      drawRef.current.updateModeOptions("polygon", {
-        styles: getPolygonModeStyle(draw),
-      });
-      drawRef.current.updateModeOptions("text", {
-        styles: getTextModeStyle(),
-      });
-      drawRef.current.updateModeOptions("point", {
-        styles: getPointModeStyle(),
-      });
-      drawRef.current.updateModeOptions("select", {
-        styles: getSelectModeStyle(draw),
-      });
-      drawRef.current.updateModeOptions("measure-linestring", {
-        styles: getMeasureLineStringModeStyle(),
-      });
-      drawRef.current.updateModeOptions("measure-polygon", {
-        styles: getMeasurePolygonModeStyle(),
-      });
+      applyModeOptions(draw);
       draw.on("finish", handleDrawFinish);
       draw.on("select", handleSelect);
       draw.on("deselect", handleDeselect);
