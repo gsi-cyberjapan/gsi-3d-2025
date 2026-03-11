@@ -1,26 +1,13 @@
 "use client";
 
 import { Source } from "react-map-gl/maplibre";
-import { MapId } from "@/hooks/store/mapManagerState";
 import { useStore } from "@/hooks/store/useStore";
 import { TERRAIN_CONFIG, getDemSourceById } from "@/lib/config";
 
-interface Props {
-  mapId: MapId;
-}
-
 export const TERRAIN_SOURCE_ID = "terrain-dem";
 
-export const TerrainSource = ({ mapId }: Props) => {
-  const isTerrainEnabled = useStore(
-    (state) => state.maps[mapId].isTerrainEnabled,
-  );
+export const TerrainSource = () => {
   const selectedDemSourceId = useStore((state) => state.selectedDemSourceId);
-
-  if (!isTerrainEnabled) {
-    return null;
-  }
-
   const demSource = getDemSourceById(selectedDemSourceId);
 
   return (

@@ -82,7 +82,10 @@ export const Map = ({ mapId, className, clipPath }: Props) => {
             source: TERRAIN_SOURCE_ID,
             exaggeration: TERRAIN_CONFIG.TERRAIN_EXAGGERATION,
           }
-        : undefined,
+        : // react-maplibre types accept only undefined, but its runtime
+          // _updateStyleComponents skips undefined and never calls
+          // map.setTerrain(null). Passing null forces the terrain off.
+          (null as unknown as undefined),
     [isTerrainEnabled],
   );
 
@@ -169,7 +172,7 @@ export const Map = ({ mapId, className, clipPath }: Props) => {
               <OptionalLayers mapId={mapId} />
               <ReliefLayer mapId={mapId} />
               <HillshadeLayer mapId={mapId} />
-              <TerrainSource mapId={mapId} />
+              <TerrainSource />
               <PointCloudController mapId={mapId} />
               <Denshi3dController mapId={mapId} />
               {/* Mapインスタンスを直接操作するコンポーネント */}
