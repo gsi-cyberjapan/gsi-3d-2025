@@ -296,14 +296,7 @@ export const Denshi3dController = ({ mapId }: Props) => {
       overlayRef.current = overlay as unknown as IControl;
     };
 
-    if (mapInstance.isStyleLoaded()) {
-      void setup();
-    } else {
-      const onStyleLoad = () => {
-        void setup();
-      };
-      void mapInstance.once("style.load", onStyleLoad);
-    }
+    void setup();
 
     return () => {
       cancelled = true;
