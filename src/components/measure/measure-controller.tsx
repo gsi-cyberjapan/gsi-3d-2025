@@ -81,7 +81,10 @@ export const MeasureController = ({ mapId }: { mapId: MapId }) => {
       if (type === "create") {
         const newMeasureFeature = ids.some((id) => {
           const f = td.getSnapshotFeature(id);
-          return f?.properties.mode === currentModeName;
+          return (
+            f?.properties.mode === currentModeName &&
+            f.properties.source !== "measure"
+          );
         });
 
         if (newMeasureFeature) {
@@ -188,6 +191,9 @@ export const MeasureController = ({ mapId }: { mapId: MapId }) => {
         type,
         value,
       });
+
+      // Mark feature as a completed measurement so recovery won't treat it as new
+      td.updateFeatureProperties(id, { source: "measure" });
 
       // Reset current measurement display for next drawing
       currentDrawingIdRef.current = null;
