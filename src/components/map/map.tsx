@@ -10,7 +10,7 @@ import {
 } from "@/lib/getMaplibreWhithProtocol";
 import { MapRef } from "react-map-gl/maplibre";
 import { buildStyleFromBaseLayer } from "@/lib/buildStyleFromBaseLayer";
-import { DEFAULT_VIEW_CONFIG } from "@/lib/config";
+import { DEFAULT_VIEW_CONFIG, TERRAIN_CONFIG } from "@/lib/config";
 import { useStore } from "@/hooks/store/useStore";
 import { useEffect, useState, useMemo, useRef } from "react";
 import { ZoomLevelController } from "./zoom-level-controller";
@@ -37,7 +37,7 @@ import { UtmGridController } from "./grids/utm-grid-controller";
 import { MagneticNorthController } from "./magnetic-north-controller";
 import { ReliefLayer } from "./relief-layer";
 import { HillshadeLayer } from "./hillshade-layer";
-import { TerrainController } from "./terrain-controller";
+import { TerrainSource, TERRAIN_SOURCE_ID } from "./terrain-controller";
 import { PointCloudController } from "./point-cloud-controller";
 import { Denshi3dController } from "./denshi-3d-controller";
 import { EquidistantCirclesController } from "../equidistant-circles/equidistant-circles-controller";
@@ -68,9 +68,25 @@ export const Map = ({ mapId, className, clipPath }: Props) => {
   const viewState = useStore((state) => state.viewStates[mapId]);
   const showLoading = !mapLib || !isMapLoaded;
   const mapRef = useRef<MapRef>(null);
+  const isTerrainEnabled = useStore(
+    (state) => state.maps[mapId].isTerrainEnabled,
+  );
   const mapStyle = useMemo(
     () => buildStyleFromBaseLayer(baseLayer),
     [baseLayer],
+  );
+  const terrain = useMemo(
+    () =>
+      isTerrainEnabled
+        ? {
+            source: TERRAIN_SOURCE_ID,
+            exaggeration: TERRAIN_CONFIG.TERRAIN_EXAGGERATION,
+          }
+        : // react-maplibre types accept only undefined, but its runtime
+          // _updateStyleComponents skips undefined and never calls
+          // map.setTerrain(null). Passing null forces the terrain off.
+          (null as unknown as undefined),
+    [isTerrainEnabled],
   );
 
   // react-map-gl only uses initialViewState on its first mount, so
@@ -144,6 +160,7 @@ export const Map = ({ mapId, className, clipPath }: Props) => {
               mapLib={mapLib}
               mapStyle={mapStyle}
               projection={projection}
+              terrain={terrain}
               maxPitch={85}
               cursor="default"
               initialViewState={initialViewState}
@@ -155,7 +172,7 @@ export const Map = ({ mapId, className, clipPath }: Props) => {
               <OptionalLayers mapId={mapId} />
               <ReliefLayer mapId={mapId} />
               <HillshadeLayer mapId={mapId} />
-              <TerrainController mapId={mapId} />
+              <TerrainSource />
               <PointCloudController mapId={mapId} />
               <Denshi3dController mapId={mapId} />
               {/* Mapインスタンスを直接操作するコンポーネント */}

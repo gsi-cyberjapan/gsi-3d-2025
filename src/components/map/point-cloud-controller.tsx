@@ -94,19 +94,10 @@ export const PointCloudController = ({ mapId }: Props) => {
       };
     };
 
-    const onStyleLoad = () => {
-      void setup();
-    };
-
-    if (mapInstance.isStyleLoaded()) {
-      void setup();
-    } else {
-      void mapInstance.once("style.load", onStyleLoad);
-    }
+    void setup();
 
     return () => {
       cancelled = true;
-      mapInstance.off("style.load", onStyleLoad);
       if (cleanupRef.current) {
         cleanupRef.current();
         cleanupRef.current = null;
