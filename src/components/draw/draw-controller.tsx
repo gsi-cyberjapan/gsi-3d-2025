@@ -43,9 +43,30 @@ const TERRA_DRAW_LAYER_IDS = [
   "td-point-marker",
 ] as const;
 
+const applyModeOptions = (draw: TerraDraw) => {
+  draw.updateModeOptions("circle", { styles: getCircleModeStyle(draw) });
+  draw.updateModeOptions("linestring", {
+    styles: getLineStringModeStyle(draw),
+  });
+  draw.updateModeOptions("freehand-linestring", {
+    styles: getLineStringModeStyle(draw),
+  });
+  draw.updateModeOptions("polygon", { styles: getPolygonModeStyle(draw) });
+  draw.updateModeOptions("text", { styles: getTextModeStyle() });
+  draw.updateModeOptions("point", { styles: getPointModeStyle() });
+  draw.updateModeOptions("select", { styles: getSelectModeStyle(draw) });
+  draw.updateModeOptions("measure-linestring", {
+    styles: getMeasureLineStringModeStyle(),
+  });
+  draw.updateModeOptions("measure-polygon", {
+    styles: getMeasurePolygonModeStyle(),
+  });
+};
+
 export const DrawController = ({ mapId }: { mapId: MapId }) => {
   const map = useMap()[mapId]?.getMap();
   const drawRef = useRef<TerraDraw | null>(null);
+  const recoveringRef = useRef(false);
   const isDrawWindowOpen = useStore((state) => state.isDrawWindowOpen);
   const setEditingFeature = useStore((state) => state.setEditingFeature);
   const setTerraDraw = useStore((state) => state.setTerraDraw);
@@ -155,53 +176,87 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
   // hiddenSources 変更時にスタイルを再登録
   useEffect(() => {
     if (!drawRef.current || !isStart) return;
-
-    drawRef.current.updateModeOptions("circle", {
-      styles: getCircleModeStyle(drawRef.current),
-    });
-    drawRef.current.updateModeOptions("linestring", {
-      styles: getLineStringModeStyle(drawRef.current),
-    });
-    drawRef.current.updateModeOptions("freehand-linestring", {
-      styles: getLineStringModeStyle(drawRef.current),
-    });
-    drawRef.current.updateModeOptions("polygon", {
-      styles: getPolygonModeStyle(drawRef.current),
-    });
-    drawRef.current.updateModeOptions("select", {
-      styles: getSelectModeStyle(drawRef.current),
-    });
+    applyModeOptions(drawRef.current);
   }, [hiddenSources, isStart]);
 
-  // TerraDraw レイヤーを常に最上位に維持する
+  // TerraDraw レイヤーの最上位維持 & スタイル変更時の復元
   useEffect(() => {
     if (!map || !isStart) return;
 
-    const moveTdLayersToTop = () => {
+    const handleStyleData = () => {
+      if (recoveringRef.current) return;
+
+      const draw = drawRef.current;
+      if (!draw) return;
+
       const allExist = TERRA_DRAW_LAYER_IDS.every(
         (id) => map.getLayer(id) !== undefined,
       );
-      if (!allExist) return;
 
-      const layerOrder = map.getLayersOrder();
-      const topLayers = layerOrder.slice(-TERRA_DRAW_LAYER_IDS.length);
-      const alreadyOnTop = TERRA_DRAW_LAYER_IDS.every(
-        (id, i) => topLayers[i] === id,
-      );
-      if (alreadyOnTop) return;
-
-      for (const id of TERRA_DRAW_LAYER_IDS) {
-        map.moveLayer(id);
+      if (allExist) {
+        // レイヤーが存在する場合は最上位に移動
+        const layerOrder = map.getLayersOrder();
+        const topLayers = layerOrder.slice(-TERRA_DRAW_LAYER_IDS.length);
+        const alreadyOnTop = TERRA_DRAW_LAYER_IDS.every(
+          (id, i) => topLayers[i] === id,
+        );
+        if (!alreadyOnTop) {
+          for (const id of TERRA_DRAW_LAYER_IDS) {
+            map.moveLayer(id);
+          }
+        }
+        return;
       }
+
+      // レイヤーが消えている場合は TerraDraw を復元
+      recoveringRef.current = true;
+
+      const snapshot = draw.getSnapshot();
+      const featuresToRestore = snapshot.filter(
+        (f) =>
+          f.properties.mode !== "select" &&
+          !f.properties.selected &&
+          !f.properties.closingPoint &&
+          !f.properties.currentlyDrawing,
+      );
+
+      try {
+        draw.stop();
+      } catch {
+        /* レイヤーが既に消えているため例外が出る可能性あり */
+      }
+      draw.start();
+      draw.clear();
+      applyModeOptions(draw);
+
+      if (featuresToRestore.length > 0) {
+        draw.addFeatures(featuresToRestore);
+      }
+
+      // Zustand ストアからモードを復元
+      const state = useStore.getState();
+      if (state.isMeasureWindowOpen) {
+        draw.setMode(
+          state.measureMode === "distance"
+            ? "measure-linestring"
+            : "measure-polygon",
+        );
+      } else if (state.isDrawWindowOpen) {
+        draw.setMode(state.drawMode);
+      } else {
+        draw.setMode("static");
+      }
+
+      setSelectedFeature(null);
+      recoveringRef.current = false;
     };
 
-    moveTdLayersToTop();
-    map.on("styledata", moveTdLayersToTop);
-
+    handleStyleData();
+    map.on("styledata", handleStyleData);
     return () => {
-      map.off("styledata", moveTdLayersToTop);
+      map.off("styledata", handleStyleData);
     };
-  }, [map, isStart]);
+  }, [map, isStart, setSelectedFeature]);
 
   useEffect(() => {
     if (!map) return;
@@ -275,33 +330,7 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
       });
       drawRef.current = draw;
       draw.start();
-      drawRef.current.updateModeOptions("circle", {
-        styles: getCircleModeStyle(draw),
-      });
-      drawRef.current.updateModeOptions("linestring", {
-        styles: getLineStringModeStyle(draw),
-      });
-      drawRef.current.updateModeOptions("freehand-linestring", {
-        styles: getLineStringModeStyle(draw),
-      });
-      drawRef.current.updateModeOptions("polygon", {
-        styles: getPolygonModeStyle(draw),
-      });
-      drawRef.current.updateModeOptions("text", {
-        styles: getTextModeStyle(),
-      });
-      drawRef.current.updateModeOptions("point", {
-        styles: getPointModeStyle(),
-      });
-      drawRef.current.updateModeOptions("select", {
-        styles: getSelectModeStyle(draw),
-      });
-      drawRef.current.updateModeOptions("measure-linestring", {
-        styles: getMeasureLineStringModeStyle(),
-      });
-      drawRef.current.updateModeOptions("measure-polygon", {
-        styles: getMeasurePolygonModeStyle(),
-      });
+      applyModeOptions(draw);
       draw.on("finish", handleDrawFinish);
       draw.on("select", handleSelect);
       draw.on("deselect", handleDeselect);
