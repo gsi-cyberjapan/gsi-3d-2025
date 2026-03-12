@@ -37,7 +37,7 @@ const CREDIT_TEXT = "出典：国土地理院";
 function getGroundResolution(latitude: number, zoom: number): number {
   return (
     (Math.cos((latitude * Math.PI) / 180) * 2 * Math.PI * EARTH_RADIUS) /
-    (256 * Math.pow(2, zoom))
+    (512 * Math.pow(2, zoom))
   );
 }
 
