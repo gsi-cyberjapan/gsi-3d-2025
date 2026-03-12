@@ -184,7 +184,7 @@ export const PrintDialog = () => {
           }
         : undefined;
 
-      const mapCanvas = await renderHighResMap({
+      const { canvas: mapCanvas, metersPerPixel } = await renderHighResMap({
         style,
         center: [center.lng, center.lat],
         zoom: adjustedZoom,
@@ -200,8 +200,7 @@ export const PrintDialog = () => {
         title,
         showCompass,
         bearing,
-        latitude: center.lat,
-        zoom: adjustedZoom,
+        metersPerPixel,
         paper: paperSize,
       });
 

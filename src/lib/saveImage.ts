@@ -28,18 +28,7 @@ const SCALE_BAR_DISTANCES: ScaleBarEntry[] = [
   { distance: 500000, label: "500km" },
 ];
 
-const EARTH_RADIUS = 6378137;
 const CREDIT_TEXT = "出典：国土地理院";
-
-/**
- * Calculate ground resolution (meters/pixel) at given latitude and zoom level
- */
-function getGroundResolution(latitude: number, zoom: number): number {
-  return (
-    (Math.cos((latitude * Math.PI) / 180) * 2 * Math.PI * EARTH_RADIUS) /
-    (512 * Math.pow(2, zoom))
-  );
-}
 
 /**
  * Capture the map canvas and return a copy.
@@ -96,16 +85,24 @@ export function cropCanvasToBBox(
  */
 export function drawScaleBar(
   canvas: HTMLCanvasElement,
-  latitude: number,
-  zoom: number,
+  map: maplibregl.Map,
 ): void {
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
 
   const dpr = window.devicePixelRatio;
-  const resolution = getGroundResolution(latitude, zoom);
+
+  // Compute ground resolution using map.unproject(), matching MapLibre's ScaleControl
+  const container = map.getContainer();
+  const cx = container.clientWidth / 2;
+  const cy = container.clientHeight / 2;
+  const halfSpan = 50;
+  const left = map.unproject([cx - halfSpan, cy]);
+  const right = map.unproject([cx + halfSpan, cy]);
+  const metersPerCssPx = left.distanceTo(right) / (halfSpan * 2);
+
   const maxBarWidthPx = canvas.width / 4;
-  const maxBarMeters = (maxBarWidthPx / dpr) * resolution;
+  const maxBarMeters = (maxBarWidthPx / dpr) * metersPerCssPx;
 
   let chosen: ScaleBarEntry | undefined;
   for (const entry of SCALE_BAR_DISTANCES) {
@@ -115,7 +112,7 @@ export function drawScaleBar(
   }
   if (!chosen) return;
 
-  const barWidthPx = (chosen.distance / resolution) * dpr;
+  const barWidthPx = (chosen.distance / metersPerCssPx) * dpr;
   const barHeight = 6 * dpr;
   const margin = 12 * dpr;
   const fontSize = 12 * dpr;

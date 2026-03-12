@@ -176,11 +176,8 @@ export const SaveImageWindow = () => {
         canvas = cropCanvasToBBox(canvas, map, saveImageBBox);
       }
 
-      const center = map.getCenter();
-      const zoom = map.getZoom();
-
       if (includeScaleBar) {
-        drawScaleBar(canvas, center.lat, zoom);
+        drawScaleBar(canvas, map);
       }
 
       if (includeCredit) {
