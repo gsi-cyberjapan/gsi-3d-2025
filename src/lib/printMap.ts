@@ -108,7 +108,6 @@ const SCALE_BAR_DISTANCES: ScaleBarEntry[] = [
   { distance: 500000, label: "500km" },
 ];
 
-const EARTH_RADIUS = 6378137;
 const CREDIT_TEXT = "\u51FA\u5178\uFF1A\u56FD\u571F\u5730\u7406\u9662";
 
 /**
@@ -119,11 +118,9 @@ export function getTitleHeight(title: string, dpi: number): number {
   return Math.round(24 * (dpi / 150)) + Math.round(16 * (dpi / 150)) * 2;
 }
 
-function getGroundResolution(latitude: number, zoom: number): number {
-  return (
-    (Math.cos((latitude * Math.PI) / 180) * 2 * Math.PI * EARTH_RADIUS) /
-    (256 * Math.pow(2, zoom))
-  );
+interface RenderResult {
+  canvas: HTMLCanvasElement;
+  metersPerPixel: number;
 }
 
 interface RenderOptions {
@@ -160,10 +157,10 @@ function waitFrames(count: number): Promise<void> {
  */
 export async function renderHighResMap(
   options: RenderOptions,
-): Promise<HTMLCanvasElement> {
+): Promise<RenderResult> {
   const mapLib = await getMaplibreWithProtocol();
 
-  return new Promise<HTMLCanvasElement>((resolve, reject) => {
+  return new Promise<RenderResult>((resolve, reject) => {
     const container = document.createElement("div");
     container.style.width = `${String(options.width)}px`;
     container.style.height = `${String(options.height)}px`;
@@ -209,7 +206,15 @@ export async function renderHighResMap(
               }
             }
 
-            resolve(resultCanvas);
+            // Measure ground resolution before destroying the map
+            const cx = container.clientWidth / 2;
+            const cy = container.clientHeight / 2;
+            const halfSpan = 50;
+            const left = renderMap.unproject([cx - halfSpan, cy]);
+            const right = renderMap.unproject([cx + halfSpan, cy]);
+            const metersPerPixel = left.distanceTo(right) / (halfSpan * 2);
+
+            resolve({ canvas: resultCanvas, metersPerPixel });
           } catch (err) {
             reject(
               err instanceof Error ? err : new Error("Failed to render map"),
@@ -353,14 +358,12 @@ function drawPrintScaleBar(
   ctx: CanvasRenderingContext2D,
   canvasWidth: number,
   canvasHeight: number,
-  latitude: number,
-  zoom: number,
+  metersPerPixel: number,
   dpi: number,
 ): void {
   const scale = dpi / 150;
-  const resolution = getGroundResolution(latitude, zoom);
   const maxBarWidthPx = canvasWidth / 4;
-  const maxBarMeters = maxBarWidthPx * resolution;
+  const maxBarMeters = maxBarWidthPx * metersPerPixel;
 
   let chosen: ScaleBarEntry | undefined;
   for (const entry of SCALE_BAR_DISTANCES) {
@@ -370,7 +373,7 @@ function drawPrintScaleBar(
   }
   if (!chosen) return;
 
-  const barWidthPx = chosen.distance / resolution;
+  const barWidthPx = chosen.distance / metersPerPixel;
   const barHeight = Math.round(6 * scale);
   const margin = Math.round(12 * scale);
   const fontSize = Math.round(12 * scale);
@@ -448,8 +451,7 @@ interface ComposeOptions {
   title: string;
   showCompass: boolean;
   bearing: number;
-  latitude: number;
-  zoom: number;
+  metersPerPixel: number;
   paper: PaperSize;
 }
 
@@ -457,7 +459,7 @@ interface ComposeOptions {
  * Compose the final print canvas with title, map, scale bar, credit, and compass
  */
 export function composePrintCanvas(options: ComposeOptions): HTMLCanvasElement {
-  const { mapCanvas, title, showCompass, bearing, latitude, zoom, paper } =
+  const { mapCanvas, title, showCompass, bearing, metersPerPixel, paper } =
     options;
 
   const titleHeight = getTitleHeight(title, paper.dpi);
@@ -487,8 +489,7 @@ export function composePrintCanvas(options: ComposeOptions): HTMLCanvasElement {
     ctx,
     canvas.width,
     canvas.height,
-    latitude,
-    zoom,
+    metersPerPixel,
     paper.dpi,
   );
 
