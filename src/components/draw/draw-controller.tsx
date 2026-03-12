@@ -339,14 +339,14 @@ export const DrawController = ({ mapId }: { mapId: MapId }) => {
       setTerraDraw({ mapId, td: draw });
     };
 
-    if (map.isStyleLoaded()) {
+    if (map.loaded()) {
       setup();
     } else {
-      void map.once("style.load", setup);
+      void map.once("load", setup);
     }
 
     return () => {
-      map.off("style.load", setup);
+      map.off("load", setup);
       if (drawRef.current) {
         drawRef.current.off("finish", handleDrawFinish);
         drawRef.current.off("select", handleSelect);
