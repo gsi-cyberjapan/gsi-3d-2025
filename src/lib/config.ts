@@ -19,7 +19,7 @@ export const GENERAL_CONFIG = {
   /** アプリケーションの言語 */
   LANGUAGE: "ja",
   /** ヘルプページのURL */
-  HELP_PAGE_URL: "http://maps.gsi.go.jp/help/",
+  HELP_PAGE_URL: "https://potential-goggles-3qr4o98.pages.github.io/",
 } as const;
 
 export const LAYOUT_CONFIG = {
@@ -250,8 +250,10 @@ export const TERRAIN_CONFIG = {
 } as const;
 
 export const POINT_CLOUD_CONFIG = {
-  TILES_INDEX_URL: "https://d2g57vdz6jjbu8.cloudfront.net/3dtiles.json",
-  TILESET_BASE_URL: "https://d2g57vdz6jjbu8.cloudfront.net/3dtiles",
+  TILES_INDEX_URL:
+    "https://cyberjapandata.gsi.go.jp/3dpc-3dtiles/pointcloud/iwaki/the-roof-standard-point/3dtiles.json",
+  TILESET_BASE_URL:
+    "https://cyberjapandata.gsi.go.jp/3dpc-3dtiles/pointcloud/iwaki",
   MIN_ZOOM: 12,
 } as const;
 
@@ -268,12 +270,10 @@ export type RoofElevationOption = (typeof ROOF_ELEVATION_OPTIONS)[number];
 export const DEFAULT_ROOF_ELEVATION_TYPE: RoofElevationType = "medElv";
 
 export const DENSHI_KOKUDO_3D_CONFIG = {
-  RAILS_URL:
-    "https://geolonia.github.io/gsi-3d-2025-demo-3dgeojson/rails.geojson",
-  ROADS_URL:
-    "https://geolonia.github.io/gsi-3d-2025-demo-3dgeojson/roads.geojson",
+  RAILS_URL: "https://cyberjapandata.gsi.go.jp/3dmaps/rails.geojson",
+  ROADS_URL: "https://cyberjapandata.gsi.go.jp/3dmaps/roads.geojson",
   BUILDINGS_TILE_URL:
-    "https://geolonia.github.io/gsi-3d-2025-demo-3dgeojson/buildings/{z}/{x}/{y}.pbf",
+    "https://cyberjapandata.gsi.go.jp/3dmaps/buildings/{z}/{x}/{y}.pbf",
   MIN_ZOOM: 10,
   MAX_ZOOM: 16,
   ADD_HEIGHT: 1.5,

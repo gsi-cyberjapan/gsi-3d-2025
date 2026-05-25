@@ -10,19 +10,19 @@
 
 **ファイル:** `src/lib/config.ts`
 
-| 設定                                                    | 現在のURL                                                                         | 変更先                    |
-| ------------------------------------------------------- | --------------------------------------------------------------------------------- | ------------------------- |
-| `POINT_CLOUD_CONFIG.TILES_INDEX_URL` (L253)             | `https://d2g57vdz6jjbu8.cloudfront.net/3dtiles.json`                              | 国土地理院本番URL（未定） |
-| `POINT_CLOUD_CONFIG.TILESET_BASE_URL` (L254)            | `https://d2g57vdz6jjbu8.cloudfront.net/3dtiles`                                   | 国土地理院本番URL（未定） |
-| `DENSHI_KOKUDO_3D_CONFIG.RAILS_URL` (L271-272)          | `https://geolonia.github.io/gsi-3d-2025-demo-3dgeojson/rails.geojson`             | 国土地理院本番URL（未定） |
-| `DENSHI_KOKUDO_3D_CONFIG.ROADS_URL` (L273-274)          | `https://geolonia.github.io/gsi-3d-2025-demo-3dgeojson/roads.geojson`             | 国土地理院本番URL（未定） |
-| `DENSHI_KOKUDO_3D_CONFIG.BUILDINGS_TILE_URL` (L275-276) | `https://geolonia.github.io/gsi-3d-2025-demo-3dgeojson/buildings/{z}/{x}/{y}.pbf` | 国土地理院本番URL（未定） |
+| 設定                                                | 変更前                                                                            | 変更後(地理院ホスト)                                                                                  |
+| --------------------------------------------------- | --------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `POINT_CLOUD_CONFIG.TILES_INDEX_URL` (L254)         | `https://d2g57vdz6jjbu8.cloudfront.net/3dtiles.json`                              | `https://cyberjapandata.gsi.go.jp/3dpc-3dtiles/pointcloud/iwaki/the-roof-standard-point/3dtiles.json` |
+| `POINT_CLOUD_CONFIG.TILESET_BASE_URL` (L256)        | `https://d2g57vdz6jjbu8.cloudfront.net/3dtiles`                                   | `https://cyberjapandata.gsi.go.jp/3dpc-3dtiles/pointcloud/iwaki`                                      |
+| `DENSHI_KOKUDO_3D_CONFIG.RAILS_URL` (L273)          | `https://geolonia.github.io/gsi-3d-2025-demo-3dgeojson/rails.geojson`             | `https://cyberjapandata.gsi.go.jp/3dmaps/rails.geojson`                                               |
+| `DENSHI_KOKUDO_3D_CONFIG.ROADS_URL` (L274)          | `https://geolonia.github.io/gsi-3d-2025-demo-3dgeojson/roads.geojson`             | `https://cyberjapandata.gsi.go.jp/3dmaps/roads.geojson`                                               |
+| `DENSHI_KOKUDO_3D_CONFIG.BUILDINGS_TILE_URL` (L276) | `https://geolonia.github.io/gsi-3d-2025-demo-3dgeojson/buildings/{z}/{x}/{y}.pbf` | `https://cyberjapandata.gsi.go.jp/3dmaps/buildings/{z}/{x}/{y}.pbf`                                   |
 
 ### ヘルプリンク変更箇所
 
-| ファイル                | 箇所                           | 現在のURL                     | 変更先                |
-| ----------------------- | ------------------------------ | ----------------------------- | --------------------- |
-| `src/lib/config.ts` L22 | `GENERAL_CONFIG.HELP_PAGE_URL` | `http://maps.gsi.go.jp/help/` | マニュアルURL（未定） |
+| ファイル                | 箇所                           | 変更前                        | 変更後(Private)                                      |
+| ----------------------- | ------------------------------ | ----------------------------- | ---------------------------------------------------- |
+| `src/lib/config.ts` L22 | `GENERAL_CONFIG.HELP_PAGE_URL` | `http://maps.gsi.go.jp/help/` | `https://potential-goggles-3qr4o98.pages.github.io/` |
 
 ## 概要
 
@@ -41,7 +41,7 @@
 
 ## サイト
 
-- デモ: https://geolonia.github.io/gsi-3d-2025/
+- デモ: https://verbose-spoon-2q6zo6r.pages.github.io/
 - 地理院地図: https://maps.gsi.go.jp/
 
 ## セットアップ
