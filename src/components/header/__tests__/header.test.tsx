@@ -114,7 +114,10 @@ describe("Header", () => {
     const helpLinks = screen.getAllByText("ヘルプ");
     // 最初の「ヘルプ」テキストの親リンクを探す
     const link = helpLinks[0].closest("a");
-    expect(link).toHaveAttribute("href", "http://maps.gsi.go.jp/help/");
+    expect(link).toHaveAttribute(
+      "href",
+      "https://potential-goggles-3qr4o98.pages.github.io/",
+    );
     expect(link).toHaveAttribute("target", "_blank");
   });
 
