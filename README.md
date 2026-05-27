@@ -2,28 +2,6 @@
 
 国土地理院が提供する3次元地図可視化サイトのソースコードです。
 
-## ⚠️ 公開前の調整事項
-
-以下の設定値は開発・デモ用のURLを指しています。**国土地理院本番環境へ公開する前に、本番URLへの差し替えが必要です。**
-
-### タイルURL変更箇所
-
-**ファイル:** `src/lib/config.ts`
-
-| 設定                                                | 変更前                                                                            | 変更後(地理院ホスト)                                                                                  |
-| --------------------------------------------------- | --------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| `POINT_CLOUD_CONFIG.TILES_INDEX_URL` (L254)         | `https://d2g57vdz6jjbu8.cloudfront.net/3dtiles.json`                              | `https://cyberjapandata.gsi.go.jp/3dpc-3dtiles/pointcloud/iwaki/the-roof-standard-point/3dtiles.json` |
-| `POINT_CLOUD_CONFIG.TILESET_BASE_URL` (L256)        | `https://d2g57vdz6jjbu8.cloudfront.net/3dtiles`                                   | `https://cyberjapandata.gsi.go.jp/3dpc-3dtiles/pointcloud/iwaki`                                      |
-| `DENSHI_KOKUDO_3D_CONFIG.RAILS_URL` (L273)          | `https://geolonia.github.io/gsi-3d-2025-demo-3dgeojson/rails.geojson`             | `https://cyberjapandata.gsi.go.jp/3dmaps/rails.geojson`                                               |
-| `DENSHI_KOKUDO_3D_CONFIG.ROADS_URL` (L274)          | `https://geolonia.github.io/gsi-3d-2025-demo-3dgeojson/roads.geojson`             | `https://cyberjapandata.gsi.go.jp/3dmaps/roads.geojson`                                               |
-| `DENSHI_KOKUDO_3D_CONFIG.BUILDINGS_TILE_URL` (L276) | `https://geolonia.github.io/gsi-3d-2025-demo-3dgeojson/buildings/{z}/{x}/{y}.pbf` | `https://cyberjapandata.gsi.go.jp/3dmaps/buildings/{z}/{x}/{y}.pbf`                                   |
-
-### ヘルプリンク変更箇所
-
-| ファイル                | 箇所                           | 変更前                        | 変更後(Private)                                      |
-| ----------------------- | ------------------------------ | ----------------------------- | ---------------------------------------------------- |
-| `src/lib/config.ts` L22 | `GENERAL_CONFIG.HELP_PAGE_URL` | `http://maps.gsi.go.jp/help/` | `https://potential-goggles-3qr4o98.pages.github.io/` |
-
 ## 概要
 
 地理院地図の地図データや各種タイルを3D表示で閲覧できるWebアプリケーションです。
@@ -41,7 +19,7 @@
 
 ## サイト
 
-- デモ: https://verbose-spoon-2q6zo6r.pages.github.io/
+- デモ: https://gsi-cyberjapan.github.io/gsi-3d-2025/
 - 地理院地図: https://maps.gsi.go.jp/
 
 ## セットアップ

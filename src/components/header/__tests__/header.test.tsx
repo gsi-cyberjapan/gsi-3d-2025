@@ -116,7 +116,7 @@ describe("Header", () => {
     const link = helpLinks[0].closest("a");
     expect(link).toHaveAttribute(
       "href",
-      "https://potential-goggles-3qr4o98.pages.github.io/",
+      "https://gsi-cyberjapan.github.io/gsi-3d-2025-manual/",
     );
     expect(link).toHaveAttribute("target", "_blank");
   });

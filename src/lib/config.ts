@@ -19,7 +19,7 @@ export const GENERAL_CONFIG = {
   /** アプリケーションの言語 */
   LANGUAGE: "ja",
   /** ヘルプページのURL */
-  HELP_PAGE_URL: "https://potential-goggles-3qr4o98.pages.github.io/",
+  HELP_PAGE_URL: "https://gsi-cyberjapan.github.io/gsi-3d-2025-manual/",
 } as const;
 
 export const LAYOUT_CONFIG = {
@@ -251,9 +251,9 @@ export const TERRAIN_CONFIG = {
 
 export const POINT_CLOUD_CONFIG = {
   TILES_INDEX_URL:
-    "https://cyberjapandata.gsi.go.jp/3dpc-3dtiles/pointcloud/iwaki/the-roof-standard-point/3dtiles.json",
+    "https://cyberjapandata.gsi.go.jp/3dpc-3dtiles/pointcloud/noto/the-roof-standard-point/3dtiles.json",
   TILESET_BASE_URL:
-    "https://cyberjapandata.gsi.go.jp/3dpc-3dtiles/pointcloud/iwaki",
+    "https://cyberjapandata.gsi.go.jp/3dpc-3dtiles/pointcloud/noto",
   MIN_ZOOM: 12,
 } as const;
 
