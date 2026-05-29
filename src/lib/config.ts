@@ -199,7 +199,7 @@ export interface DemSource {
   maxZoom: number;
 }
 
-export const DEFAULT_DEM_SOURCE_ID: DemSourceId = "gsidem10b";
+export const DEFAULT_DEM_SOURCE_ID: DemSourceId = "gsidem1a";
 
 export const DEM_SOURCES: DemSource[] = [
   {
