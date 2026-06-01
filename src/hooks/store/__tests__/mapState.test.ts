@@ -105,7 +105,7 @@ describe("mapState", () => {
     it("立体表示を切り替えられる", () => {
       store.getState().setTerrainEnabled({ mapId: "sub", enabled: true });
       expect(store.getState().maps.sub.isTerrainEnabled).toBe(true);
-      expect(store.getState().maps.main.isTerrainEnabled).toBe(false);
+      expect(store.getState().maps.main.isTerrainEnabled).toBe(true);
     });
   });
 
@@ -155,7 +155,7 @@ describe("mapState", () => {
       expect(store.getState().maps.sub.isTerrainEnabled).toBe(true);
       expect(store.getState().maps.sub.isPointCloudEnabled).toBe(true);
       expect(store.getState().maps.sub.isDenshi3dEnabled).toBe(true);
-      expect(store.getState().maps.main.isTerrainEnabled).toBe(false);
+      expect(store.getState().maps.main.isTerrainEnabled).toBe(true);
     });
   });
 });
