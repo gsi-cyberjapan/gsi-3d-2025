@@ -1,10 +1,10 @@
 export const DEFAULT_VIEW_CONFIG = {
   /** デフォルトの経度 */
-  LONGITUDE: 140.084556,
+  LONGITUDE: 135.1266,
   /** デフォルトの緯度 */
-  LATITUDE: 36.104611,
+  LATITUDE: 35.2967,
   /** デフォルトのズームレベル */
-  ZOOM: 4,
+  ZOOM: 16,
   /** デフォルトの方位（北が上） */
   BEARING: 0,
   /** デフォルトの傾き（真上から見下ろす） */
