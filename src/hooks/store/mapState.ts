@@ -44,9 +44,9 @@ export const MAP_INITIAL_STATE: MapState = {
   projection: "mercator",
   td: null,
   isHillshadeEnabled: false,
-  isTerrainEnabled: false,
+  isTerrainEnabled: true,
   isPointCloudEnabled: false,
-  isDenshi3dEnabled: false,
+  isDenshi3dEnabled: true,
   roofElevationType: DEFAULT_ROOF_ELEVATION_TYPE,
 };
 
