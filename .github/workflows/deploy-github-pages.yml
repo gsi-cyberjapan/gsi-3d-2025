@@ -24,22 +24,22 @@ jobs:
     steps:
       # 1. リポジトリを取得
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       # 2. pnpm を有効化
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v5
 
       # 3. Node.js セットアップ
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 20
           cache: pnpm
 
       # 4. GitHub Pages 用の環境設定
       - name: Configure GitHub Pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
 
       # 5. 依存関係のインストール
       - name: Install dependencies
@@ -51,7 +51,7 @@ jobs:
         env:
           # ルート直下で配信する Pages の場合は空でOK
           # https://<random>.pages.github.io/
-          BASE_PATH: /gsi-3d-2025
+          BASE_PATH: ""
 
       # 7. Jekyll 無効化（_next/ 対策）
       - name: Add .nojekyll
@@ -59,7 +59,7 @@ jobs:
 
       # 8. ビルド成果物を Pages artifact としてアップロード
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v5
         with:
           path: ./out
 
@@ -74,4 +74,4 @@ jobs:
     steps:
       - name: Deploy
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
