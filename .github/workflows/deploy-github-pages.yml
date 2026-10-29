@@ -51,7 +51,7 @@ jobs:
         env:
           # ルート直下で配信する Pages の場合は空でOK
           # https://<random>.pages.github.io/
-          BASE_PATH: ""
+          BASE_PATH: /gsi-3d-2025
 
       # 7. Jekyll 無効化（_next/ 対策）
       - name: Add .nojekyll
